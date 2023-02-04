@@ -8,11 +8,11 @@ module Deli
       @string = string
     end
 
-    def locate_token(token)
-      locate_string(token.row, token.col, token.lexeme.length)
+    def show_span(span)
+      show_string(span.row, span.col, span.length)
     end
 
-    def locate_string(row, col, length)
+    def show_string(row, col, length)
       col_string = format("  %d  |  ", row + 1)
 
       indicator_indent = " " * (col_string.length + col)

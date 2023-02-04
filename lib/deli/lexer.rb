@@ -1,16 +1,78 @@
 module Deli
   class Lexer
+    class TrackingStringScanner
+      attr_reader :prev_row
+      attr_reader :prev_col
+
+      def initialize(string)
+        @scanner = StringScanner.new(string)
+
+        @prev_row = 0
+        @prev_col = 0
+
+        @row = 0
+        @col = 0
+      end
+
+      def eos?
+        @scanner.eos?
+      end
+
+      def scan_newline
+        res = @scanner.scan(/\n+/)
+        return nil if res.nil?
+
+        advance
+        @row += res.size
+        @col = 0
+
+        res
+      end
+
+      def scan(pattern)
+        res = @scanner.scan(pattern)
+        return nil if res.nil?
+
+        advance
+        @col += res.size
+
+        res
+      end
+
+      def matched_span
+        Span.new(@prev_row, @prev_col, matched.length)
+      end
+
+      def matched
+        @scanner.matched
+      end
+
+      def getch
+        res = @scanner.getch
+        return nil if res.nil?
+
+        advance
+        @col += res.size
+
+        res
+      end
+
+      private
+
+      def advance
+        @prev_row = @row
+        @prev_col = @col
+      end
+    end
+
     def initialize(source_code)
       @source_code = source_code
-      @scanner = StringScanner.new(source_code.string)
-
-      @col = 0
-      @row = 0
+      @scanner = TrackingStringScanner.new(source_code.string)
     end
 
     def call
       tokens = []
-      while (t = lex_token_except_whitespace)
+      while (t = lex_token)
         tokens << t
       end
       tokens
@@ -18,59 +80,39 @@ module Deli
 
     private
 
-    def lex_token_except_whitespace
-      token = lex_token
-      return nil unless token
-
-      case token.type
-      when :WHITESPACE_NL
-        @row += 1
-        @col = 0
-        lex_token_except_whitespace
-      when :WHITESPACE
-        @col += token.lexeme.size
-        lex_token_except_whitespace
-      else
-        token.row = @row
-        token.col = @col
-        @col += token.lexeme.size
-        token
-      end
-    end
-
     def lex_token
       if @scanner.eos?
         nil
-      elsif @scanner.scan(/[\r\n]/)
-        Token.new(:WHITESPACE_NL, @scanner.matched, nil)
-      elsif @scanner.scan(/\s+/)
-        Token.new(:WHITESPACE, @scanner.matched, nil)
+      elsif @scanner.scan_newline
+        lex_token
+      elsif @scanner.scan(/ +/)
+        lex_token
       elsif @scanner.scan("+")
-        Token.new(:PLUS, @scanner.matched, nil)
+        Token.new(:PLUS, @scanner.matched, nil, @scanner.matched_span)
       elsif @scanner.scan("*")
-        Token.new(:TIMES, @scanner.matched, nil)
+        Token.new(:TIMES, @scanner.matched, nil, @scanner.matched_span)
       elsif @scanner.scan("-")
-        Token.new(:MINUS, @scanner.matched, nil)
+        Token.new(:MINUS, @scanner.matched, nil, @scanner.matched_span)
       elsif @scanner.scan("/")
-        Token.new(:DIVIDE, @scanner.matched, nil)
+        Token.new(:DIVIDE, @scanner.matched, nil, @scanner.matched_span)
       elsif @scanner.scan(";")
-        Token.new(:SEMICOLON, @scanner.matched, nil)
+        Token.new(:SEMICOLON, @scanner.matched, nil, @scanner.matched_span)
       elsif @scanner.scan("=")
-        Token.new(:EQUAL, @scanner.matched, nil)
+        Token.new(:EQUAL, @scanner.matched, nil, @scanner.matched_span)
       elsif @scanner.scan(/\d+/)
-        Token.new(:NUMBER, @scanner.matched, @scanner.matched)
+        Token.new(:NUMBER, @scanner.matched, @scanner.matched, @scanner.matched_span)
       elsif @scanner.scan(/\w+/)
         case @scanner.matched
         when "var"
-          Token.new(:KEYWORD_VAR, @scanner.matched, nil)
+          Token.new(:KEYWORD_VAR, @scanner.matched, nil, @scanner.matched_span)
         when "print"
-          Token.new(:KEYWORD_PRINT, @scanner.matched, nil)
+          Token.new(:KEYWORD_PRINT, @scanner.matched, nil, @scanner.matched_span)
         else
-          Token.new(:IDENTIFIER, @scanner.matched, @scanner.matched)
+          Token.new(:IDENTIFIER, @scanner.matched, @scanner.matched, @scanner.matched_span)
         end
       else
         char = @scanner.getch
-        raise Deli::CharLocatableError.new(@source_code, @row, @col, "Unknown character: #{char}")
+        raise Deli::LocatableError.new(@source_code, @scanner.matched_span, "Unknown character: #{char}")
       end
     end
   end

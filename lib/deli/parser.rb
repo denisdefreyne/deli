@@ -59,8 +59,8 @@ module Deli
       when :IDENTIFIER
         Deli::AST::IdentifierExpr.new(token)
       else
-        raise Deli::TokenLocatableError.new(
-          @source_code, token, "parse error: expected NUMBER, but got #{token.type}"
+        raise Deli::LocatableError.new(
+          @source_code, token.span, "parse error: expected NUMBER, but got #{token.type}"
         )
       end
     end
@@ -69,8 +69,8 @@ module Deli
       if @tokens.first.type == type
         @tokens.shift
       else
-        raise Deli::TokenLocatableError.new(
-          @source_code, @tokens.first, "parse error: expected #{type}, but got #{@tokens.first.type}"
+        raise Deli::LocatableError.new(
+          @source_code, @tokens.span.first, "parse error: expected #{type}, but got #{@tokens.first.type}"
         )
       end
     end

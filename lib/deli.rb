@@ -3,6 +3,7 @@ require "strscan"
 # Utilities
 require_relative "deli/source_code"
 require_relative "deli/error"
+require_relative "deli/span"
 
 # Primary models
 require_relative "deli/token"

@@ -9,7 +9,7 @@ module Deli
 
       def [](token)
         @values.fetch(token.value) do
-          raise Deli::TokenLocatableError.new(@source_code, token, "Unknown name: #{token.value}")
+          raise Deli::LocatableError.new(@source_code, token.span, "Unknown name: #{token.value}")
         end
       end
 
