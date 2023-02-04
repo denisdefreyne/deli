@@ -1,0 +1,3 @@
+var blorp = print;
+print blorp;
+print eek;

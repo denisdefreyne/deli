@@ -1,0 +1,18 @@
+#/bin/bash
+
+set -euo pipefail
+
+case "$1" in
+"up")
+  gem install standard
+  ;;
+
+"test")
+  bundle exec rubocop
+  ;;
+
+*)
+  echo "usage: dev [command]"
+  exit 1
+  ;;
+esac

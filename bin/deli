@@ -1,0 +1,307 @@
+#!/usr/bin/env ruby
+
+require "strscan"
+
+################################################################################
+
+class SourceCode
+  attr_reader :filename
+  attr_reader :string
+
+  def initialize(filename, string)
+    @filename = filename
+    @string = string
+  end
+
+  def locate_token(token)
+    locate_string(token.row, token.col, token.lexeme.length)
+  end
+
+  def locate_string(row, col, length)
+    col_string = format("  %d  |  ", row + 1)
+
+    indicator_indent = ' ' * (col_string.length + col)
+    indicator = '^' * length
+
+    "#{col_string}#{lines[row]}\n#{indicator_indent}#{indicator}"
+  end
+
+  private
+
+  def lines
+    @_lines ||= string.lines.map(&:chomp)
+  end
+end
+
+class DeliError < StandardError; end
+
+class CharLocatableDeliError < DeliError
+  def initialize(source_code, row, col, message)
+    @source_code = source_code
+    @row = row
+    @col = col
+    @message = message
+  end
+
+  def message
+    <<~MESSAGE
+      #{@source_code.filename}:#{@row + 1}: #{@message}
+      #{@source_code.locate_string(@row, @col, 1)}
+    MESSAGE
+  end
+end
+
+class TokenLocatableDeliError < DeliError
+  def initialize(source_code, token, message)
+    @source_code = source_code
+    @token = token
+    @message = message
+  end
+
+  def message
+    <<~MESSAGE
+      #{@source_code.filename}:#{@token.row + 1}: #{@message}
+      #{@source_code.locate_token(@token)}
+    MESSAGE
+  end
+end
+
+################################################################################
+
+Token = Struct.new(:type, :lexeme, :value, :row, :col)
+
+class Lexer
+  def initialize(source_code)
+    @source_code = source_code
+    @scanner = StringScanner.new(source_code.string)
+
+    @col = 0
+    @row = 0
+  end
+
+  def call
+    tokens = []
+    while (t = lex_token_except_whitespace)
+      tokens << t
+    end
+    tokens
+  end
+
+  private
+
+  def lex_token_except_whitespace
+    token = lex_token
+    return nil unless token
+
+    case token.type
+    when :WHITESPACE_NL
+      @row += 1
+      @col = 0
+      lex_token_except_whitespace
+    when :WHITESPACE
+      @col += token.lexeme.size
+      lex_token_except_whitespace
+    else
+      token.row = @row
+      token.col = @col
+      @col += token.lexeme.size
+      token
+    end
+  end
+
+  def lex_token
+    if @scanner.eos?
+      nil
+    elsif @scanner.scan(/[\r\n]/)
+      Token.new(:WHITESPACE_NL, @scanner.matched, nil)
+    elsif @scanner.scan(/\s+/)
+      Token.new(:WHITESPACE, @scanner.matched, nil)
+    elsif @scanner.scan("+")
+      Token.new(:PLUS, @scanner.matched, nil)
+    elsif @scanner.scan("*")
+      Token.new(:TIMES, @scanner.matched, nil)
+    elsif @scanner.scan("-")
+      Token.new(:MINUS, @scanner.matched, nil)
+    elsif @scanner.scan("/")
+      Token.new(:DIVIDE, @scanner.matched, nil)
+    elsif @scanner.scan(";")
+      Token.new(:SEMICOLON, @scanner.matched, nil)
+    elsif @scanner.scan("=")
+      Token.new(:EQUAL, @scanner.matched, nil)
+    elsif @scanner.scan(/\d+/)
+      Token.new(:NUMBER, @scanner.matched, @scanner.matched)
+    elsif @scanner.scan(/\w+/)
+      case @scanner.matched
+      when "var"
+        Token.new(:KEYWORD_VAR, @scanner.matched, nil)
+      when "print"
+        Token.new(:KEYWORD_PRINT, @scanner.matched, nil)
+      else
+        Token.new(:IDENTIFIER, @scanner.matched, @scanner.matched)
+      end
+    else
+      char = @scanner.getch
+      raise CharLocatableDeliError.new(@source_code, @row, @col, "Unknown character: #{char}")
+    end
+  end
+end
+
+################################################################################
+
+VarStmt = Struct.new(:identifier, :value_expr)
+PrintStmt = Struct.new(:expr)
+
+IntegerExpr = Struct.new(:value)
+IdentifierExpr = Struct.new(:identifier)
+
+class Parser
+  def initialize(source_code, tokens)
+    @source_code = source_code
+    @tokens = tokens.dup
+  end
+
+  def call
+    stmts = []
+    while (s = parse_stmt)
+      stmts << s
+    end
+    stmts
+  end
+
+  private
+
+  def parse_stmt
+    if @tokens.empty?
+      return nil
+    end
+
+    token = @tokens.shift
+    case token.type
+    when :KEYWORD_VAR
+      parse_var_stmt
+    when :KEYWORD_PRINT
+      parse_print_stmt
+    else
+      raise "???"
+    end
+  end
+
+  def parse_var_stmt
+    # NOTE: :KEYWORD_VAR already consumed
+
+    identifier = consume(:IDENTIFIER)
+    consume(:EQUAL)
+    value_expr = parse_expr
+    consume(:SEMICOLON)
+
+    VarStmt.new(identifier, value_expr)
+  end
+
+  def parse_print_stmt
+    # NOTE: :KEYWORD_PRINT already consumed
+
+    expr = parse_expr
+    consume(:SEMICOLON)
+
+    PrintStmt.new(expr)
+  end
+
+  def parse_expr
+    token = @tokens.shift
+    case token.type
+    when :NUMBER
+      IntegerExpr.new(Integer(token.value))
+    when :IDENTIFIER
+      IdentifierExpr.new(token)
+    else
+      raise TokenLocatableDeliError.new(
+        @source_code, token, "parse error: expected NUMBER, but got #{token.type}")
+    end
+  end
+
+  def consume(type)
+    if @tokens.first.type == type
+      @tokens.shift
+    else
+      raise TokenLocatableDeliError.new(
+        @source_code, @tokens.first, "parse error: expected #{type}, but got #{@tokens.first.type}")
+    end
+  end
+end
+
+################################################################################
+
+class Evaluator
+  class Env
+    def initialize(source_code)
+      @source_code = source_code
+
+      @values = {}
+    end
+
+    def [](token)
+      @values.fetch(token.value) do
+        raise TokenLocatableDeliError.new(@source_code, token, "Unknown name: #{token.value}")
+      end
+    end
+
+    def []=(token, value)
+      @values[token.value] = value
+    end
+  end
+
+  def initialize(source, stmts)
+    @stmts = stmts
+
+    @env = Env.new(source)
+  end
+
+  def call
+    @stmts.each { eval_stmt(_1) }
+  end
+
+  private
+
+  def eval_stmt(stmt)
+    case stmt
+    when VarStmt # Struct.new(:identifier, :value_expr)
+      value = eval_expr(stmt.value_expr)
+      @env[stmt.identifier] = value
+    when PrintStmt # Struct.new(:expr)
+      value = eval_expr(stmt.expr)
+      puts value
+    end
+  end
+
+  def eval_expr(expr)
+    case expr
+    when IntegerExpr # Struct.new(:value)
+      expr.value
+    when IdentifierExpr # Struct.new(:identifier)
+      @env[expr.identifier]
+    end
+  end
+end
+
+################################################################################
+
+if ARGV.size != 1
+  warn "usage: deli [path]"
+  exit 64
+end
+
+contents = File.read(ARGV[0])
+source_code = SourceCode.new(ARGV[0], contents)
+
+begin
+  lexer = Lexer.new(source_code)
+  tokens = lexer.call
+
+  parser = Parser.new(source_code, tokens)
+  stmts = parser.call
+
+  evaluator = Evaluator.new(source_code, stmts)
+  evaluator.call
+rescue DeliError => err
+  warn err.message
+end
