@@ -2,69 +2,7 @@
 
 require "strscan"
 
-################################################################################
-
-class SourceCode
-  attr_reader :filename
-  attr_reader :string
-
-  def initialize(filename, string)
-    @filename = filename
-    @string = string
-  end
-
-  def locate_token(token)
-    locate_string(token.row, token.col, token.lexeme.length)
-  end
-
-  def locate_string(row, col, length)
-    col_string = format("  %d  |  ", row + 1)
-
-    indicator_indent = ' ' * (col_string.length + col)
-    indicator = '^' * length
-
-    "#{col_string}#{lines[row]}\n#{indicator_indent}#{indicator}"
-  end
-
-  private
-
-  def lines
-    @_lines ||= string.lines.map(&:chomp)
-  end
-end
-
-class DeliError < StandardError; end
-
-class CharLocatableDeliError < DeliError
-  def initialize(source_code, row, col, message)
-    @source_code = source_code
-    @row = row
-    @col = col
-    @message = message
-  end
-
-  def message
-    <<~MESSAGE
-      #{@source_code.filename}:#{@row + 1}: #{@message}
-      #{@source_code.locate_string(@row, @col, 1)}
-    MESSAGE
-  end
-end
-
-class TokenLocatableDeliError < DeliError
-  def initialize(source_code, token, message)
-    @source_code = source_code
-    @token = token
-    @message = message
-  end
-
-  def message
-    <<~MESSAGE
-      #{@source_code.filename}:#{@token.row + 1}: #{@message}
-      #{@source_code.locate_token(@token)}
-    MESSAGE
-  end
-end
+require_relative '../lib/deli'
 
 ################################################################################
 
@@ -141,7 +79,7 @@ class Lexer
       end
     else
       char = @scanner.getch
-      raise CharLocatableDeliError.new(@source_code, @row, @col, "Unknown character: #{char}")
+      raise Deli::CharLocatableError.new(@source_code, @row, @col, "Unknown character: #{char}")
     end
   end
 end
@@ -214,8 +152,9 @@ class Parser
     when :IDENTIFIER
       IdentifierExpr.new(token)
     else
-      raise TokenLocatableDeliError.new(
-        @source_code, token, "parse error: expected NUMBER, but got #{token.type}")
+      raise Deli::TokenLocatableError.new(
+        @source_code, token, "parse error: expected NUMBER, but got #{token.type}"
+      )
     end
   end
 
@@ -223,8 +162,9 @@ class Parser
     if @tokens.first.type == type
       @tokens.shift
     else
-      raise TokenLocatableDeliError.new(
-        @source_code, @tokens.first, "parse error: expected #{type}, but got #{@tokens.first.type}")
+      raise Deli::TokenLocatableError.new(
+        @source_code, @tokens.first, "parse error: expected #{type}, but got #{@tokens.first.type}"
+      )
     end
   end
 end
@@ -291,7 +231,7 @@ if ARGV.size != 1
 end
 
 contents = File.read(ARGV[0])
-source_code = SourceCode.new(ARGV[0], contents)
+source_code = Deli::SourceCode.new(ARGV[0], contents)
 
 begin
   lexer = Lexer.new(source_code)
@@ -302,6 +242,6 @@ begin
 
   evaluator = Evaluator.new(source_code, stmts)
   evaluator.call
-rescue DeliError => err
+rescue Deli::Error => err
   warn err.message
 end
