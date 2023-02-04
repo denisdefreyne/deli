@@ -1,9 +1,6 @@
 module Deli
   class Lexer
     class TrackingStringScanner
-      attr_reader :prev_row
-      attr_reader :prev_col
-
       def initialize(string)
         @scanner = StringScanner.new(string)
 
@@ -39,7 +36,7 @@ module Deli
         res
       end
 
-      def matched_span
+      def span
         Span.new(@prev_row, @prev_col, matched.length)
       end
 
@@ -85,34 +82,34 @@ module Deli
         nil
       elsif @scanner.scan_newline
         lex_token
-      elsif @scanner.scan(/ +/)
+      elsif @scanner.scan(/[^\S\n]+/)
         lex_token
       elsif @scanner.scan("+")
-        Token.new(:PLUS, @scanner.matched, nil, @scanner.matched_span)
+        Token.new(:PLUS, @scanner.matched, nil, @scanner.span)
       elsif @scanner.scan("*")
-        Token.new(:TIMES, @scanner.matched, nil, @scanner.matched_span)
+        Token.new(:TIMES, @scanner.matched, nil, @scanner.span)
       elsif @scanner.scan("-")
-        Token.new(:MINUS, @scanner.matched, nil, @scanner.matched_span)
+        Token.new(:MINUS, @scanner.matched, nil, @scanner.span)
       elsif @scanner.scan("/")
-        Token.new(:DIVIDE, @scanner.matched, nil, @scanner.matched_span)
+        Token.new(:DIVIDE, @scanner.matched, nil, @scanner.span)
       elsif @scanner.scan(";")
-        Token.new(:SEMICOLON, @scanner.matched, nil, @scanner.matched_span)
+        Token.new(:SEMICOLON, @scanner.matched, nil, @scanner.span)
       elsif @scanner.scan("=")
-        Token.new(:EQUAL, @scanner.matched, nil, @scanner.matched_span)
+        Token.new(:EQUAL, @scanner.matched, nil, @scanner.span)
       elsif @scanner.scan(/\d+/)
-        Token.new(:NUMBER, @scanner.matched, @scanner.matched, @scanner.matched_span)
+        Token.new(:NUMBER, @scanner.matched, @scanner.matched, @scanner.span)
       elsif @scanner.scan(/\w+/)
         case @scanner.matched
         when "var"
-          Token.new(:KEYWORD_VAR, @scanner.matched, nil, @scanner.matched_span)
+          Token.new(:KEYWORD_VAR, @scanner.matched, nil, @scanner.span)
         when "print"
-          Token.new(:KEYWORD_PRINT, @scanner.matched, nil, @scanner.matched_span)
+          Token.new(:KEYWORD_PRINT, @scanner.matched, nil, @scanner.span)
         else
-          Token.new(:IDENTIFIER, @scanner.matched, @scanner.matched, @scanner.matched_span)
+          Token.new(:IDENTIFIER, @scanner.matched, @scanner.matched, @scanner.span)
         end
       else
         char = @scanner.getch
-        raise Deli::LocatableError.new(@source_code, @scanner.matched_span, "Unknown character: #{char}")
+        raise Deli::LocatableError.new(@source_code, @scanner.span, "Unknown character: #{char}")
       end
     end
   end
