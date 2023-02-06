@@ -24,6 +24,12 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("200\n", $stdout.string)
   end
 
+  def test_assign_unknown
+    error = assert_raises(Deli::LocatableError) { evaluate('r = 100;') }
+
+    assert_equal('Unknown name: r', error.short_message)
+  end
+
   def test_if_without_else_true
     evaluate('if 2 < 3 { print 100; }')
 
@@ -40,6 +46,12 @@ class TestDeliEvaluator < Minitest::Test
     evaluate('if 2 < 3 { print 100; } else { print 200; }')
 
     assert_equal("100\n", $stdout.string)
+  end
+
+  def test_if_scope
+    evaluate('var a = 100; if 2 < 3 { var a = 200; print a; } print a;')
+
+    assert_equal("200\n100\n", $stdout.string)
   end
 
   def test_unary
@@ -78,7 +90,7 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("5\n-1\n6\n2\n", $stdout.string)
   end
 
-  def test_binary_relationaloperator
+  def test_binary_relational_operator
     evaluate('print 2<3; print 2<=3; print 2>3; print 2>=3;')
 
     assert_equal("true\ntrue\nfalse\nfalse\n", $stdout.string)

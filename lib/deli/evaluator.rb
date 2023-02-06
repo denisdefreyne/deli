@@ -3,8 +3,11 @@
 module Deli
   class Evaluator
     class Env
-      def initialize(source_code)
+      attr_reader :parent
+
+      def initialize(source_code, parent: nil)
         @source_code = source_code
+        @parent = parent
 
         @values = {}
       end
@@ -19,15 +22,34 @@ module Deli
         end
       end
 
+      def assign_new(token, value)
+        @values[token.value] = value
+      end
+
+      def assign_existing(token, value)
+        if @values.key?(token.value)
+          @values[token.value] = value
+        elsif @parent
+          @parent.assign_existing(token, value)
+        else
+          raise Deli::LocatableError.new(
+            @source_code,
+            token.span,
+            "Unknown name: #{token.value}",
+          )
+        end
+      end
+
       def []=(token, value)
         @values[token.value] = value
       end
     end
 
-    def initialize(source, stmts)
+    def initialize(source_code, stmts)
+      @source_code = source_code
       @stmts = stmts
 
-      @env = Env.new(source)
+      @env = Env.new(source_code)
     end
 
     def call
@@ -38,10 +60,12 @@ module Deli
 
     def eval_stmt(stmt)
       case stmt
-      when AST::VarStmt, AST::AssignStmt
-        # TODO: split var from assign
+      when AST::VarStmt
         value = eval_expr(stmt.value_expr)
-        @env[stmt.identifier] = value
+        @env.assign_new(stmt.identifier, value)
+      when AST::AssignStmt
+        value = eval_expr(stmt.value_expr)
+        @env.assign_existing(stmt.identifier, value)
       when AST::PrintStmt
         value = eval_expr(stmt.expr)
         puts(stringify(value))
@@ -53,7 +77,9 @@ module Deli
           eval_stmt(stmt.false_stmt)
         end
       when AST::GroupStmt
-        stmt.stmts.each { eval_stmt(_1) }
+        push_env do
+          stmt.stmts.each { eval_stmt(_1) }
+        end
       else
         raise Deli::InternalInconsistencyError,
           "Unexpected stmt class: #{stmt.class}"
@@ -115,6 +141,12 @@ module Deli
         raise Deli::InternalInconsistencyError,
           "Unexpected expr class: #{expr.class}"
       end
+    end
+
+    def push_env
+      @env = Env.new(@source_code, parent: @env)
+      yield
+      @env = @env.parent
     end
 
     def stringify(obj)
