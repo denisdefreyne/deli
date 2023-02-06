@@ -13,6 +13,9 @@ module Deli
       parser.on('--dump-ast', 'Dump AST') do |_value|
         options[:dump_ast] = true
       end
+      parser.on('--dump-tokens', 'Dump tokens') do |_value|
+        options[:dump_tokens] = true
+      end
       parser.parse!(@args)
 
       if @args.size != 1
@@ -25,6 +28,14 @@ module Deli
 
       lexer = Deli::Lexer.new(source_code)
       tokens = lexer.call
+      if options.fetch(:dump_tokens, false)
+        warn '--- Tokens'
+        tokens.each do |token|
+          warn token.inspect
+        end
+        warn '---'
+        warn
+      end
 
       parser = Deli::Parser.new(source_code, tokens)
       stmts = parser.call

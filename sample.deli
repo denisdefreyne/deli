@@ -1,9 +1,10 @@
 var area = 13;
 print area;
 
-var a = 0;
-while a < 5 {
-  print a;
-  a = a + 1;
+var counter = 0;
+var step = 1;
+while counter < 5 {
+  print counter;
+  counter = counter + step;
 }
-print a;
+print counter;
