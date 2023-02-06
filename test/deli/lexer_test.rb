@@ -52,18 +52,28 @@ class TestDeliLexer < Minitest::Test
   end
 
   def test_keywords_and_identifiers
-    tokens = lex('if else for while true false null gecko serif format')
+    tokens = lex('if else for while fun true false null gecko serif format')
 
     assert_token(:KW_IF,      'if',     nil,      tokens.shift)
     assert_token(:KW_ELSE,    'else',   nil,      tokens.shift)
     assert_token(:KW_FOR,     'for',    nil,      tokens.shift)
     assert_token(:KW_WHILE,   'while',  nil,      tokens.shift)
+    assert_token(:KW_FUN,     'fun',    nil,      tokens.shift)
     assert_token(:KW_TRUE,    'true',   nil,      tokens.shift)
     assert_token(:KW_FALSE,   'false',  nil,      tokens.shift)
     assert_token(:KW_NULL,    'null',   nil,      tokens.shift)
     assert_token(:IDENTIFIER, 'gecko',  'gecko',  tokens.shift)
     assert_token(:IDENTIFIER, 'serif',  'serif',  tokens.shift)
     assert_token(:IDENTIFIER, 'format', 'format', tokens.shift)
+    assert_nil(tokens.shift)
+  end
+
+  def test_identifiers
+    tokens = lex('doit do_it doit123')
+
+    assert_token(:IDENTIFIER, 'doit',    'doit',    tokens.shift)
+    assert_token(:IDENTIFIER, 'do_it',   'do_it',   tokens.shift)
+    assert_token(:IDENTIFIER, 'doit123', 'doit123', tokens.shift)
     assert_nil(tokens.shift)
   end
 

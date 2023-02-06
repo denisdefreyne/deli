@@ -60,6 +60,12 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("0\n1\n2\n3\n4\n", $stdout.string)
   end
 
+  def test_fun_no_params_no_return
+    evaluate('fun print_hundred() { print 100; } print_hundred();')
+
+    assert_equal("100\n", $stdout.string)
+  end
+
   def test_unary
     evaluate('var bloop = -10; print bloop;')
 

@@ -75,6 +75,14 @@ module Deli
       end
     end
 
+    CallStmt = Struct.new(:identifier) do
+      include SExp
+
+      def to_sexp
+        [:call, identifier.value]
+      end
+    end
+
     PrintStmt = Struct.new(:expr) do
       include SExp
 
@@ -104,6 +112,14 @@ module Deli
 
       def to_sexp
         [:while, cond_expr, body_stmt]
+      end
+    end
+
+    FunStmt = Struct.new(:identifier, :body_stmt) do
+      include SExp
+
+      def to_sexp
+        [:fun, identifier.value, body_stmt]
       end
     end
 

@@ -49,6 +49,14 @@ module Deli
       end
     end
 
+    class Fun
+      attr_reader :body_stmt
+
+      def initialize(body_stmt)
+        @body_stmt = body_stmt
+      end
+    end
+
     def initialize(source_code, stmts)
       @source_code = source_code
       @stmts = stmts
@@ -87,6 +95,14 @@ module Deli
       when AST::GroupStmt
         push_env do
           stmt.stmts.each { eval_stmt(_1) }
+        end
+      when AST::FunStmt
+        fn = Fun.new(stmt.body_stmt)
+        @env.assign_new(stmt.identifier, fn)
+      when AST::CallStmt
+        fun = @env[stmt.identifier]
+        push_env do
+          eval_stmt(fun.body_stmt)
         end
       else
         raise Deli::InternalInconsistencyError,

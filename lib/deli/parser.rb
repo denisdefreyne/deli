@@ -32,6 +32,8 @@ module Deli
         parse_if_stmt
       when :KW_WHILE
         parse_while_stmt
+      when :KW_FUN
+        parse_fun_stmt
       when :IDENTIFIER
         parse_partial_identifier_stmt(token)
       else
@@ -90,6 +92,24 @@ module Deli
       Deli::AST::WhileStmt.new(condition_expr, body_stmt)
     end
 
+    # FIXME: is this really a statement?
+    def parse_fun_stmt
+      # NOTE: :KW_FUN already consumed
+
+      identifier = consume(:IDENTIFIER)
+
+      # Parameter list
+      consume(:LPAREN)
+      # TODO: parameters
+      consume(:RPAREN)
+
+      # Body
+      consume(:LBRACE)
+      body_stmt = parse_group_stmt
+
+      Deli::AST::FunStmt.new(identifier, body_stmt)
+    end
+
     def parse_group_stmt
       # NOTE: :LBRACE already consumed
 
@@ -109,7 +129,9 @@ module Deli
       token = advance
       case token.type
       when :EQ
-        parse_assign(identifier_token)
+        parse_assign_stmt(identifier_token)
+      when :LPAREN
+        parse_call_stmt(identifier_token)
       else
         raise Deli::LocatableError.new(
           @source_code, token.span, "parse error: expected `=`, but got #{token.type}",
@@ -117,7 +139,7 @@ module Deli
       end
     end
 
-    def parse_assign(identifier_token)
+    def parse_assign_stmt(identifier_token)
       # NOTE: :IDENTIFIER already consumed
       # NOTE: :EQ already consumed
 
@@ -125,6 +147,17 @@ module Deli
       consume(:SEMICOLON)
 
       Deli::AST::AssignStmt.new(identifier_token, expr)
+    end
+
+    def parse_call_stmt(identifier_token)
+      # NOTE: :IDENTIFIER already consumed
+      # NOTE: :LPAREN already consumed
+
+      # TODO: arguments
+      consume(:RPAREN)
+      consume(:SEMICOLON)
+
+      Deli::AST::CallStmt.new(identifier_token)
     end
 
     module Precedence
@@ -172,9 +205,6 @@ module Deli
       SLASH:      ParseRule.new(Precedence::FACTOR, infix: :parse_binary),
 
       BANG:       ParseRule.new(Precedence::UNARY, prefix: :parse_unary),
-
-      SEMICOLON:  ParseRule.new(Precedence::NONE),
-      LBRACE:     ParseRule.new(Precedence::NONE),
     }.freeze
 
     def parse_expr
@@ -198,12 +228,12 @@ module Deli
         rule = PARSE_RULES[peek.type]
         break if rule.nil? || rule.precedence < precedence
 
+        token = advance
         unless rule&.infix
           raise Deli::LocatableError.new(
-            @source_code, peek.span, "parse error: #{peek.type} cannot be used as an infix operator",
+            @source_code, token.span, "parse error: #{token.type} cannot be used as an infix operator",
           )
         end
-        token = advance
 
         expr = send(rule.infix, token, expr)
       end
@@ -248,7 +278,7 @@ module Deli
           @tokens.shift
         else
           raise Deli::LocatableError.new(
-            @source_code, @tokens.last.span, "parse error: expected #{type}, but got #{peek.type}",
+            @source_code, peek.span, "parse error: expected #{type}, but got #{peek.type}",
           )
         end
       else
