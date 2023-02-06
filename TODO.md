@@ -1,0 +1,6 @@
+- [ ] Functions
+- [ ] Error handling
+  - [ ] End-of-input handling
+  - [ ] Testing of error handling
+- [ ] Scopes, symbols, bindings
+- [ ] Transpiler

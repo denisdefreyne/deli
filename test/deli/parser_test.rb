@@ -108,6 +108,18 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
+  def test_error_end_of_input_a
+    error = assert_raises(Deli::LocatableError) { parse('var x = 123') }
+
+    assert_equal('parse error: expected SEMICOLON, but got end of input', error.short_message)
+  end
+
+  def test_error_end_of_input_b
+    error = assert_raises(Deli::LocatableError) { parse('var x =') }
+
+    assert_equal('parse error: unexpected end of input', error.short_message)
+  end
+
   private
 
   def parse(string)

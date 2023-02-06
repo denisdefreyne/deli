@@ -5,12 +5,14 @@ module Deli
     def initialize(source_code, tokens)
       @source_code = source_code
       @tokens = tokens.dup
+
+      @last_token = @tokens.last
     end
 
     def call
       stmts = []
-      while (s = parse_stmt)
-        stmts << s
+      until @tokens.empty?
+        stmts << parse_stmt
       end
       stmts
     end
@@ -20,7 +22,7 @@ module Deli
     def parse_stmt
       return nil if @tokens.empty?
 
-      token = @tokens.shift
+      token = advance
       case token.type
       when :KW_VAR
         parse_var_stmt
@@ -69,8 +71,8 @@ module Deli
 
       false_stmt = nil
       if peek&.type == :KW_ELSE
-        @tokens.shift # consume :ELSE
-        @tokens.shift # consume :LBRACE
+        advance # consume :ELSE
+        consume(:LBRACE)
         false_stmt = parse_group_stmt
       end
 
@@ -104,7 +106,7 @@ module Deli
     def parse_partial_identifier_stmt(identifier_token)
       # NOTE: :IDENTIFIER already consumed
 
-      token = @tokens.shift
+      token = advance
       case token.type
       when :EQ
         parse_assign(identifier_token)
@@ -182,12 +184,12 @@ module Deli
     # TODO: handle right associativity
 
     def parse_precedence(precedence)
-      token = @tokens.shift
+      token = advance
       rule = PARSE_RULES.fetch(token.type) # TODO: handle errors
       expr = send(rule.prefix, token)
 
-      while PARSE_RULES.fetch(peek.type).precedence >= precedence
-        token = @tokens.shift
+      while peek && PARSE_RULES.fetch(peek.type).precedence >= precedence
+        token = advance
         rule = PARSE_RULES.fetch(token.type) # TODO: handle errors
         expr = send(rule.infix, token, expr)
       end
@@ -227,17 +229,38 @@ module Deli
     end
 
     def consume(type)
-      if peek.type == type
-        @tokens.shift
+      if peek
+        if peek.type == type
+          @tokens.shift
+        else
+          raise Deli::LocatableError.new(
+            @source_code, @tokens.span.first, "parse error: expected #{type}, but got #{peek.type}",
+          )
+        end
       else
         raise Deli::LocatableError.new(
-          @source_code, @tokens.span.first, "parse error: expected #{type}, but got #{peek.type}",
+          @source_code, @last_token.span, "parse error: expected #{type}, but got end of input",
         )
       end
     end
 
+    def advance
+      must_peek
+      @tokens.shift
+    end
+
     def peek
       @tokens.first
+    end
+
+    def must_peek
+      peek or unexpected_end_of_input
+    end
+
+    def unexpected_end_of_input
+      raise Deli::LocatableError.new(
+        @source_code, @last_token.span, 'parse error: unexpected end of input',
+      )
     end
   end
 end
