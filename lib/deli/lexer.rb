@@ -179,9 +179,9 @@ module Deli
 
     def new_token(type, value = nil)
       Token.new(
-        type:,
+        type:   type,
         lexeme: @scanner.matched,
-        value:,
+        value:  value,
         span:   @scanner.span,
       )
     end

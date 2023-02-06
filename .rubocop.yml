@@ -37,6 +37,9 @@ Layout/ArgumentAlignment:
 Layout/SpaceInsideHashLiteralBraces:
   EnforcedStyle: no_space
 
+Style/HashSyntax:
+  EnforcedShorthandSyntax: never
+
 ################################################################################
 # Disabling cops that are not useful
 
