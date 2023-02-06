@@ -52,13 +52,14 @@ class TestDeliLexer < Minitest::Test
   end
 
   def test_keywords_and_identifiers
-    tokens = lex('if else for while fun true false null gecko serif format')
+    tokens = lex('if else for while fun return true false null gecko serif format')
 
     assert_token(:KW_IF,      'if',     nil,      tokens.shift)
     assert_token(:KW_ELSE,    'else',   nil,      tokens.shift)
     assert_token(:KW_FOR,     'for',    nil,      tokens.shift)
     assert_token(:KW_WHILE,   'while',  nil,      tokens.shift)
     assert_token(:KW_FUN,     'fun',    nil,      tokens.shift)
+    assert_token(:KW_RETURN,  'return', nil,      tokens.shift)
     assert_token(:KW_TRUE,    'true',   nil,      tokens.shift)
     assert_token(:KW_FALSE,   'false',  nil,      tokens.shift)
     assert_token(:KW_NULL,    'null',   nil,      tokens.shift)

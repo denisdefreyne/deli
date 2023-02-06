@@ -102,7 +102,15 @@ module Deli
       when AST::CallStmt
         fun = @env[stmt.identifier]
         push_env do
-          eval_stmt(fun.body_stmt)
+          catch :return do
+            eval_stmt(fun.body_stmt)
+          end
+        end
+      when AST::ReturnStmt
+        if stmt.value
+          throw :return, eval_expr(stmt.value)
+        else
+          throw :return
         end
       else
         raise Deli::InternalInconsistencyError,
@@ -116,6 +124,13 @@ module Deli
         expr.value
       when AST::IdentifierExpr
         @env[expr.identifier]
+      when AST::CallExpr
+        target = eval_expr(expr.target)
+        push_env do
+          catch :return do
+            eval_stmt(target.body_stmt)
+          end
+        end
       when AST::TrueExpr
         true
       when AST::FalseExpr
@@ -169,8 +184,9 @@ module Deli
 
     def push_env
       @env = Env.new(@source_code, parent: @env)
-      yield
+      res = yield
       @env = @env.parent
+      res
     end
 
     def stringify(obj)

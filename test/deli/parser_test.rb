@@ -61,6 +61,13 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
+  def test_fun_return
+    stmts = parse('fun hundred() { return 100; }')
+
+    assert_equal('(fun "hundred" (group (return (integer 100))))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
   def test_unary_basic
     stmts = parse('print bla; print 123; print true; print false; print null;')
 

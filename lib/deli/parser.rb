@@ -34,6 +34,8 @@ module Deli
         parse_while_stmt
       when :KW_FUN
         parse_fun_stmt
+      when :KW_RETURN
+        parse_return_stmt
       when :IDENTIFIER
         parse_partial_identifier_stmt(token)
       else
@@ -110,6 +112,19 @@ module Deli
       Deli::AST::FunStmt.new(identifier, body_stmt)
     end
 
+    def parse_return_stmt
+      # NOTE: :KW_RETURN already consumed
+
+      if must_peek.type == :SEMICOLON
+        advance
+        Deli::AST::ReturnStmt.new(nil)
+      else
+        expr = parse_expr
+        consume(:SEMICOLON)
+        Deli::AST::ReturnStmt.new(expr)
+      end
+    end
+
     def parse_group_stmt
       # NOTE: :LBRACE already consumed
 
@@ -169,6 +184,7 @@ module Deli
       TERM       = 3
       FACTOR     = 4
       UNARY      = 5
+      CALL       = 6
     end
 
     class ParseRule
@@ -205,6 +221,8 @@ module Deli
       SLASH:      ParseRule.new(Precedence::FACTOR, infix: :parse_binary),
 
       BANG:       ParseRule.new(Precedence::UNARY, prefix: :parse_unary),
+
+      LPAREN:     ParseRule.new(Precedence::CALL, infix: :parse_call_expr),
     }.freeze
 
     def parse_expr
@@ -258,6 +276,13 @@ module Deli
 
     def parse_variable(token)
       Deli::AST::IdentifierExpr.new(token)
+    end
+
+    def parse_call_expr(_token, left_expr)
+      # TODO: arguments
+      consume(:RPAREN)
+
+      Deli::AST::CallExpr.new(left_expr)
     end
 
     def parse_true(_token)

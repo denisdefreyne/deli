@@ -123,6 +123,14 @@ module Deli
       end
     end
 
+    ReturnStmt = Struct.new(:value) do
+      include SExp
+
+      def to_sexp
+        [:return, value]
+      end
+    end
+
     # Expressions
 
     IntegerExpr = Struct.new(:value) do
@@ -162,6 +170,14 @@ module Deli
 
       def to_sexp
         [:null]
+      end
+    end
+
+    CallExpr = Struct.new(:target) do
+      include SExp
+
+      def to_sexp
+        [:call, target]
       end
     end
 

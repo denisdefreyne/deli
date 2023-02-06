@@ -149,6 +149,8 @@ module Deli
           new_token(:KW_ELSE)
         when 'fun'
           new_token(:KW_FUN)
+        when 'return'
+          new_token(:KW_RETURN)
         when 'while'
           new_token(:KW_WHILE)
         when 'for'
