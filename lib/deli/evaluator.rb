@@ -20,74 +20,6 @@ module Deli
       end
     end
 
-    class Integer
-      attr_reader :value
-
-      def initialize(value)
-        @value = value
-      end
-
-      def to_s
-        @value.to_s
-      end
-
-      def +(other)
-        Integer.new(@value + other.value)
-      end
-
-      def -(other)
-        Integer.new(@value - other.value)
-      end
-
-      def *(other)
-        Integer.new(@value * other.value)
-      end
-
-      def /(other)
-        Integer.new(@value / other.value)
-      end
-
-      def -@
-        Integer.new(-@value)
-      end
-    end
-
-    class True
-      include Singleton
-
-      def to_s
-        'true'
-      end
-
-      def !@
-        False.instance
-      end
-    end
-
-    class False
-      include Singleton
-
-      def to_s
-        'false'
-      end
-
-      def !@
-        True.instance
-      end
-    end
-
-    class Null
-      include Singleton
-
-      def to_s
-        'null'
-      end
-
-      def !@
-        True.instance
-      end
-    end
-
     def initialize(source, stmts)
       @stmts = stmts
 
@@ -108,7 +40,7 @@ module Deli
         @env[stmt.identifier] = value
       when AST::PrintStmt
         value = eval_expr(stmt.expr)
-        puts value
+        puts(stringify(value))
       else
         raise Deli::InternalInconsistencyError, "Unexpected stmt class: #{stmt.class}"
       end
@@ -117,15 +49,15 @@ module Deli
     def eval_expr(expr)
       case expr
       when AST::IntegerExpr
-        Integer.new(expr.value)
+        expr.value
       when AST::IdentifierExpr
         @env[expr.identifier]
       when AST::TrueExpr
-        True.instance
+        true
       when AST::FalseExpr
-        False.instance
+        false
       when AST::NullExpr
-        Null.instance
+        nil
       when AST::UnaryExpr
         val = eval_expr(expr.expr)
 
@@ -157,6 +89,15 @@ module Deli
         end
       else
         raise Deli::InternalInconsistencyError, "Unexpected expr class: #{expr.class}"
+      end
+    end
+
+    def stringify(obj)
+      case obj
+      when nil
+        'null'
+      else
+        obj.to_s
       end
     end
   end
