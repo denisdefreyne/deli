@@ -11,7 +11,11 @@ module Deli
 
       def [](token)
         @values.fetch(token.value) do
-          raise Deli::LocatableError.new(@source_code, token.span, "Unknown name: #{token.value}")
+          raise Deli::LocatableError.new(
+            @source_code,
+            token.span,
+            "Unknown name: #{token.value}",
+          )
         end
       end
 
@@ -69,7 +73,8 @@ module Deli
         when :BANG
           !val
         else
-          raise Deli::InternalInconsistencyError, "Unexpected unary operator: #{expr.op}"
+          raise Deli::InternalInconsistencyError,
+            "Unexpected unary operator: #{expr.op}"
         end
       when AST::BinaryExpr
         left_val = eval_expr(expr.left)
@@ -85,10 +90,12 @@ module Deli
         when :SLASH
           left_val / right_val
         else
-          raise Deli::InternalInconsistencyError, "Unexpected unary operator: #{expr.op}"
+          raise Deli::InternalInconsistencyError,
+            "Unexpected unary operator: #{expr.op}"
         end
       else
-        raise Deli::InternalInconsistencyError, "Unexpected expr class: #{expr.class}"
+        raise Deli::InternalInconsistencyError,
+          "Unexpected expr class: #{expr.class}"
       end
     end
 

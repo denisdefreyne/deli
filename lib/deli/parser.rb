@@ -30,7 +30,7 @@ module Deli
         parse_partial_identifier(token)
       else
         raise Deli::LocatableError.new(
-          @source_code, token.span, "parse error: expected `var` or `print`, but got #{token.type}"
+          @source_code, token.span, "parse error: expected `var` or `print`, but got #{token.type}",
         )
       end
     end
@@ -64,7 +64,7 @@ module Deli
         parse_assign(identifier_token)
       else
         raise Deli::LocatableError.new(
-          @source_code, token.span, "parse error: expected `=`, but got #{token.type}"
+          @source_code, token.span, "parse error: expected `=`, but got #{token.type}",
         )
       end
     end
@@ -184,7 +184,7 @@ module Deli
         @tokens.shift
       else
         raise Deli::LocatableError.new(
-          @source_code, @tokens.span.first, "parse error: expected #{type}, but got #{@tokens.first.type}"
+          @source_code, @tokens.span.first, "parse error: expected #{type}, but got #{@tokens.first.type}",
         )
       end
     end
