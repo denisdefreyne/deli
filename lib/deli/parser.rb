@@ -5,8 +5,6 @@ module Deli
     def initialize(source_code, tokens)
       @source_code = source_code
       @tokens = tokens.dup
-
-      @last_token = @tokens.last
     end
 
     def call

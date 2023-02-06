@@ -18,7 +18,7 @@ module Deli
       col_string = format('  %d  |  ', row + 1)
 
       indicator_indent = ' ' * (col_string.length + col)
-      indicator = '^' * length
+      indicator = '^' * [length, 1].max
 
       "#{col_string}#{lines[row]}\n#{indicator_indent}#{indicator}"
     end

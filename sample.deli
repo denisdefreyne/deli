@@ -19,3 +19,5 @@ while a < 1000000 {
   a = b;
   b = c;
 }
+
+var x =
