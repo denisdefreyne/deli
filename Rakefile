@@ -2,6 +2,7 @@
 
 require 'minitest/test_task'
 require 'rubocop/rake_task'
+require 'bundler/gem_tasks'
 
 Minitest::TestTask.create(:minitest) do |t|
   t.libs << 'test'
