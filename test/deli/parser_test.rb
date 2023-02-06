@@ -26,6 +26,20 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
+  def test_if_without_else
+    stmts = parse('if 2 < 3 { print 100; }')
+
+    assert_equal('(if (binary < (integer 2) (integer 3)) (group (print (integer 100))) nil)', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
+  def test_if_with_else
+    stmts = parse('if 2 < 3 { print 100; } else { print 200; }')
+
+    assert_equal('(if (binary < (integer 2) (integer 3)) (group (print (integer 100))) (group (print (integer 200))))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
   def test_unary_basic
     stmts = parse('print bla; print 123; print true; print false; print null;')
 

@@ -22,6 +22,18 @@ module Deli
       end
     end
 
+    GroupStmt = Struct.new(:stmts) do
+      def inspect
+        "(group #{stmts.map(&:inspect).join(' ')})"
+      end
+    end
+
+    IfStmt = Struct.new(:cond_expr, :true_stmt, :false_stmt) do
+      def inspect
+        "(if #{cond_expr.inspect} #{true_stmt.inspect} #{false_stmt.inspect})"
+      end
+    end
+
     # Expressions
 
     IntegerExpr = Struct.new(:value) do

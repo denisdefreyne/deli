@@ -26,8 +26,10 @@ module Deli
         parse_var_stmt
       when :KW_PRINT
         parse_print_stmt
+      when :KW_IF
+        parse_if_stmt
       when :IDENTIFIER
-        parse_partial_identifier(token)
+        parse_partial_identifier_stmt(token)
       else
         raise Deli::LocatableError.new(
           @source_code, token.span, "parse error: expected `var` or `print`, but got #{token.type}",
@@ -55,7 +57,38 @@ module Deli
       Deli::AST::PrintStmt.new(expr)
     end
 
-    def parse_partial_identifier(identifier_token)
+    def parse_if_stmt
+      # NOTE: :KW_IF already consumed
+
+      condition_expr = parse_expr
+      consume(:LBRACE)
+
+      true_stmt = parse_group_stmt
+
+      false_stmt = nil
+      if peek&.type == :KW_ELSE
+        @tokens.shift # consume :ELSE
+        @tokens.shift # consume :LBRACE
+        false_stmt = parse_group_stmt
+      end
+
+      Deli::AST::IfStmt.new(condition_expr, true_stmt, false_stmt)
+    end
+
+    def parse_group_stmt
+      # NOTE: :LBRACE already consumed
+
+      stmts = []
+      until peek.type == :RBRACE
+        stmts << parse_stmt
+      end
+
+      consume(:RBRACE)
+
+      Deli::AST::GroupStmt.new(stmts)
+    end
+
+    def parse_partial_identifier_stmt(identifier_token)
       # NOTE: :IDENTIFIER already consumed
 
       token = @tokens.shift
@@ -126,6 +159,7 @@ module Deli
       BANG:       ParseRule.new(Precedence::UNARY, prefix: :parse_unary),
 
       SEMICOLON:  ParseRule.new(Precedence::NONE),
+      LBRACE:     ParseRule.new(Precedence::NONE),
     }.freeze
 
     def parse_expr
@@ -139,7 +173,7 @@ module Deli
       rule = PARSE_RULES.fetch(token.type) # TODO: handle errors
       expr = send(rule.prefix, token)
 
-      while PARSE_RULES.fetch(@tokens.first.type).precedence >= precedence
+      while PARSE_RULES.fetch(peek.type).precedence >= precedence
         token = @tokens.shift
         rule = PARSE_RULES.fetch(token.type) # TODO: handle errors
         expr = send(rule.infix, token, expr)
@@ -180,13 +214,17 @@ module Deli
     end
 
     def consume(type)
-      if @tokens.first.type == type
+      if peek.type == type
         @tokens.shift
       else
         raise Deli::LocatableError.new(
-          @source_code, @tokens.span.first, "parse error: expected #{type}, but got #{@tokens.first.type}",
+          @source_code, @tokens.span.first, "parse error: expected #{type}, but got #{peek.type}",
         )
       end
+    end
+
+    def peek
+      @tokens.first
     end
   end
 end

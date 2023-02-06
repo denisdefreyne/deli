@@ -43,6 +43,15 @@ Style/Documentation:
 Metrics:
   Enabled: false
 
+Layout/LineLength:
+  Enabled: false
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+Style/WhileUntilModifier:
+  Enabled: false
+
 ################################################################################
 # Enabling new cops
 
