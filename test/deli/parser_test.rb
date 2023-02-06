@@ -26,7 +26,17 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
-  def test_unary
+  def test_unary_basic
+    stmts = parse('print bla; print 123; print true; print false;')
+
+    assert_equal('(print (identifier "bla"))', stmts.shift.inspect)
+    assert_equal('(print (integer 123))', stmts.shift.inspect)
+    assert_equal('(print (true))', stmts.shift.inspect)
+    assert_equal('(print (false))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
+  def test_unary_operators
     stmts = parse('print -4; print --++8; print !false;')
 
     assert_equal('(print (unary - (integer 4)))', stmts.shift.inspect)
@@ -35,18 +45,44 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
-  def test_binary
-    stmts = parse('print 1 + 2;')
+  def test_binary_equality
+    stmts = parse('print a == 123; print a != 234;')
 
-    assert_equal('(print (binary + (integer 1) (integer 2)))', stmts.shift.inspect)
+    assert_equal('(print (binary == (identifier "a") (integer 123)))', stmts.shift.inspect)
+    assert_equal('(print (binary != (identifier "a") (integer 234)))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 
-  def test_relational
-    stmts = parse('var x = 1 < 2; var y = 4 >= 3;')
+  def test_binary_comparison
+    stmts = parse('print a < 1; print a <= 2; print a > 3; print a >= 4;')
 
-    assert_equal('(var "x" (binary < (integer 1) (integer 2)))', stmts.shift.inspect)
-    assert_equal('(var "y" (binary >= (integer 4) (integer 3)))', stmts.shift.inspect)
+    assert_equal('(print (binary < (identifier "a") (integer 1)))', stmts.shift.inspect)
+    assert_equal('(print (binary <= (identifier "a") (integer 2)))', stmts.shift.inspect)
+    assert_equal('(print (binary > (identifier "a") (integer 3)))', stmts.shift.inspect)
+    assert_equal('(print (binary >= (identifier "a") (integer 4)))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
+  def test_binary_term
+    stmts = parse('print a + 1; print a - 2;')
+
+    assert_equal('(print (binary + (identifier "a") (integer 1)))', stmts.shift.inspect)
+    assert_equal('(print (binary - (identifier "a") (integer 2)))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
+  def test_binary_factor
+    stmts = parse('print a * 1; print a / 2;')
+
+    assert_equal('(print (binary * (identifier "a") (integer 1)))', stmts.shift.inspect)
+    assert_equal('(print (binary / (identifier "a") (integer 2)))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
+  def test_binary_precedence_term_factor
+    stmts = parse('print 1 + 2 * 3;')
+
+    assert_equal('(print (binary + (integer 1) (binary * (integer 2) (integer 3))))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 

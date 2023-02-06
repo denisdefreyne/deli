@@ -122,12 +122,11 @@ module Deli
         Token.new(:NUMBER, @scanner.matched, @scanner.matched, @scanner.span)
       elsif @scanner.scan(/\w+/)
         case @scanner.matched
-        # Constants
+        # Keywords
         when 'true'
           Token.new(:KW_TRUE, @scanner.matched, nil, @scanner.span)
         when 'false'
           Token.new(:KW_FALSE, @scanner.matched, nil, @scanner.span)
-        # Keywords
         when 'print'
           Token.new(:KW_PRINT, @scanner.matched, nil, @scanner.span)
         when 'if'
@@ -142,6 +141,7 @@ module Deli
           Token.new(:KW_WHILE, @scanner.matched, nil, @scanner.span)
         when 'var'
           Token.new(:KW_VAR, @scanner.matched, nil, @scanner.span)
+
         # Identifier
         else
           Token.new(:IDENTIFIER, @scanner.matched, @scanner.matched, @scanner.span)

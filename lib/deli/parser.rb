@@ -118,9 +118,11 @@ module Deli
 
       PLUS:       ParseRule.new(Precedence::TERM, prefix: :parse_unary, infix: :parse_binary),
       MINUS:      ParseRule.new(Precedence::TERM, prefix: :parse_unary, infix: :parse_binary),
-      ASTERISK:   ParseRule.new(Precedence::TERM, infix: :parse_binary),
-      SLASH:      ParseRule.new(Precedence::TERM, infix: :parse_binary),
-      BANG:       ParseRule.new(Precedence::TERM, prefix: :parse_unary),
+
+      ASTERISK:   ParseRule.new(Precedence::FACTOR, infix: :parse_binary),
+      SLASH:      ParseRule.new(Precedence::FACTOR, infix: :parse_binary),
+
+      BANG:       ParseRule.new(Precedence::UNARY, prefix: :parse_unary),
 
       SEMICOLON:  ParseRule.new(Precedence::NONE),
     }.freeze
