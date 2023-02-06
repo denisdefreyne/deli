@@ -35,5 +35,17 @@ module Deli
         "(identifier #{identifier.value.inspect})"
       end
     end
+
+    UnaryExpr = Struct.new(:op, :expr) do
+      def inspect
+        "(unary #{op.value.inspect} #{expr.inspect})"
+      end
+    end
+
+    BinaryExpr = Struct.new(:op, :left, :right) do
+      def inspect
+        "(unary #{op.value.inspect} #{left.inspect} #{right.inspect})"
+      end
+    end
   end
 end

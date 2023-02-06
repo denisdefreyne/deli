@@ -79,18 +79,51 @@ module Deli
       Deli::AST::AssignStmt.new(identifier_token, expr)
     end
 
-    def parse_expr
-      token = @tokens.shift
-      case token.type
-      when :NUMBER
-        Deli::AST::IntegerExpr.new(Integer(token.value))
-      when :IDENTIFIER
-        Deli::AST::IdentifierExpr.new(token)
-      else
-        raise Deli::LocatableError.new(
-          @source_code, token.span, "parse error: expected NUMBER, but got #{token.type}"
-        )
+    module Precedence
+      LOWEST = 0
+      TERM   = 1
+      FACTOR = 2
+      UNARY  = 3
+    end
+
+    class ParseRule
+      attr_reader :precedence
+      attr_reader :prefix
+      attr_reader :infix
+
+      def initialize(precedence, prefix: nil, infix: nil)
+        @precedence = precedence
+        @prefix     = prefix
+        @infix      = infix
       end
+    end
+
+    PARSE_RULES = {
+      IDENTIFIER: ParseRule.new(Precedence::LOWEST, prefix: :parse_variable),
+      NUMBER:     ParseRule.new(Precedence::LOWEST, prefix: :parse_number),
+      PLUS:       ParseRule.new(Precedence::TERM,   prefix: :parse_unary)
+    }.freeze
+
+    def parse_precedence(_precedence)
+      token = @tokens.shift
+      rule = PARSE_RULES.fetch(token.type)
+      send(rule.prefix, token)
+    end
+
+    def parse_expr
+      parse_precedence(Precedence::LOWEST)
+    end
+
+    def parse_number(token)
+      Deli::AST::IntegerExpr.new(Integer(token.value))
+    end
+
+    def parse_unary(token)
+      # TODO
+    end
+
+    def parse_variable(token)
+      Deli::AST::IdentifierExpr.new(token)
     end
 
     def consume(type)

@@ -19,6 +19,9 @@ Naming/MemoizedInstanceVariableName:
 Style/AccessorGrouping:
   EnforcedStyle: separated
 
+Layout/HashAlignment:
+  EnforcedColonStyle: table
+
 ################################################################################
 # Disabling cops that are not useful
 
