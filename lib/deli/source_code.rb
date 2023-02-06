@@ -2,7 +2,8 @@
 
 module Deli
   class SourceCode
-    attr_reader :filename, :string
+    attr_reader :filename
+    attr_reader :string
 
     def initialize(filename, string)
       @filename = filename

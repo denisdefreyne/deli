@@ -1,3 +1,6 @@
+################################################################################
+# General configuration
+
 require:
   - rubocop-rake
   - rubocop-minitest
@@ -7,14 +10,26 @@ AllCops:
   Exclude:
     - 'bin/rake'
 
+################################################################################
+# Tweaking cops configuration
+
+Naming/MemoizedInstanceVariableName:
+  EnforcedStyleForLeadingUnderscores: required
+
+Style/AccessorGrouping:
+  EnforcedStyle: separated
+
+################################################################################
+# Disabling cops that are not useful
+
 Style/Documentation:
   Enabled: false
 
 Metrics:
   Enabled: false
 
-Naming/MemoizedInstanceVariableName:
-  EnforcedStyleForLeadingUnderscores: required
+################################################################################
+# Enabling new cops
 
 Gemspec/DeprecatedAttributeAssignment: # new in 1.30
   Enabled: true

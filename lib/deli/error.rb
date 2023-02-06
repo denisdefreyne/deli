@@ -5,6 +5,8 @@ module Deli
 
   class LocatableError < Error
     def initialize(source_code, span, message)
+      super(message)
+
       @source_code = source_code
       @span = span
       @message = message
