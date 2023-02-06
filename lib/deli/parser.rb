@@ -185,12 +185,26 @@ module Deli
 
     def parse_precedence(precedence)
       token = advance
-      rule = PARSE_RULES.fetch(token.type) # TODO: handle errors
+      rule = PARSE_RULES[token.type]
+      unless rule&.prefix
+        raise Deli::LocatableError.new(
+          @source_code, token.span, "parse error: #{token.type} cannot be used as a prefix operator",
+        )
+      end
+
       expr = send(rule.prefix, token)
 
-      while peek && PARSE_RULES.fetch(peek.type).precedence >= precedence
+      while peek
+        rule = PARSE_RULES[peek.type]
+        break if rule.nil? || rule.precedence < precedence
+
+        unless rule&.infix
+          raise Deli::LocatableError.new(
+            @source_code, peek.span, "parse error: #{peek.type} cannot be used as an infix operator",
+          )
+        end
         token = advance
-        rule = PARSE_RULES.fetch(token.type) # TODO: handle errors
+
         expr = send(rule.infix, token, expr)
       end
 
@@ -234,7 +248,7 @@ module Deli
           @tokens.shift
         else
           raise Deli::LocatableError.new(
-            @source_code, @tokens.span.first, "parse error: expected #{type}, but got #{peek.type}",
+            @source_code, @tokens.last.span, "parse error: expected #{type}, but got #{peek.type}",
           )
         end
       else

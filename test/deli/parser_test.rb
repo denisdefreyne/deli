@@ -108,6 +108,30 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
+  def test_error_unknown_infix
+    error = assert_raises(Deli::LocatableError) { parse('var x = a var b') }
+
+    assert_equal('parse error: expected SEMICOLON, but got KW_VAR', error.short_message)
+  end
+
+  def test_error_unsupported_infix
+    error = assert_raises(Deli::LocatableError) { parse('var x = a ! b') }
+
+    assert_equal('parse error: BANG cannot be used as an infix operator', error.short_message)
+  end
+
+  def test_error_unknown_prefix
+    error = assert_raises(Deli::LocatableError) { parse('var x = var b') }
+
+    assert_equal('parse error: KW_VAR cannot be used as a prefix operator', error.short_message)
+  end
+
+  def test_error_unsupported_prefix
+    error = assert_raises(Deli::LocatableError) { parse('var x = < 1') }
+
+    assert_equal('parse error: LT cannot be used as a prefix operator', error.short_message)
+  end
+
   def test_error_end_of_input_a
     error = assert_raises(Deli::LocatableError) { parse('var x = 123') }
 
