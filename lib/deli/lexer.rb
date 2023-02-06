@@ -74,6 +74,11 @@ module Deli
       while (t = lex_token)
         tokens << t
       end
+
+      # EOF
+      @scanner.scan('')
+      tokens << new_token(:EOF)
+
       tokens
     end
 

@@ -144,25 +144,25 @@ class TestDeliParser < Minitest::Test
   def test_error_unknown_prefix
     error = assert_raises(Deli::LocatableError) { parse('var x = var b') }
 
-    assert_equal('parse error: KW_VAR cannot be used as a prefix operator', error.short_message)
+    assert_equal('parse error: unexpected KW_VAR', error.short_message)
   end
 
   def test_error_unsupported_prefix
     error = assert_raises(Deli::LocatableError) { parse('var x = < 1') }
 
-    assert_equal('parse error: LT cannot be used as a prefix operator', error.short_message)
+    assert_equal('parse error: unexpected LT', error.short_message)
   end
 
   def test_error_end_of_input_a
     error = assert_raises(Deli::LocatableError) { parse('var x = 123') }
 
-    assert_equal('parse error: expected SEMICOLON, but got end of input', error.short_message)
+    assert_equal('parse error: expected SEMICOLON, but got EOF', error.short_message)
   end
 
   def test_error_end_of_input_b
     error = assert_raises(Deli::LocatableError) { parse('var x =') }
 
-    assert_equal('parse error: unexpected end of input', error.short_message)
+    assert_equal('parse error: unexpected EOF', error.short_message)
   end
 
   private

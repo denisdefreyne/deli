@@ -11,6 +11,7 @@ class TestDeliLexer < Minitest::Test
     assert_token(:NUMBER, '123', '123', tokens.shift)
     assert_token(:MINUS,  '-',   nil,   tokens.shift)
     assert_token(:NUMBER, '8',   '8',   tokens.shift)
+    assert_token(:EOF,    '',    nil,   tokens.shift)
     assert_nil(tokens.shift)
   end
 
@@ -21,6 +22,7 @@ class TestDeliLexer < Minitest::Test
     assert_token(:MINUS,    '-', nil, tokens.shift)
     assert_token(:ASTERISK, '*', nil, tokens.shift)
     assert_token(:SLASH,    '/', nil, tokens.shift)
+    assert_token(:EOF,      '',  nil, tokens.shift)
     assert_nil(tokens.shift)
   end
 
@@ -35,6 +37,7 @@ class TestDeliLexer < Minitest::Test
     assert_token(:GT,       '>', nil, tokens.shift)
     assert_token(:LPAREN,   '(', nil, tokens.shift)
     assert_token(:RPAREN,   ')', nil, tokens.shift)
+    assert_token(:EOF,      '',  nil, tokens.shift)
     assert_nil(tokens.shift)
   end
 
@@ -48,6 +51,7 @@ class TestDeliLexer < Minitest::Test
     assert_token(:LTE,     '<=', nil, tokens.shift)
     assert_token(:GT,      '>',  nil, tokens.shift)
     assert_token(:GTE,     '>=', nil, tokens.shift)
+    assert_token(:EOF,     '',   nil, tokens.shift)
     assert_nil(tokens.shift)
   end
 
@@ -66,6 +70,7 @@ class TestDeliLexer < Minitest::Test
     assert_token(:IDENTIFIER, 'gecko',  'gecko',  tokens.shift)
     assert_token(:IDENTIFIER, 'serif',  'serif',  tokens.shift)
     assert_token(:IDENTIFIER, 'format', 'format', tokens.shift)
+    assert_token(:EOF,        '',       nil,      tokens.shift)
     assert_nil(tokens.shift)
   end
 
@@ -75,6 +80,7 @@ class TestDeliLexer < Minitest::Test
     assert_token(:IDENTIFIER, 'doit',    'doit',    tokens.shift)
     assert_token(:IDENTIFIER, 'do_it',   'do_it',   tokens.shift)
     assert_token(:IDENTIFIER, 'doit123', 'doit123', tokens.shift)
+    assert_token(:EOF,        '',        nil,       tokens.shift)
     assert_nil(tokens.shift)
   end
 

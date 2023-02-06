@@ -11,7 +11,7 @@ module Deli
 
     def call
       stmts = []
-      until @tokens.empty?
+      until peek.type == :EOF
         stmts << parse_stmt
       end
       stmts
@@ -115,7 +115,7 @@ module Deli
     def parse_return_stmt
       # NOTE: :KW_RETURN already consumed
 
-      if must_peek.type == :SEMICOLON
+      if peek.type == :SEMICOLON
         advance
         Deli::AST::ReturnStmt.new(nil)
       else
@@ -199,8 +199,6 @@ module Deli
       end
     end
 
-    DEFAULT_PARSE_RULE = ParseRule.new(Precedence::NONE)
-
     PARSE_RULES = { # rubocop:disable Style/MutableConstant
       IDENTIFIER: ParseRule.new(Precedence::NONE, prefix: :parse_variable),
       NUMBER:     ParseRule.new(Precedence::NONE, prefix: :parse_number),
@@ -226,7 +224,7 @@ module Deli
 
       LPAREN:     ParseRule.new(Precedence::CALL, infix: :parse_call_expr),
     }
-    PARSE_RULES.default = DEFAULT_PARSE_RULE
+    PARSE_RULES.default = ParseRule.new(Precedence::NONE)
     PARSE_RULES.freeze
 
     def parse_expr
@@ -240,7 +238,7 @@ module Deli
       rule = PARSE_RULES[token.type]
       unless rule.prefix
         raise Deli::LocatableError.new(
-          @source_code, token.span, "parse error: #{token.type} cannot be used as a prefix operator",
+          @source_code, token.span, "parse error: unexpected #{token.type}",
         )
       end
 
@@ -299,38 +297,21 @@ module Deli
     end
 
     def consume(type)
-      if peek
-        if peek.type == type
-          @tokens.shift
-        else
-          raise Deli::LocatableError.new(
-            @source_code, peek.span, "parse error: expected #{type}, but got #{peek.type}",
-          )
-        end
+      if peek.type == type
+        @tokens.shift
       else
         raise Deli::LocatableError.new(
-          @source_code, @last_token.span, "parse error: expected #{type}, but got end of input",
+          @source_code, peek.span, "parse error: expected #{type}, but got #{peek.type}",
         )
       end
     end
 
     def advance
-      must_peek
       @tokens.shift
     end
 
     def peek
       @tokens.first
-    end
-
-    def must_peek
-      peek or unexpected_end_of_input
-    end
-
-    def unexpected_end_of_input
-      raise Deli::LocatableError.new(
-        @source_code, @last_token.span, 'parse error: unexpected end of input',
-      )
     end
   end
 end
