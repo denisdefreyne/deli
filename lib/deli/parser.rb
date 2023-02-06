@@ -244,7 +244,7 @@ module Deli
 
       expr = send(rule.prefix, token)
 
-      while peek && (rule = PARSE_RULES[peek.type]).precedence >= precedence
+      while (rule = PARSE_RULES[peek.type]).precedence >= precedence
         token = advance
         unless rule.infix
           raise Deli::LocatableError.new(
