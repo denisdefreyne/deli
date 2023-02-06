@@ -45,6 +45,15 @@ module Deli
       when AST::PrintStmt
         value = eval_expr(stmt.expr)
         puts(stringify(value))
+      when AST::IfStmt
+        value = eval_expr(stmt.cond_expr)
+        if value
+          eval_stmt(stmt.true_stmt)
+        elsif stmt.false_stmt
+          eval_stmt(stmt.false_stmt)
+        end
+      when AST::GroupStmt
+        stmt.stmts.each { eval_stmt(_1) }
       else
         raise Deli::InternalInconsistencyError,
           "Unexpected stmt class: #{stmt.class}"
@@ -90,6 +99,14 @@ module Deli
           left_val * right_val
         when :SLASH
           left_val / right_val
+        when :LT
+          left_val < right_val
+        when :LTE
+          left_val <= right_val
+        when :GT
+          left_val > right_val
+        when :GTE
+          left_val >= right_val
         else
           raise Deli::InternalInconsistencyError,
             "Unexpected unary operator: #{expr.op}"
