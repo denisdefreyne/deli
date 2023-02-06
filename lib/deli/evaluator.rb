@@ -52,8 +52,31 @@ module Deli
         expr.value
       when AST::IdentifierExpr
         @env[expr.identifier]
+      when AST::UnaryExpr
+        val = eval_expr(expr.expr)
+
+        case expr.op.type
+        when :PLUS
+          val
+        when :MINUS
+          -val
+        else
+          raise Deli::InternalInconsistencyError, "Unexpected unary operator: #{expr.op}"
+        end
+      when AST::BinaryExpr
+        left_val = eval_expr(expr.left)
+        right_val = eval_expr(expr.right)
+
+        case expr.op.type
+        when :PLUS
+          left_val + right_val
+        when :MINUS
+          left_val - right_val
+        else
+          raise Deli::InternalInconsistencyError, "Unexpected unary operator: #{expr.op}"
+        end
       else
-        raise Deli::InternalInconsistencyError, "Unexpected expr class: #{stmt.class}"
+        raise Deli::InternalInconsistencyError, "Unexpected expr class: #{expr.class}"
       end
     end
   end

@@ -24,6 +24,18 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("200\n", $stdout.string)
   end
 
+  def test_unary
+    evaluate('var bloop = -10; print bloop;')
+
+    assert_equal("-10\n", $stdout.string)
+  end
+
+  def test_binary
+    evaluate('var bloop = 10 + 25; print bloop;')
+
+    assert_equal("35\n", $stdout.string)
+  end
+
   private
 
   def evaluate(string)
