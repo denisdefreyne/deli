@@ -180,10 +180,10 @@ module Deli
 
     def new_token(type, value = nil)
       Token.new(
-        type:   type,
+        type: type,
         lexeme: @scanner.matched,
-        value:  value,
-        span:   @scanner.span,
+        value: value,
+        span: @scanner.span,
       )
     end
   end

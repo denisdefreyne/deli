@@ -36,7 +36,9 @@ module Deli
         parse_partial_identifier_stmt(token)
       else
         raise Deli::LocatableError.new(
-          @source_code, token.span, "parse error: expected `var` or `print`, but got #{token.type}",
+          @source_code,
+          token.span,
+          "parse error: expected `var` or `print`, but got #{token.type}",
         )
       end
     end
@@ -76,7 +78,9 @@ module Deli
         false_stmt = parse_group_stmt
       end
 
-      Deli::AST::IfStmt.new(condition_expr, true_stmt, false_stmt)
+      Deli::AST::IfStmt.new(
+        condition_expr, true_stmt, false_stmt,
+      )
     end
 
     def parse_while_stmt
@@ -145,7 +149,9 @@ module Deli
         parse_call_stmt(identifier_token, token)
       else
         raise Deli::LocatableError.new(
-          @source_code, token.span, "parse error: expected `=`, but got #{token.type}",
+          @source_code,
+          token.span,
+          "parse error: expected `=`, but got #{token.type}",
         )
       end
     end
@@ -194,33 +200,135 @@ module Deli
       end
     end
 
-    PARSE_RULES = { # rubocop:disable Style/MutableConstant
-      IDENTIFIER: ParseRule.new(Precedence::NONE, prefix: :parse_variable),
-      NUMBER:     ParseRule.new(Precedence::NONE, prefix: :parse_number),
-      KW_TRUE:    ParseRule.new(Precedence::NONE, prefix: :parse_true),
-      KW_FALSE:   ParseRule.new(Precedence::NONE, prefix: :parse_false),
-      KW_NULL:    ParseRule.new(Precedence::NONE, prefix: :parse_null),
+    class ParseRules
+      def initialize
+        @rules = {}
 
-      EQ_EQ:      ParseRule.new(Precedence::EQUALITY, infix: :parse_binary),
-      BANG_EQ:    ParseRule.new(Precedence::EQUALITY, infix: :parse_binary),
+        @default_rule = ParseRule.new(Precedence::NONE)
+      end
 
-      LT:         ParseRule.new(Precedence::COMPARISON, infix: :parse_binary),
-      LTE:        ParseRule.new(Precedence::COMPARISON, infix: :parse_binary),
-      GT:         ParseRule.new(Precedence::COMPARISON, infix: :parse_binary),
-      GTE:        ParseRule.new(Precedence::COMPARISON, infix: :parse_binary),
+      def register(
+        token_type, precedence, prefix: nil, infix: nil
+      )
+        rule = ParseRule.new(
+          precedence,
+          prefix: prefix,
+          infix: infix,
+        )
 
-      PLUS:       ParseRule.new(Precedence::TERM, prefix: :parse_unary, infix: :parse_binary),
-      MINUS:      ParseRule.new(Precedence::TERM, prefix: :parse_unary, infix: :parse_binary),
+        @rules[token_type] = rule
+      end
 
-      ASTERISK:   ParseRule.new(Precedence::FACTOR, infix: :parse_binary),
-      SLASH:      ParseRule.new(Precedence::FACTOR, infix: :parse_binary),
+      def [](token_type)
+        @rules.fetch(token_type, @default_rule)
+      end
+    end
 
-      BANG:       ParseRule.new(Precedence::UNARY, prefix: :parse_unary),
+    PARSE_RULES = ParseRules.new
 
-      LPAREN:     ParseRule.new(Precedence::CALL, infix: :parse_call_expr),
-    }
-    PARSE_RULES.default = ParseRule.new(Precedence::NONE)
-    PARSE_RULES.freeze
+    PARSE_RULES.register(
+      :IDENTIFIER,
+      Precedence::NONE,
+      prefix: :parse_variable,
+    )
+
+    PARSE_RULES.register(
+      :NUMBER,
+      Precedence::NONE,
+      prefix: :parse_number,
+    )
+
+    PARSE_RULES.register(
+      :KW_TRUE,
+      Precedence::NONE,
+      prefix: :parse_true,
+    )
+
+    PARSE_RULES.register(
+      :KW_FALSE,
+      Precedence::NONE,
+      prefix: :parse_false,
+    )
+
+    PARSE_RULES.register(
+      :KW_NULL,
+      Precedence::NONE,
+      prefix: :parse_null,
+    )
+
+    PARSE_RULES.register(
+      :EQ_EQ,
+      Precedence::EQUALITY,
+      infix: :parse_binary,
+    )
+
+    PARSE_RULES.register(
+      :BANG_EQ,
+      Precedence::EQUALITY,
+      infix: :parse_binary,
+    )
+
+    PARSE_RULES.register(
+      :LT,
+      Precedence::COMPARISON,
+      infix: :parse_binary,
+    )
+
+    PARSE_RULES.register(
+      :LTE,
+      Precedence::COMPARISON,
+      infix: :parse_binary,
+    )
+
+    PARSE_RULES.register(
+      :GT,
+      Precedence::COMPARISON,
+      infix: :parse_binary,
+    )
+
+    PARSE_RULES.register(
+      :GTE,
+      Precedence::COMPARISON,
+      infix: :parse_binary,
+    )
+
+    PARSE_RULES.register(
+      :PLUS,
+      Precedence::TERM,
+      prefix: :parse_unary,
+      infix: :parse_binary,
+    )
+
+    PARSE_RULES.register(
+      :MINUS,
+      Precedence::TERM,
+      prefix: :parse_unary,
+      infix: :parse_binary,
+    )
+
+    PARSE_RULES.register(
+      :ASTERISK,
+      Precedence::FACTOR,
+      infix: :parse_binary,
+    )
+
+    PARSE_RULES.register(
+      :SLASH,
+      Precedence::FACTOR,
+      infix: :parse_binary,
+    )
+
+    PARSE_RULES.register(
+      :BANG,
+      Precedence::UNARY,
+      prefix: :parse_unary,
+    )
+
+    PARSE_RULES.register(
+      :LPAREN,
+      Precedence::CALL,
+      infix: :parse_call_expr,
+    )
 
     def parse_expr
       parse_precedence(Precedence::LOWEST)
@@ -263,7 +371,7 @@ module Deli
     end
 
     def parse_binary(left_expr, token)
-      rule = PARSE_RULES.fetch(token.type)
+      rule = PARSE_RULES[token.type]
       right_expr = parse_precedence(rule.precedence + 1)
       Deli::AST::BinaryExpr.new(token, left_expr, right_expr)
     end
@@ -296,7 +404,9 @@ module Deli
         @tokens.shift
       else
         raise Deli::LocatableError.new(
-          @source_code, peek.span, "parse error: expected #{type}, but got #{peek.type}",
+          @source_code,
+          peek.span,
+          "parse error: expected #{type}, but got #{peek.type}",
         )
       end
     end

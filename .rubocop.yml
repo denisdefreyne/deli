@@ -28,8 +28,8 @@ Style/TrailingCommaInHashLiteral:
 Style/TrailingCommaInArguments:
   EnforcedStyleForMultiline: consistent_comma
 
-Layout/HashAlignment:
-  EnforcedColonStyle: table
+# Layout/HashAlignment:
+#   EnforcedColonStyle: table
 
 Layout/ArgumentAlignment:
   EnforcedStyle: with_fixed_indentation

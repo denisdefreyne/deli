@@ -18,7 +18,7 @@ module Deli
       format(
         '%-10<type>s  %<value>s',
         {
-          type:  type,
+          type: type,
           value: value&.inspect,
         },
       ).strip
