@@ -57,7 +57,7 @@ class TestDeliParser < Minitest::Test
   def test_fun_call_no_params_no_return
     stmts = parse('print_hundred();')
 
-    assert_equal('(call "print_hundred")', stmts.shift.inspect)
+    assert_equal('(expr (call (identifier "print_hundred")))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 

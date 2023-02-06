@@ -75,7 +75,7 @@ module Deli
         tokens << t
       end
 
-      # EOF
+      # Add EOF token
       @scanner.scan('')
       tokens << new_token(:EOF)
 
@@ -139,6 +139,7 @@ module Deli
         new_token(:NUMBER, @scanner.matched)
       elsif @scanner.scan(/\w+/)
         case @scanner.matched
+
         # Keywords
         when 'true'
           new_token(:KW_TRUE)

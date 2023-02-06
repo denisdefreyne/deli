@@ -75,11 +75,11 @@ module Deli
       end
     end
 
-    CallStmt = Struct.new(:identifier) do
+    ExprStmt = Struct.new(:expr) do
       include SExp
 
       def to_sexp
-        [:call, identifier.value]
+        [:expr, expr]
       end
     end
 

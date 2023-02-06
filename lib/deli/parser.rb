@@ -18,8 +18,6 @@ module Deli
     private
 
     def parse_stmt
-      return nil if @tokens.empty?
-
       token = advance
       case token.type
       when :KW_VAR
@@ -142,9 +140,9 @@ module Deli
       token = advance
       case token.type
       when :EQ
-        parse_assign_stmt(identifier_token)
+        parse_assign_stmt(identifier_token, token)
       when :LPAREN
-        parse_call_stmt(identifier_token)
+        parse_call_stmt(identifier_token, token)
       else
         raise Deli::LocatableError.new(
           @source_code, token.span, "parse error: expected `=`, but got #{token.type}",
@@ -152,7 +150,7 @@ module Deli
       end
     end
 
-    def parse_assign_stmt(identifier_token)
+    def parse_assign_stmt(identifier_token, _eq_token)
       # NOTE: :IDENTIFIER already consumed
       # NOTE: :EQ already consumed
 
@@ -162,15 +160,14 @@ module Deli
       Deli::AST::AssignStmt.new(identifier_token, expr)
     end
 
-    def parse_call_stmt(identifier_token)
+    def parse_call_stmt(identifier_token, lparen_token)
       # NOTE: :IDENTIFIER already consumed
       # NOTE: :LPAREN already consumed
 
-      # TODO: arguments
-      consume(:RPAREN)
+      fun_expr = Deli::AST::IdentifierExpr.new(identifier_token)
+      expr = parse_call_expr(fun_expr, lparen_token)
       consume(:SEMICOLON)
-
-      Deli::AST::CallStmt.new(identifier_token)
+      Deli::AST::ExprStmt.new(expr)
     end
 
     module Precedence
@@ -250,7 +247,7 @@ module Deli
           )
         end
 
-        expr = send(rule.infix, token, expr)
+        expr = send(rule.infix, expr, token)
       end
 
       expr
@@ -265,7 +262,7 @@ module Deli
       Deli::AST::UnaryExpr.new(token, expr)
     end
 
-    def parse_binary(token, left_expr)
+    def parse_binary(left_expr, token)
       rule = PARSE_RULES.fetch(token.type)
       right_expr = parse_precedence(rule.precedence + 1)
       Deli::AST::BinaryExpr.new(token, left_expr, right_expr)
@@ -275,7 +272,7 @@ module Deli
       Deli::AST::IdentifierExpr.new(token)
     end
 
-    def parse_call_expr(_token, left_expr)
+    def parse_call_expr(left_expr, _lparen_token)
       # TODO: arguments
       consume(:RPAREN)
 

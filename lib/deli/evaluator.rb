@@ -99,13 +99,8 @@ module Deli
       when AST::FunStmt
         fn = Fun.new(stmt.body_stmt)
         @env.assign_new(stmt.identifier, fn)
-      when AST::CallStmt
-        fun = @env[stmt.identifier]
-        push_env do
-          catch :return do
-            eval_stmt(fun.body_stmt)
-          end
-        end
+      when AST::ExprStmt
+        eval_expr(stmt.expr)
       when AST::ReturnStmt
         if stmt.value
           throw :return, eval_expr(stmt.value)
