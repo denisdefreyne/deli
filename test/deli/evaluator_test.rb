@@ -54,6 +54,12 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("200\n100\n", $stdout.string)
   end
 
+  def test_while
+    evaluate('var a = 0; while a < 5 { print a; a = a + 1; }')
+
+    assert_equal("0\n1\n2\n3\n4\n", $stdout.string)
+  end
+
   def test_unary
     evaluate('var bloop = -10; print bloop;')
 

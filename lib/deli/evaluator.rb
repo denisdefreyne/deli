@@ -14,11 +14,15 @@ module Deli
 
       def [](token)
         @values.fetch(token.value) do
-          raise Deli::LocatableError.new(
-            @source_code,
-            token.span,
-            "Unknown name: #{token.value}",
-          )
+          if @parent
+            @parent[token]
+          else
+            raise Deli::LocatableError.new(
+              @source_code,
+              token.span,
+              "Unknown name: #{token.value}",
+            )
+          end
         end
       end
 
@@ -75,6 +79,10 @@ module Deli
           eval_stmt(stmt.true_stmt)
         elsif stmt.false_stmt
           eval_stmt(stmt.false_stmt)
+        end
+      when AST::WhileStmt
+        while eval_expr(stmt.cond_expr)
+          eval_stmt(stmt.body_stmt)
         end
       when AST::GroupStmt
         push_env do

@@ -40,6 +40,13 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
+  def test_while
+    stmts = parse('while a { a = !a; }')
+
+    assert_equal('(while (identifier "a") (group (assign "a" (unary ! (identifier "a")))))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
   def test_unary_basic
     stmts = parse('print bla; print 123; print true; print false; print null;')
 

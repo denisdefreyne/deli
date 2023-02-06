@@ -28,6 +28,8 @@ module Deli
         parse_print_stmt
       when :KW_IF
         parse_if_stmt
+      when :KW_WHILE
+        parse_while_stmt
       when :IDENTIFIER
         parse_partial_identifier_stmt(token)
       else
@@ -73,6 +75,17 @@ module Deli
       end
 
       Deli::AST::IfStmt.new(condition_expr, true_stmt, false_stmt)
+    end
+
+    def parse_while_stmt
+      # NOTE: :KW_WHILE already consumed
+
+      condition_expr = parse_expr
+      consume(:LBRACE)
+
+      body_stmt = parse_group_stmt
+
+      Deli::AST::WhileStmt.new(condition_expr, body_stmt)
     end
 
     def parse_group_stmt

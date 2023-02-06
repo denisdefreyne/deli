@@ -34,6 +34,12 @@ module Deli
       end
     end
 
+    WhileStmt = Struct.new(:cond_expr, :body_stmt) do
+      def inspect
+        "(while #{cond_expr.inspect} #{body_stmt.inspect})"
+      end
+    end
+
     # Expressions
 
     IntegerExpr = Struct.new(:value) do

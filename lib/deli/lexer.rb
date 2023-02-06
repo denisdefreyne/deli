@@ -147,6 +147,8 @@ module Deli
           new_token(:KW_IF)
         when 'else'
           new_token(:KW_ELSE)
+        when 'while'
+          new_token(:KW_WHILE)
         when 'for'
           new_token(:KW_FOR)
         when 'var'
