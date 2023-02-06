@@ -2,6 +2,7 @@
 
 require 'optparse'
 require 'singleton'
+require 'stringio'
 require 'strscan'
 
 require_relative 'deli/version'

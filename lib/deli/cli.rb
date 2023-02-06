@@ -10,7 +10,7 @@ module Deli
       # Parse options
       options = {}
       parser = OptionParser.new
-      parser.on('--dump-ast', 'Dump AST') do |value|
+      parser.on('--dump-ast', 'Dump AST') do |_value|
         options[:dump_ast] = true
       end
       parser.parse!(@args)
@@ -30,7 +30,10 @@ module Deli
       stmts = parser.call
       if options.fetch(:dump_ast, false)
         warn '--- AST'
-        stmts.each { warn _1.inspect }
+        stmts.each do |stmt|
+          Deli::AST.dump_sexp(stmt.to_sexp, $stdout, 0)
+          $stdout.puts
+        end
         warn '---'
         warn
       end
