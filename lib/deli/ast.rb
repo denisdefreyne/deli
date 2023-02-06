@@ -38,13 +38,13 @@ module Deli
 
     UnaryExpr = Struct.new(:op, :expr) do
       def inspect
-        "(unary #{op.value.inspect} #{expr.inspect})"
+        "(unary #{op.lexeme} #{expr.inspect})"
       end
     end
 
     BinaryExpr = Struct.new(:op, :left, :right) do
       def inspect
-        "(unary #{op.value.inspect} #{left.inspect} #{right.inspect})"
+        "(binary #{op.lexeme} #{left.inspect} #{right.inspect})"
       end
     end
   end

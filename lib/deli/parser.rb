@@ -80,7 +80,8 @@ module Deli
     end
 
     module Precedence
-      LOWEST = 0
+      NONE = 0
+
       TERM   = 1
       FACTOR = 2
       UNARY  = 3
@@ -99,19 +100,33 @@ module Deli
     end
 
     PARSE_RULES = {
-      IDENTIFIER: ParseRule.new(Precedence::LOWEST, prefix: :parse_variable),
-      NUMBER:     ParseRule.new(Precedence::LOWEST, prefix: :parse_number),
-      PLUS:       ParseRule.new(Precedence::TERM,   prefix: :parse_unary)
+      IDENTIFIER: ParseRule.new(Precedence::NONE, prefix: :parse_variable),
+      NUMBER:     ParseRule.new(Precedence::NONE, prefix: :parse_number),
+
+      PLUS:       ParseRule.new(Precedence::TERM, prefix: :parse_unary, infix: :parse_binary),
+      MINUS:      ParseRule.new(Precedence::TERM, prefix: :parse_unary, infix: :parse_binary),
+      ASTERISK:   ParseRule.new(Precedence::TERM, prefix: :parse_unary, infix: :parse_binary),
+      SLASH:      ParseRule.new(Precedence::TERM, prefix: :parse_unary, infix: :parse_binary),
+
+      SEMICOLON:  ParseRule.new(Precedence::NONE),
     }.freeze
 
-    def parse_precedence(_precedence)
-      token = @tokens.shift
-      rule = PARSE_RULES.fetch(token.type)
-      send(rule.prefix, token)
+    def parse_expr
+      parse_precedence(Precedence::TERM)
     end
 
-    def parse_expr
-      parse_precedence(Precedence::LOWEST)
+    def parse_precedence(precedence)
+      token = @tokens.shift
+      rule = PARSE_RULES.fetch(token.type) # TODO: handle errors
+      expr = send(rule.prefix, token)
+
+      while PARSE_RULES.fetch(@tokens.first.type).precedence >= precedence
+        token = @tokens.shift
+        rule = PARSE_RULES.fetch(token.type) # TODO: handle errors
+        expr = send(rule.infix, token, expr)
+      end
+
+      expr
     end
 
     def parse_number(token)
@@ -119,7 +134,14 @@ module Deli
     end
 
     def parse_unary(token)
-      # TODO
+      expr = parse_precedence(Precedence::UNARY)
+      Deli::AST::UnaryExpr.new(token, expr)
+    end
+
+    def parse_binary(token, left_expr)
+      rule = PARSE_RULES.fetch(token.type)
+      right_expr = parse_precedence(rule.precedence + 1)
+      Deli::AST::BinaryExpr.new(token, left_expr, right_expr)
     end
 
     def parse_variable(token)

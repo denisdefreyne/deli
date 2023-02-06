@@ -19,6 +19,12 @@ Naming/MemoizedInstanceVariableName:
 Style/AccessorGrouping:
   EnforcedStyle: separated
 
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+
 Layout/HashAlignment:
   EnforcedColonStyle: table
 

@@ -26,6 +26,21 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
+  def test_unary
+    stmts = parse('print -4; print --++8;')
+
+    assert_equal('(print (unary - (integer 4)))', stmts.shift.inspect)
+    assert_equal('(print (unary - (unary - (unary + (unary + (integer 8))))))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
+  def test_binary
+    stmts = parse('print 1 + 2;')
+
+    assert_equal('(print (binary + (integer 1) (integer 2)))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
   private
 
   def parse(string)
