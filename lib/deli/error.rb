@@ -3,6 +3,8 @@
 module Deli
   class Error < StandardError; end
 
+  class InternalInconsistencyError < Error; end
+
   class LocatableError < Error
     def initialize(source_code, span, message)
       super(message)

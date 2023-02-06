@@ -34,21 +34,26 @@ module Deli
 
     def eval_stmt(stmt)
       case stmt
-      when AST::VarStmt # Struct.new(:identifier, :value_expr)
+      when AST::VarStmt, AST::AssignStmt
+        # TODO: split var from assign
         value = eval_expr(stmt.value_expr)
         @env[stmt.identifier] = value
-      when AST::PrintStmt # Struct.new(:expr)
+      when AST::PrintStmt
         value = eval_expr(stmt.expr)
         puts value
+      else
+        raise Deli::InternalInconsistencyError, "Unexpected stmt class: #{stmt.class}"
       end
     end
 
     def eval_expr(expr)
       case expr
-      when AST::IntegerExpr # Struct.new(:value)
+      when AST::IntegerExpr
         expr.value
-      when AST::IdentifierExpr # Struct.new(:identifier)
+      when AST::IdentifierExpr
         @env[expr.identifier]
+      else
+        raise Deli::InternalInconsistencyError, "Unexpected expr class: #{stmt.class}"
       end
     end
   end
