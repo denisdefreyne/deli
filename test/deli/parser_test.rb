@@ -13,7 +13,7 @@ class TestDeliParser < Minitest::Test
   def test_print
     stmts = parse('print zing; print 123;')
 
-    assert_equal('(print (identifier "zing"))', stmts.shift.inspect)
+    assert_equal('(print (ident "zing"))', stmts.shift.inspect)
     assert_equal('(print (integer 123))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
@@ -43,7 +43,7 @@ class TestDeliParser < Minitest::Test
   def test_while
     stmts = parse('while a { a = !a; }')
 
-    assert_equal('(while (identifier "a") (group (assign "a" (unary "!" (identifier "a")))))', stmts.shift.inspect)
+    assert_equal('(while (ident "a") (group (assign "a" (unary "!" (ident "a")))))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 
@@ -57,7 +57,7 @@ class TestDeliParser < Minitest::Test
   def test_fun_call_no_params_no_return
     stmts = parse('print_hundred();')
 
-    assert_equal('(expr (call (identifier "print_hundred")))', stmts.shift.inspect)
+    assert_equal('(expr (call (ident "print_hundred")))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 
@@ -71,7 +71,7 @@ class TestDeliParser < Minitest::Test
   def test_unary_basic
     stmts = parse('print bla; print 123; print true; print false; print null;')
 
-    assert_equal('(print (identifier "bla"))', stmts.shift.inspect)
+    assert_equal('(print (ident "bla"))', stmts.shift.inspect)
     assert_equal('(print (integer 123))', stmts.shift.inspect)
     assert_equal('(print (true))', stmts.shift.inspect)
     assert_equal('(print (false))', stmts.shift.inspect)
@@ -91,34 +91,34 @@ class TestDeliParser < Minitest::Test
   def test_binary_equality
     stmts = parse('print a == 123; print a != 234;')
 
-    assert_equal('(print (binary "==" (identifier "a") (integer 123)))', stmts.shift.inspect)
-    assert_equal('(print (binary "!=" (identifier "a") (integer 234)))', stmts.shift.inspect)
+    assert_equal('(print (binary "==" (ident "a") (integer 123)))', stmts.shift.inspect)
+    assert_equal('(print (binary "!=" (ident "a") (integer 234)))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 
   def test_binary_comparison
     stmts = parse('print a < 1; print a <= 2; print a > 3; print a >= 4;')
 
-    assert_equal('(print (binary "<" (identifier "a") (integer 1)))', stmts.shift.inspect)
-    assert_equal('(print (binary "<=" (identifier "a") (integer 2)))', stmts.shift.inspect)
-    assert_equal('(print (binary ">" (identifier "a") (integer 3)))', stmts.shift.inspect)
-    assert_equal('(print (binary ">=" (identifier "a") (integer 4)))', stmts.shift.inspect)
+    assert_equal('(print (binary "<" (ident "a") (integer 1)))', stmts.shift.inspect)
+    assert_equal('(print (binary "<=" (ident "a") (integer 2)))', stmts.shift.inspect)
+    assert_equal('(print (binary ">" (ident "a") (integer 3)))', stmts.shift.inspect)
+    assert_equal('(print (binary ">=" (ident "a") (integer 4)))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 
   def test_binary_term
     stmts = parse('print a + 1; print a - 2;')
 
-    assert_equal('(print (binary "+" (identifier "a") (integer 1)))', stmts.shift.inspect)
-    assert_equal('(print (binary "-" (identifier "a") (integer 2)))', stmts.shift.inspect)
+    assert_equal('(print (binary "+" (ident "a") (integer 1)))', stmts.shift.inspect)
+    assert_equal('(print (binary "-" (ident "a") (integer 2)))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 
   def test_binary_factor
     stmts = parse('print a * 1; print a / 2;')
 
-    assert_equal('(print (binary "*" (identifier "a") (integer 1)))', stmts.shift.inspect)
-    assert_equal('(print (binary "/" (identifier "a") (integer 2)))', stmts.shift.inspect)
+    assert_equal('(print (binary "*" (ident "a") (integer 1)))', stmts.shift.inspect)
+    assert_equal('(print (binary "/" (ident "a") (integer 2)))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 

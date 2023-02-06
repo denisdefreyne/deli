@@ -166,7 +166,7 @@ module Deli
 
         # Identifier
         else
-          new_token(:IDENTIFIER, @scanner.matched)
+          new_token(:IDENT, @scanner.matched)
         end
       else
         char = @scanner.getch

@@ -74,10 +74,10 @@ module Deli
       case stmt
       when AST::VarStmt
         value = eval_expr(stmt.value_expr)
-        @env.assign_new(stmt.identifier, value)
+        @env.assign_new(stmt.ident, value)
       when AST::AssignStmt
         value = eval_expr(stmt.value_expr)
-        @env.assign_existing(stmt.identifier, value)
+        @env.assign_existing(stmt.ident, value)
       when AST::PrintStmt
         value = eval_expr(stmt.expr)
         puts(stringify(value))
@@ -98,7 +98,7 @@ module Deli
         end
       when AST::FunStmt
         fn = Fun.new(stmt.body_stmt)
-        @env.assign_new(stmt.identifier, fn)
+        @env.assign_new(stmt.ident, fn)
       when AST::ExprStmt
         eval_expr(stmt.expr)
       when AST::ReturnStmt
@@ -118,7 +118,7 @@ module Deli
       when AST::IntegerExpr
         expr.value
       when AST::IdentifierExpr
-        @env[expr.identifier]
+        @env[expr.ident]
       when AST::CallExpr
         target = eval_expr(expr.target)
         push_env do

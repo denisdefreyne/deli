@@ -32,8 +32,8 @@ module Deli
         parse_fun_stmt
       when :KW_RETURN
         parse_return_stmt
-      when :IDENTIFIER
-        parse_partial_identifier_stmt(token)
+      when :IDENT
+        parse_partial_ident_stmt(token)
       else
         raise Deli::LocatableError.new(
           @source_code,
@@ -46,12 +46,12 @@ module Deli
     def parse_var_stmt
       # NOTE: :KW_VAR already consumed
 
-      identifier_token = consume(:IDENTIFIER)
+      ident_token = consume(:IDENT)
       consume(:EQ)
       value_expr = parse_expr
       consume(:SEMICOLON)
 
-      Deli::AST::VarStmt.new(identifier_token, value_expr)
+      Deli::AST::VarStmt.new(ident_token, value_expr)
     end
 
     def parse_print_stmt
@@ -98,7 +98,7 @@ module Deli
     def parse_fun_stmt
       # NOTE: :KW_FUN already consumed
 
-      identifier = consume(:IDENTIFIER)
+      ident = consume(:IDENT)
 
       # Parameter list
       consume(:LPAREN)
@@ -109,7 +109,7 @@ module Deli
       consume(:LBRACE)
       body_stmt = parse_group_stmt
 
-      Deli::AST::FunStmt.new(identifier, body_stmt)
+      Deli::AST::FunStmt.new(ident, body_stmt)
     end
 
     def parse_return_stmt
@@ -138,15 +138,15 @@ module Deli
       Deli::AST::GroupStmt.new(stmts)
     end
 
-    def parse_partial_identifier_stmt(identifier_token)
-      # NOTE: :IDENTIFIER already consumed
+    def parse_partial_ident_stmt(ident_token)
+      # NOTE: :IDENT already consumed
 
       token = advance
       case token.type
       when :EQ
-        parse_assign_stmt(identifier_token, token)
+        parse_assign_stmt(ident_token, token)
       when :LPAREN
-        parse_call_stmt(identifier_token, token)
+        parse_call_stmt(ident_token, token)
       else
         raise Deli::LocatableError.new(
           @source_code,
@@ -156,21 +156,21 @@ module Deli
       end
     end
 
-    def parse_assign_stmt(identifier_token, _eq_token)
-      # NOTE: :IDENTIFIER already consumed
+    def parse_assign_stmt(ident_token, _eq_token)
+      # NOTE: :IDENT already consumed
       # NOTE: :EQ already consumed
 
       expr = parse_expr
       consume(:SEMICOLON)
 
-      Deli::AST::AssignStmt.new(identifier_token, expr)
+      Deli::AST::AssignStmt.new(ident_token, expr)
     end
 
-    def parse_call_stmt(identifier_token, lparen_token)
-      # NOTE: :IDENTIFIER already consumed
+    def parse_call_stmt(ident_token, lparen_token)
+      # NOTE: :IDENT already consumed
       # NOTE: :LPAREN already consumed
 
-      fun_expr = Deli::AST::IdentifierExpr.new(identifier_token)
+      fun_expr = Deli::AST::IdentifierExpr.new(ident_token)
       expr = parse_call_expr(fun_expr, lparen_token)
       consume(:SEMICOLON)
       Deli::AST::ExprStmt.new(expr)
@@ -227,7 +227,7 @@ module Deli
     PARSE_RULES = ParseRules.new
 
     PARSE_RULES.register(
-      :IDENTIFIER,
+      :IDENT,
       Precedence::NONE,
       prefix: :parse_variable,
     )

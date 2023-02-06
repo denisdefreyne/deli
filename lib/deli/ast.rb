@@ -59,19 +59,19 @@ module Deli
 
     # Statements
 
-    VarStmt = Struct.new(:identifier, :value_expr) do
+    VarStmt = Struct.new(:ident, :value_expr) do
       include SExp
 
       def to_sexp
-        [:var, identifier.value, value_expr]
+        [:var, ident.value, value_expr]
       end
     end
 
-    AssignStmt = Struct.new(:identifier, :value_expr) do
+    AssignStmt = Struct.new(:ident, :value_expr) do
       include SExp
 
       def to_sexp
-        [:assign, identifier.value, value_expr]
+        [:assign, ident.value, value_expr]
       end
     end
 
@@ -115,11 +115,11 @@ module Deli
       end
     end
 
-    FunStmt = Struct.new(:identifier, :body_stmt) do
+    FunStmt = Struct.new(:ident, :body_stmt) do
       include SExp
 
       def to_sexp
-        [:fun, identifier.value, body_stmt]
+        [:fun, ident.value, body_stmt]
       end
     end
 
@@ -141,11 +141,11 @@ module Deli
       end
     end
 
-    IdentifierExpr = Struct.new(:identifier) do
+    IdentifierExpr = Struct.new(:ident) do
       include SExp
 
       def to_sexp
-        [:identifier, identifier.value]
+        [:ident, ident.value]
       end
     end
 
