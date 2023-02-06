@@ -85,28 +85,28 @@ module Deli
       # Whitespace
       elsif @scanner.scan_newline || @scanner.scan(/[^\S\n]+/)
         lex_token
-      # Operators
+      # Binary operators
       elsif @scanner.scan('+')
         Token.new(:PLUS, @scanner.matched, nil, @scanner.span)
       elsif @scanner.scan('-')
         Token.new(:MINUS, @scanner.matched, nil, @scanner.span)
       elsif @scanner.scan('*')
-        Token.new(:TIMES, @scanner.matched, nil, @scanner.span)
+        Token.new(:ASTERISK, @scanner.matched, nil, @scanner.span)
       elsif @scanner.scan('/')
-        Token.new(:DIVIDE, @scanner.matched, nil, @scanner.span)
-      # Comparators
+        Token.new(:SLASH, @scanner.matched, nil, @scanner.span)
+      # Relational operators
       elsif @scanner.scan('==')
         Token.new(:EQUAL_EQUAL, @scanner.matched, nil, @scanner.span)
       elsif @scanner.scan('!=')
         Token.new(:BANG_EQUAL, @scanner.matched, nil, @scanner.span)
-      elsif @scanner.scan('<')
-        Token.new(:LESS_THAN, @scanner.matched, nil, @scanner.span)
       elsif @scanner.scan('<=')
         Token.new(:LESS_THAN_OR_EQUAL, @scanner.matched, nil, @scanner.span)
-      elsif @scanner.scan('>')
-        Token.new(:GREATER_THAN, @scanner.matched, nil, @scanner.span)
+      elsif @scanner.scan('<')
+        Token.new(:LESS_THAN, @scanner.matched, nil, @scanner.span)
       elsif @scanner.scan('>=')
         Token.new(:GREATER_THAN_OR_EQUAL, @scanner.matched, nil, @scanner.span)
+      elsif @scanner.scan('>')
+        Token.new(:GREATER_THAN, @scanner.matched, nil, @scanner.span)
       # Misc
       elsif @scanner.scan(';')
         Token.new(:SEMICOLON, @scanner.matched, nil, @scanner.span)
@@ -119,9 +119,9 @@ module Deli
         case @scanner.matched
         # Constants
         when 'true'
-          Token.new(:TRUE, @scanner.matched, nil, @scanner.span)
+          Token.new(:KEYWORD_TRUE, @scanner.matched, nil, @scanner.span)
         when 'false'
-          Token.new(:FALSE, @scanner.matched, nil, @scanner.span)
+          Token.new(:KEYWORD_FALSE, @scanner.matched, nil, @scanner.span)
         # Keywords
         when 'print'
           Token.new(:KEYWORD_PRINT, @scanner.matched, nil, @scanner.span)
