@@ -116,6 +116,18 @@ module Deli
         new_token(:EQ)
       elsif @scanner.scan('!')
         new_token(:BANG)
+      elsif @scanner.scan('(')
+        new_token(:LPAREN)
+      elsif @scanner.scan(')')
+        new_token(:RPAREN)
+      elsif @scanner.scan('{')
+        new_token(:LBRACE)
+      elsif @scanner.scan('}')
+        new_token(:RBRACE)
+      elsif @scanner.scan('[')
+        new_token(:LBRACKET)
+      elsif @scanner.scan(']')
+        new_token(:RBRACKET)
 
       # Values
       elsif @scanner.scan(/\d+/)

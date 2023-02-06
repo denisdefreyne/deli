@@ -24,6 +24,20 @@ class TestDeliLexer < Minitest::Test
     assert_nil(tokens.shift)
   end
 
+  def test_pairs
+    tokens = lex('[]{}<>()')
+
+    assert_token(:LBRACKET, '[', nil, tokens.shift)
+    assert_token(:RBRACKET, ']', nil, tokens.shift)
+    assert_token(:LBRACE,   '{', nil, tokens.shift)
+    assert_token(:RBRACE,   '}', nil, tokens.shift)
+    assert_token(:LT,       '<', nil, tokens.shift)
+    assert_token(:GT,       '>', nil, tokens.shift)
+    assert_token(:LPAREN,   '(', nil, tokens.shift)
+    assert_token(:RPAREN,   ')', nil, tokens.shift)
+    assert_nil(tokens.shift)
+  end
+
   def test_relational_operators
     tokens = lex('= == != < <= > >=')
 
