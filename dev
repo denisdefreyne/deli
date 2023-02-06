@@ -8,6 +8,7 @@ case "$1" in
   ;;
 
 "test")
+  bundle exec rake
   bundle exec rubocop
   ;;
 

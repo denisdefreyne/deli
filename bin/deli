@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-
 require_relative "../lib/deli"
 
 if ARGV.size != 1

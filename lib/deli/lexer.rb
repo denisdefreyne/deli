@@ -80,30 +80,64 @@ module Deli
     def lex_token
       if @scanner.eos?
         nil
+      # Whitespace
       elsif @scanner.scan_newline
         lex_token
       elsif @scanner.scan(/[^\S\n]+/)
         lex_token
+      # Operators
       elsif @scanner.scan("+")
         Token.new(:PLUS, @scanner.matched, nil, @scanner.span)
-      elsif @scanner.scan("*")
-        Token.new(:TIMES, @scanner.matched, nil, @scanner.span)
       elsif @scanner.scan("-")
         Token.new(:MINUS, @scanner.matched, nil, @scanner.span)
+      elsif @scanner.scan("*")
+        Token.new(:TIMES, @scanner.matched, nil, @scanner.span)
       elsif @scanner.scan("/")
         Token.new(:DIVIDE, @scanner.matched, nil, @scanner.span)
+      # Comparators
+      elsif @scanner.scan("==")
+        Token.new(:EQUAL_EQUAL, @scanner.matched, nil, @scanner.span)
+      elsif @scanner.scan("!=")
+        Token.new(:BANG_EQUAL, @scanner.matched, nil, @scanner.span)
+      elsif @scanner.scan("<")
+        Token.new(:LESS_THAN, @scanner.matched, nil, @scanner.span)
+      elsif @scanner.scan("<=")
+        Token.new(:LESS_THAN_OR_EQUAL, @scanner.matched, nil, @scanner.span)
+      elsif @scanner.scan(">")
+        Token.new(:GREATER_THAN, @scanner.matched, nil, @scanner.span)
+      elsif @scanner.scan(">=")
+        Token.new(:GREATER_THAN_OR_EQUAL, @scanner.matched, nil, @scanner.span)
+      # Misc
       elsif @scanner.scan(";")
         Token.new(:SEMICOLON, @scanner.matched, nil, @scanner.span)
       elsif @scanner.scan("=")
         Token.new(:EQUAL, @scanner.matched, nil, @scanner.span)
+      # Values
       elsif @scanner.scan(/\d+/)
         Token.new(:NUMBER, @scanner.matched, @scanner.matched, @scanner.span)
       elsif @scanner.scan(/\w+/)
         case @scanner.matched
-        when "var"
-          Token.new(:KEYWORD_VAR, @scanner.matched, nil, @scanner.span)
+        # Constants
+        when "true"
+          Token.new(:TRUE, @scanner.matched, nil, @scanner.span)
+        when "false"
+          Token.new(:FALSE, @scanner.matched, nil, @scanner.span)
+        # Keywords
         when "print"
           Token.new(:KEYWORD_PRINT, @scanner.matched, nil, @scanner.span)
+        when "if"
+          Token.new(:KEYWORD_IF, @scanner.matched, nil, @scanner.span)
+        when "then"
+          Token.new(:KEYWORD_THEN, @scanner.matched, nil, @scanner.span)
+        when "else"
+          Token.new(:KEYWORD_ELSE, @scanner.matched, nil, @scanner.span)
+        when "for"
+          Token.new(:KEYWORD_FOR, @scanner.matched, nil, @scanner.span)
+        when "while"
+          Token.new(:KEYWORD_WHILE, @scanner.matched, nil, @scanner.span)
+        when "var"
+          Token.new(:KEYWORD_VAR, @scanner.matched, nil, @scanner.span)
+        # Identifier
         else
           Token.new(:IDENTIFIER, @scanner.matched, @scanner.matched, @scanner.span)
         end
