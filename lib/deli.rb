@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require 'strscan'
+require 'optparse'
 require 'singleton'
+require 'strscan'
 
 require_relative 'deli/version'
 require_relative 'deli/cli'

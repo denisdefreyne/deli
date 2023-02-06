@@ -3,12 +3,20 @@
 module Deli
   class CLI
     def initialize(args)
-      @args = args
+      @args = args.dup
     end
 
     def call
+      # Parse options
+      options = {}
+      parser = OptionParser.new
+      parser.on('--dump-ast', 'Dump AST') do |value|
+        options[:dump_ast] = true
+      end
+      parser.parse!(@args)
+
       if @args.size != 1
-        warn 'usage: deli [path]'
+        warn 'usage: deli [options] path'
         exit 64
       end
 
@@ -20,6 +28,12 @@ module Deli
 
       parser = Deli::Parser.new(source_code, tokens)
       stmts = parser.call
+      if options.fetch(:dump_ast, false)
+        warn '--- AST'
+        stmts.each { warn _1.inspect }
+        warn '---'
+        warn
+      end
 
       evaluator = Deli::Evaluator.new(source_code, stmts)
       evaluator.call
