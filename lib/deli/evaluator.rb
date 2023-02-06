@@ -46,7 +46,8 @@ module Deli
         value = eval_expr(stmt.expr)
         puts(stringify(value))
       else
-        raise Deli::InternalInconsistencyError, "Unexpected stmt class: #{stmt.class}"
+        raise Deli::InternalInconsistencyError,
+          "Unexpected stmt class: #{stmt.class}"
       end
     end
 

@@ -89,69 +89,82 @@ module Deli
 
       # Two-character tokens
       elsif @scanner.scan('==')
-        Token.new(:EQ_EQ, @scanner.matched, nil, @scanner.span)
+        new_token(:EQ_EQ)
       elsif @scanner.scan('!=')
-        Token.new(:BANG_EQ, @scanner.matched, nil, @scanner.span)
+        new_token(:BANG_EQ)
       elsif @scanner.scan('<=')
-        Token.new(:LTE, @scanner.matched, nil, @scanner.span)
+        new_token(:LTE)
       elsif @scanner.scan('>=')
-        Token.new(:GTE, @scanner.matched, nil, @scanner.span)
+        new_token(:GTE)
 
       # One-character tokens
       elsif @scanner.scan('+')
-        Token.new(:PLUS, @scanner.matched, nil, @scanner.span)
+        new_token(:PLUS)
       elsif @scanner.scan('-')
-        Token.new(:MINUS, @scanner.matched, nil, @scanner.span)
+        new_token(:MINUS)
       elsif @scanner.scan('*')
-        Token.new(:ASTERISK, @scanner.matched, nil, @scanner.span)
+        new_token(:ASTERISK)
       elsif @scanner.scan('/')
-        Token.new(:SLASH, @scanner.matched, nil, @scanner.span)
+        new_token(:SLASH)
       elsif @scanner.scan('<')
-        Token.new(:LT, @scanner.matched, nil, @scanner.span)
+        new_token(:LT)
       elsif @scanner.scan('>')
-        Token.new(:GT, @scanner.matched, nil, @scanner.span)
+        new_token(:GT)
       elsif @scanner.scan(';')
-        Token.new(:SEMICOLON, @scanner.matched, nil, @scanner.span)
+        new_token(:SEMICOLON)
       elsif @scanner.scan('=')
-        Token.new(:EQ, @scanner.matched, nil, @scanner.span)
+        new_token(:EQ)
       elsif @scanner.scan('!')
-        Token.new(:BANG, @scanner.matched, nil, @scanner.span)
+        new_token(:BANG)
 
       # Values
       elsif @scanner.scan(/\d+/)
-        Token.new(:NUMBER, @scanner.matched, @scanner.matched, @scanner.span)
+        new_token(:NUMBER, @scanner.matched)
       elsif @scanner.scan(/\w+/)
         case @scanner.matched
         # Keywords
         when 'true'
-          Token.new(:KW_TRUE, @scanner.matched, nil, @scanner.span)
+          new_token(:KW_TRUE)
         when 'false'
-          Token.new(:KW_FALSE, @scanner.matched, nil, @scanner.span)
+          new_token(:KW_FALSE)
         when 'null'
-          Token.new(:KW_NULL, @scanner.matched, nil, @scanner.span)
+          new_token(:KW_NULL)
         when 'print'
-          Token.new(:KW_PRINT, @scanner.matched, nil, @scanner.span)
+          new_token(:KW_PRINT)
         when 'if'
-          Token.new(:KW_IF, @scanner.matched, nil, @scanner.span)
+          new_token(:KW_IF)
         when 'then'
-          Token.new(:KW_THEN, @scanner.matched, nil, @scanner.span)
+          new_token(:KW_THEN)
         when 'else'
-          Token.new(:KW_ELSE, @scanner.matched, nil, @scanner.span)
+          new_token(:KW_ELSE)
         when 'for'
-          Token.new(:KW_FOR, @scanner.matched, nil, @scanner.span)
+          new_token(:KW_FOR)
         when 'while'
-          Token.new(:KW_WHILE, @scanner.matched, nil, @scanner.span)
+          new_token(:KW_WHILE)
         when 'var'
-          Token.new(:KW_VAR, @scanner.matched, nil, @scanner.span)
+          new_token(:KW_VAR)
 
         # Identifier
         else
-          Token.new(:IDENTIFIER, @scanner.matched, @scanner.matched, @scanner.span)
+          new_token(:IDENTIFIER, @scanner.matched)
         end
       else
         char = @scanner.getch
-        raise Deli::LocatableError.new(@source_code, @scanner.span, "Unknown character: #{char}")
+        raise Deli::LocatableError.new(
+          @source_code,
+          @scanner.span,
+          "Unknown character: #{char}",
+        )
       end
+    end
+
+    def new_token(type, value = nil)
+      Token.new(
+        type:,
+        lexeme: @scanner.matched,
+        value:,
+        span:   @scanner.span,
+      )
     end
   end
 end
