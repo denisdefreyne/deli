@@ -51,11 +51,11 @@ module Deli
 
     VarStmt = Struct.new(:identifier, :value_expr) do
       def inspect
-        "(var #{identifier.value.inspect} #{value_expr.inspect})"
+        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
       end
 
       def inspect_multiline
-        StringIO.new.tap { dump_sexp_multiline(to_sexp, _1, 0) }.string
+        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
       end
 
       def to_sexp
@@ -65,11 +65,11 @@ module Deli
 
     AssignStmt = Struct.new(:identifier, :value_expr) do
       def inspect
-        "(assign #{identifier.value.inspect} #{value_expr.inspect})"
+        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
       end
 
       def inspect_multiline
-        StringIO.new.tap { dump_sexp_multiline(to_sexp, _1, 0) }.string
+        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
       end
 
       def to_sexp
@@ -79,11 +79,11 @@ module Deli
 
     PrintStmt = Struct.new(:expr) do
       def inspect
-        "(print #{expr.inspect})"
+        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
       end
 
       def inspect_multiline
-        StringIO.new.tap { dump_sexp_multiline(to_sexp, _1, 0) }.string
+        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
       end
 
       def to_sexp
@@ -93,11 +93,11 @@ module Deli
 
     GroupStmt = Struct.new(:stmts) do
       def inspect
-        "(group #{stmts.map(&:inspect).join(' ')})"
+        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
       end
 
       def inspect_multiline
-        StringIO.new.tap { dump_sexp_multiline(to_sexp, _1, 0) }.string
+        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
       end
 
       def to_sexp
@@ -107,11 +107,11 @@ module Deli
 
     IfStmt = Struct.new(:cond_expr, :true_stmt, :false_stmt) do
       def inspect
-        "(if #{cond_expr.inspect} #{true_stmt.inspect} #{false_stmt.inspect})"
+        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
       end
 
       def inspect_multiline
-        StringIO.new.tap { dump_sexp_multiline(to_sexp, _1, 0) }.string
+        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
       end
 
       def to_sexp
@@ -121,11 +121,11 @@ module Deli
 
     WhileStmt = Struct.new(:cond_expr, :body_stmt) do
       def inspect
-        "(while #{cond_expr.inspect} #{body_stmt.inspect})"
+        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
       end
 
       def inspect_multiline
-        StringIO.new.tap { dump_sexp_multiline(to_sexp, _1, 0) }.string
+        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
       end
 
       def to_sexp
@@ -137,11 +137,11 @@ module Deli
 
     IntegerExpr = Struct.new(:value) do
       def inspect
-        "(integer #{value.inspect})"
+        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
       end
 
       def inspect_multiline
-        StringIO.new.tap { dump_sexp_multiline(to_sexp, _1, 0) }.string
+        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
       end
 
       def to_sexp
@@ -151,11 +151,11 @@ module Deli
 
     IdentifierExpr = Struct.new(:identifier) do
       def inspect
-        "(identifier #{identifier.value.inspect})"
+        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
       end
 
       def inspect_multiline
-        StringIO.new.tap { dump_sexp_multiline(to_sexp, _1, 0) }.string
+        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
       end
 
       def to_sexp
@@ -165,11 +165,11 @@ module Deli
 
     TrueExpr = Class.new do
       def inspect
-        '(true)'
+        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
       end
 
       def inspect_multiline
-        StringIO.new.tap { dump_sexp_multiline(to_sexp, _1, 0) }.string
+        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
       end
 
       def to_sexp
@@ -179,11 +179,11 @@ module Deli
 
     FalseExpr = Class.new do
       def inspect
-        '(false)'
+        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
       end
 
       def inspect_multiline
-        StringIO.new.tap { dump_sexp_multiline(to_sexp, _1, 0) }.string
+        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
       end
 
       def to_sexp
@@ -193,11 +193,11 @@ module Deli
 
     NullExpr = Class.new do
       def inspect
-        '(null)'
+        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
       end
 
       def inspect_multiline
-        StringIO.new.tap { dump_sexp_multiline(to_sexp, _1, 0) }.string
+        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
       end
 
       def to_sexp
@@ -207,11 +207,11 @@ module Deli
 
     UnaryExpr = Struct.new(:op, :expr) do
       def inspect
-        "(unary #{op.lexeme} #{expr.inspect})"
+        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
       end
 
       def inspect_multiline
-        StringIO.new.tap { dump_sexp_multiline(to_sexp, _1, 0) }.string
+        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
       end
 
       def to_sexp
@@ -221,11 +221,11 @@ module Deli
 
     BinaryExpr = Struct.new(:op, :left, :right) do
       def inspect
-        "(binary #{op.lexeme} #{left.inspect} #{right.inspect})"
+        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
       end
 
       def inspect_multiline
-        StringIO.new.tap { dump_sexp_multiline(to_sexp, _1, 0) }.string
+        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
       end
 
       def to_sexp

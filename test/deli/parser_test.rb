@@ -29,21 +29,21 @@ class TestDeliParser < Minitest::Test
   def test_if_without_else
     stmts = parse('if 2 < 3 { print 100; }')
 
-    assert_equal('(if (binary < (integer 2) (integer 3)) (group (print (integer 100))) nil)', stmts.shift.inspect)
+    assert_equal('(if (binary "<" (integer 2) (integer 3)) (group (print (integer 100))) nil)', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 
   def test_if_with_else
     stmts = parse('if 2 < 3 { print 100; } else { print 200; }')
 
-    assert_equal('(if (binary < (integer 2) (integer 3)) (group (print (integer 100))) (group (print (integer 200))))', stmts.shift.inspect)
+    assert_equal('(if (binary "<" (integer 2) (integer 3)) (group (print (integer 100))) (group (print (integer 200))))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 
   def test_while
     stmts = parse('while a { a = !a; }')
 
-    assert_equal('(while (identifier "a") (group (assign "a" (unary ! (identifier "a")))))', stmts.shift.inspect)
+    assert_equal('(while (identifier "a") (group (assign "a" (unary "!" (identifier "a")))))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 
@@ -61,50 +61,50 @@ class TestDeliParser < Minitest::Test
   def test_unary_operators
     stmts = parse('print -4; print --++8; print !false;')
 
-    assert_equal('(print (unary - (integer 4)))', stmts.shift.inspect)
-    assert_equal('(print (unary - (unary - (unary + (unary + (integer 8))))))', stmts.shift.inspect)
-    assert_equal('(print (unary ! (false)))', stmts.shift.inspect)
+    assert_equal('(print (unary "-" (integer 4)))', stmts.shift.inspect)
+    assert_equal('(print (unary "-" (unary "-" (unary "+" (unary "+" (integer 8))))))', stmts.shift.inspect)
+    assert_equal('(print (unary "!" (false)))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 
   def test_binary_equality
     stmts = parse('print a == 123; print a != 234;')
 
-    assert_equal('(print (binary == (identifier "a") (integer 123)))', stmts.shift.inspect)
-    assert_equal('(print (binary != (identifier "a") (integer 234)))', stmts.shift.inspect)
+    assert_equal('(print (binary "==" (identifier "a") (integer 123)))', stmts.shift.inspect)
+    assert_equal('(print (binary "!=" (identifier "a") (integer 234)))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 
   def test_binary_comparison
     stmts = parse('print a < 1; print a <= 2; print a > 3; print a >= 4;')
 
-    assert_equal('(print (binary < (identifier "a") (integer 1)))', stmts.shift.inspect)
-    assert_equal('(print (binary <= (identifier "a") (integer 2)))', stmts.shift.inspect)
-    assert_equal('(print (binary > (identifier "a") (integer 3)))', stmts.shift.inspect)
-    assert_equal('(print (binary >= (identifier "a") (integer 4)))', stmts.shift.inspect)
+    assert_equal('(print (binary "<" (identifier "a") (integer 1)))', stmts.shift.inspect)
+    assert_equal('(print (binary "<=" (identifier "a") (integer 2)))', stmts.shift.inspect)
+    assert_equal('(print (binary ">" (identifier "a") (integer 3)))', stmts.shift.inspect)
+    assert_equal('(print (binary ">=" (identifier "a") (integer 4)))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 
   def test_binary_term
     stmts = parse('print a + 1; print a - 2;')
 
-    assert_equal('(print (binary + (identifier "a") (integer 1)))', stmts.shift.inspect)
-    assert_equal('(print (binary - (identifier "a") (integer 2)))', stmts.shift.inspect)
+    assert_equal('(print (binary "+" (identifier "a") (integer 1)))', stmts.shift.inspect)
+    assert_equal('(print (binary "-" (identifier "a") (integer 2)))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 
   def test_binary_factor
     stmts = parse('print a * 1; print a / 2;')
 
-    assert_equal('(print (binary * (identifier "a") (integer 1)))', stmts.shift.inspect)
-    assert_equal('(print (binary / (identifier "a") (integer 2)))', stmts.shift.inspect)
+    assert_equal('(print (binary "*" (identifier "a") (integer 1)))', stmts.shift.inspect)
+    assert_equal('(print (binary "/" (identifier "a") (integer 2)))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 
   def test_binary_precedence_term_factor
     stmts = parse('print 1 + 2 * 3;')
 
-    assert_equal('(print (binary + (integer 1) (binary * (integer 2) (integer 3))))', stmts.shift.inspect)
+    assert_equal('(print (binary "+" (integer 1) (binary "*" (integer 2) (integer 3))))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 
