@@ -34,6 +34,9 @@ Layout/HashAlignment:
 Layout/ArgumentAlignment:
   EnforcedStyle: with_fixed_indentation
 
+Layout/SpaceInsideHashLiteralBraces:
+  EnforcedStyle: no_space
+
 ################################################################################
 # Disabling cops that are not useful
 

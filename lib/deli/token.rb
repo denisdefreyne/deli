@@ -3,7 +3,7 @@
 module Deli
   Token = Struct.new(:type, :lexeme, :value, :span) do
     def inspect
-      format "%-10s  %s", type, value ? value.inspect : nil
+      format '%-10<type>s  %<value>s', {type:, value: value ? value.inspect : nil}
     end
   end
 end

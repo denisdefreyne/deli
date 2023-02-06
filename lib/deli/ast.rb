@@ -47,9 +47,7 @@ module Deli
       out << ')'
     end
 
-    # Statements
-
-    VarStmt = Struct.new(:identifier, :value_expr) do
+    module SExp
       def inspect
         StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
       end
@@ -57,6 +55,12 @@ module Deli
       def inspect_multiline
         StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
       end
+    end
+
+    # Statements
+
+    VarStmt = Struct.new(:identifier, :value_expr) do
+      include SExp
 
       def to_sexp
         [:var, identifier.value, value_expr]
@@ -64,13 +68,7 @@ module Deli
     end
 
     AssignStmt = Struct.new(:identifier, :value_expr) do
-      def inspect
-        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
-      end
-
-      def inspect_multiline
-        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
-      end
+      include SExp
 
       def to_sexp
         [:assign, identifier.value, value_expr]
@@ -78,13 +76,7 @@ module Deli
     end
 
     PrintStmt = Struct.new(:expr) do
-      def inspect
-        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
-      end
-
-      def inspect_multiline
-        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
-      end
+      include SExp
 
       def to_sexp
         [:print, expr]
@@ -92,13 +84,7 @@ module Deli
     end
 
     GroupStmt = Struct.new(:stmts) do
-      def inspect
-        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
-      end
-
-      def inspect_multiline
-        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
-      end
+      include SExp
 
       def to_sexp
         [:group, *stmts]
@@ -106,13 +92,7 @@ module Deli
     end
 
     IfStmt = Struct.new(:cond_expr, :true_stmt, :false_stmt) do
-      def inspect
-        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
-      end
-
-      def inspect_multiline
-        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
-      end
+      include SExp
 
       def to_sexp
         [:if, cond_expr, true_stmt, false_stmt]
@@ -120,13 +100,7 @@ module Deli
     end
 
     WhileStmt = Struct.new(:cond_expr, :body_stmt) do
-      def inspect
-        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
-      end
-
-      def inspect_multiline
-        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
-      end
+      include SExp
 
       def to_sexp
         [:while, cond_expr, body_stmt]
@@ -136,13 +110,7 @@ module Deli
     # Expressions
 
     IntegerExpr = Struct.new(:value) do
-      def inspect
-        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
-      end
-
-      def inspect_multiline
-        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
-      end
+      include SExp
 
       def to_sexp
         [:integer, value]
@@ -150,13 +118,7 @@ module Deli
     end
 
     IdentifierExpr = Struct.new(:identifier) do
-      def inspect
-        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
-      end
-
-      def inspect_multiline
-        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
-      end
+      include SExp
 
       def to_sexp
         [:identifier, identifier.value]
@@ -164,13 +126,7 @@ module Deli
     end
 
     TrueExpr = Class.new do
-      def inspect
-        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
-      end
-
-      def inspect_multiline
-        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
-      end
+      include SExp
 
       def to_sexp
         [:true] # rubocop:disable Lint/BooleanSymbol
@@ -178,13 +134,7 @@ module Deli
     end
 
     FalseExpr = Class.new do
-      def inspect
-        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
-      end
-
-      def inspect_multiline
-        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
-      end
+      include SExp
 
       def to_sexp
         [:false] # rubocop:disable Lint/BooleanSymbol
@@ -192,13 +142,7 @@ module Deli
     end
 
     NullExpr = Class.new do
-      def inspect
-        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
-      end
-
-      def inspect_multiline
-        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
-      end
+      include SExp
 
       def to_sexp
         [:null]
@@ -206,13 +150,7 @@ module Deli
     end
 
     UnaryExpr = Struct.new(:op, :expr) do
-      def inspect
-        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
-      end
-
-      def inspect_multiline
-        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
-      end
+      include SExp
 
       def to_sexp
         [:unary, op.lexeme, expr]
@@ -220,13 +158,7 @@ module Deli
     end
 
     BinaryExpr = Struct.new(:op, :left, :right) do
-      def inspect
-        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
-      end
-
-      def inspect_multiline
-        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
-      end
+      include SExp
 
       def to_sexp
         [:binary, op.lexeme, left, right]

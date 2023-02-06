@@ -10,7 +10,7 @@ module Deli
       # Parse options
       options = {}
       parser = OptionParser.new
-      parser.banner = "Usage: deli [options] path"
+      parser.banner = 'Usage: deli [options] path'
       parser.on('--dump-ast', 'Dump AST') do |_value|
         options[:dump_ast] = true
       end
