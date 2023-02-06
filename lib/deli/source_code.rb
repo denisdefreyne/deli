@@ -11,16 +11,12 @@ module Deli
     end
 
     def show_span(span)
-      show_string(span.row, span.col, span.length)
-    end
+      col_string = format('  %d  |  ', span.row + 1)
 
-    def show_string(row, col, length)
-      col_string = format('  %d  |  ', row + 1)
+      indicator_indent = ' ' * (col_string.length + span.col)
+      indicator = '^' * [span.length, 1].max
 
-      indicator_indent = ' ' * (col_string.length + col)
-      indicator = '^' * [length, 1].max
-
-      "#{col_string}#{lines[row]}\n#{indicator_indent}#{indicator}"
+      "#{col_string}#{lines[span.row]}\n#{indicator_indent}#{indicator}"
     end
 
     private
