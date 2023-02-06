@@ -4,12 +4,12 @@ set -euo pipefail
 
 case "$1" in
 "up")
-  gem install standard
+  gem install bundler
+  bundle
   ;;
 
 "test")
   bundle exec rake
-  bundle exec rubocop
   ;;
 
 *)
