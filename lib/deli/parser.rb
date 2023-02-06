@@ -26,20 +26,24 @@ module Deli
         parse_var_stmt
       when :KEYWORD_PRINT
         parse_print_stmt
+      when :IDENTIFIER
+        parse_partial_identifier(token)
       else
-        raise '???'
+        raise Deli::LocatableError.new(
+          @source_code, token.span, "parse error: expected `var` or `print`, but got #{token.type}"
+        )
       end
     end
 
     def parse_var_stmt
       # NOTE: :KEYWORD_VAR already consumed
 
-      identifier = consume(:IDENTIFIER)
+      identifier_token = consume(:IDENTIFIER)
       consume(:EQUAL)
       value_expr = parse_expr
       consume(:SEMICOLON)
 
-      Deli::AST::VarStmt.new(identifier, value_expr)
+      Deli::AST::VarStmt.new(identifier_token, value_expr)
     end
 
     def parse_print_stmt
@@ -49,6 +53,30 @@ module Deli
       consume(:SEMICOLON)
 
       Deli::AST::PrintStmt.new(expr)
+    end
+
+    def parse_partial_identifier(identifier_token)
+      # NOTE: :IDENTIFIER already consumed
+
+      token = @tokens.shift
+      case token.type
+      when :EQUAL
+        parse_assign(identifier_token)
+      else
+        raise Deli::LocatableError.new(
+          @source_code, token.span, "parse error: expected `=`, but got #{token.type}"
+        )
+      end
+    end
+
+    def parse_assign(identifier_token)
+      # NOTE: :IDENTIFIER already consumed
+      # NOTE: :EQUAL already consumed
+
+      expr = parse_expr
+      consume(:SEMICOLON)
+
+      Deli::AST::AssignStmt.new(identifier_token, expr)
     end
 
     def parse_expr

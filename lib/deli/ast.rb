@@ -10,6 +10,12 @@ module Deli
       end
     end
 
+    AssignStmt = Struct.new(:identifier, :value_expr) do
+      def inspect
+        "(assign #{identifier.value.inspect} #{value_expr.inspect})"
+      end
+    end
+
     PrintStmt = Struct.new(:expr) do
       def inspect
         "(print #{expr.inspect})"

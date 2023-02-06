@@ -18,6 +18,14 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
+  def test_assign
+    stmts = parse('var bloop = 123; bloop = 234;')
+
+    assert_equal('(var "bloop" (integer 123))', stmts.shift.inspect)
+    assert_equal('(assign "bloop" (integer 234))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
   private
 
   def parse(string)
