@@ -179,12 +179,12 @@ module Deli
       NONE   = 0
       LOWEST = 1
 
-      EQUALITY   = 1
-      COMPARISON = 2
-      TERM       = 3
-      FACTOR     = 4
-      UNARY      = 5
-      CALL       = 6
+      EQUALITY   = 1 # == !=
+      COMPARISON = 2 # > >= < <=
+      TERM       = 3 # + -
+      FACTOR     = 4 # * /
+      UNARY      = 5 # - !
+      CALL       = 6 # ( .
     end
 
     class ParseRule
@@ -199,7 +199,9 @@ module Deli
       end
     end
 
-    PARSE_RULES = {
+    DEFAULT_PARSE_RULE = ParseRule.new(Precedence::NONE)
+
+    PARSE_RULES = { # rubocop:disable Style/MutableConstant
       IDENTIFIER: ParseRule.new(Precedence::NONE, prefix: :parse_variable),
       NUMBER:     ParseRule.new(Precedence::NONE, prefix: :parse_number),
       KW_TRUE:    ParseRule.new(Precedence::NONE, prefix: :parse_true),
@@ -223,7 +225,9 @@ module Deli
       BANG:       ParseRule.new(Precedence::UNARY, prefix: :parse_unary),
 
       LPAREN:     ParseRule.new(Precedence::CALL, infix: :parse_call_expr),
-    }.freeze
+    }
+    PARSE_RULES.default = DEFAULT_PARSE_RULE
+    PARSE_RULES.freeze
 
     def parse_expr
       parse_precedence(Precedence::LOWEST)
@@ -234,7 +238,7 @@ module Deli
     def parse_precedence(precedence)
       token = advance
       rule = PARSE_RULES[token.type]
-      unless rule&.prefix
+      unless rule.prefix
         raise Deli::LocatableError.new(
           @source_code, token.span, "parse error: #{token.type} cannot be used as a prefix operator",
         )
@@ -242,12 +246,9 @@ module Deli
 
       expr = send(rule.prefix, token)
 
-      while peek
-        rule = PARSE_RULES[peek.type]
-        break if rule.nil? || rule.precedence < precedence
-
+      while peek && (rule = PARSE_RULES[peek.type]).precedence >= precedence
         token = advance
-        unless rule&.infix
+        unless rule.infix
           raise Deli::LocatableError.new(
             @source_code, token.span, "parse error: #{token.type} cannot be used as an infix operator",
           )

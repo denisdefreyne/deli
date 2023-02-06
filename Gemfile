@@ -13,7 +13,7 @@ group :development do
   gem 'rubocop', '~> 1.42', require: false
   gem 'rubocop-minitest', '~> 0.27.0', require: false
   gem 'rubocop-rake', '~> 0.6.0', require: false
-  gem "sorbet", "~> 0.5.10648", require: false
-  gem "sorbet-runtime", "~> 0.5.10648", require: false
-  gem "ruby-lsp", "~> 0.3.8", require: false
+  gem 'ruby-lsp', '~> 0.3.8', require: false
+  gem 'sorbet', '~> 0.5.10648', require: false
+  gem 'sorbet-runtime', '~> 0.5.10648', require: false
 end
