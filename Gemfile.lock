@@ -8,10 +8,12 @@ GEM
   specs:
     ast (2.4.2)
     json (2.6.3)
+    language_server-protocol (3.17.0.3)
     minitest (5.17.0)
     parallel (1.22.1)
     parser (3.2.0.0)
       ast (~> 2.4.1)
+    prettier_print (1.2.0)
     rainbow (3.1.1)
     rake (13.0.6)
     regexp_parser (2.6.2)
@@ -32,7 +34,17 @@ GEM
       rubocop (>= 0.90, < 2.0)
     rubocop-rake (0.6.0)
       rubocop (~> 1.0)
+    ruby-lsp (0.3.8)
+      language_server-protocol (~> 3.17.0)
+      sorbet-runtime
+      syntax_tree (>= 5.0.0, < 6)
     ruby-progressbar (1.11.0)
+    sorbet (0.5.10648)
+      sorbet-static (= 0.5.10648)
+    sorbet-runtime (0.5.10648)
+    sorbet-static (0.5.10648-universal-darwin-22)
+    syntax_tree (5.3.0)
+      prettier_print (>= 1.2.0)
     unicode-display_width (2.4.2)
 
 PLATFORMS
@@ -45,6 +57,9 @@ DEPENDENCIES
   rubocop (~> 1.42)
   rubocop-minitest (~> 0.27.0)
   rubocop-rake (~> 0.6.0)
+  ruby-lsp (~> 0.3.8)
+  sorbet (~> 0.5.10648)
+  sorbet-runtime (~> 0.5.10648)
 
 BUNDLED WITH
    2.4.6
