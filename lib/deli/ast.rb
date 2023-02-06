@@ -2,10 +2,32 @@
 
 module Deli
   module AST
-    VarStmt = Struct.new(:identifier, :value_expr)
-    PrintStmt = Struct.new(:expr)
+    # Statements
 
-    IntegerExpr = Struct.new(:value)
-    IdentifierExpr = Struct.new(:identifier)
+    VarStmt = Struct.new(:identifier, :value_expr) do
+      def inspect
+        "(var #{identifier.value.inspect} #{value_expr.inspect})"
+      end
+    end
+
+    PrintStmt = Struct.new(:expr) do
+      def inspect
+        "(print #{expr.inspect})"
+      end
+    end
+
+    # Expressions
+
+    IntegerExpr = Struct.new(:value) do
+      def inspect
+        "(integer #{value.inspect})"
+      end
+    end
+
+    IdentifierExpr = Struct.new(:identifier) do
+      def inspect
+        "(identifier #{identifier.inspect})"
+      end
+    end
   end
 end

@@ -56,8 +56,7 @@ class TestDeliLexer < Minitest::Test
 
   def lex(string)
     source_code = Deli::SourceCode.new('(test)', string)
-    lexer = Deli::Lexer.new(source_code)
-    lexer.call
+    Deli::Lexer.new(source_code).call
   end
 
   def assert_token(expected_type, expected_lexeme, expected_value, token)
