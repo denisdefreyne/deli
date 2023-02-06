@@ -145,14 +145,10 @@ module Deli
           new_token(:KW_PRINT)
         when 'if'
           new_token(:KW_IF)
-        when 'then'
-          new_token(:KW_THEN)
         when 'else'
           new_token(:KW_ELSE)
         when 'for'
           new_token(:KW_FOR)
-        when 'while'
-          new_token(:KW_WHILE)
         when 'var'
           new_token(:KW_VAR)
 
