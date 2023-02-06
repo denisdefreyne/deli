@@ -3,23 +3,4 @@
 
 require 'deli'
 
-if ARGV.size != 1
-  warn 'usage: deli [path]'
-  exit 64
-end
-
-contents = File.read(ARGV[0])
-source_code = Deli::SourceCode.new(ARGV[0], contents)
-
-begin
-  lexer = Deli::Lexer.new(source_code)
-  tokens = lexer.call
-
-  parser = Deli::Parser.new(source_code, tokens)
-  stmts = parser.call
-
-  evaluator = Deli::Evaluator.new(source_code, stmts)
-  evaluator.call
-rescue Deli::Error => e
-  warn e.message
-end
+Deli::CLI.new(ARGV).call

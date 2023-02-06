@@ -4,6 +4,7 @@ require 'strscan'
 require 'singleton'
 
 require_relative 'deli/version'
+require_relative 'deli/cli'
 
 # Utilities
 require_relative 'deli/source_code'
