@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'strscan'
+require 'singleton'
 
 require_relative 'deli/version'
 

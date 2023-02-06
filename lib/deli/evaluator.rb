@@ -46,12 +46,54 @@ module Deli
       end
     end
 
+    class True
+      include Singleton
+
+      def to_s
+        'true'
+      end
+
+      def !@
+        False.instance
+      end
+    end
+
+    class False
+      include Singleton
+
+      def to_s
+        'false'
+      end
+
+      def !@
+        True.instance
+      end
+    end
+
+    class Null
+      include Singleton
+
+      def to_s
+        'null'
+      end
+
+      def !@
+        True.instance
+      end
+    end
+
     def eval_expr(expr)
       case expr
       when AST::IntegerExpr
         expr.value
       when AST::IdentifierExpr
         @env[expr.identifier]
+      when AST::TrueExpr
+        True.instance
+      when AST::FalseExpr
+        False.instance
+      when AST::NullExpr
+        Null.instance
       when AST::UnaryExpr
         val = eval_expr(expr.expr)
 
@@ -60,6 +102,8 @@ module Deli
           val
         when :MINUS
           -val
+        when :BANG
+          !val
         else
           raise Deli::InternalInconsistencyError, "Unexpected unary operator: #{expr.op}"
         end

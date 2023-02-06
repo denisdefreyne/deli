@@ -42,6 +42,18 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("15\n", $stdout.string)
   end
 
+  def test_unary_basic
+    evaluate('print true; print false; print null;')
+
+    assert_equal("true\nfalse\nnull\n", $stdout.string)
+  end
+
+  def test_unary_operator
+    evaluate('print !true; print !false; print !null;')
+
+    assert_equal("false\ntrue\ntrue\n", $stdout.string)
+  end
+
   private
 
   def evaluate(string)

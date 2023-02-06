@@ -107,6 +107,7 @@ module Deli
       NUMBER:     ParseRule.new(Precedence::NONE, prefix: :parse_number),
       KW_TRUE:    ParseRule.new(Precedence::NONE, prefix: :parse_true),
       KW_FALSE:   ParseRule.new(Precedence::NONE, prefix: :parse_false),
+      KW_NULL:    ParseRule.new(Precedence::NONE, prefix: :parse_null),
 
       EQ_EQ:      ParseRule.new(Precedence::EQUALITY, infix: :parse_binary),
       BANG_EQ:    ParseRule.new(Precedence::EQUALITY, infix: :parse_binary),
@@ -172,6 +173,10 @@ module Deli
 
     def parse_false(_token)
       Deli::AST::FalseExpr.new
+    end
+
+    def parse_null(_token)
+      Deli::AST::NullExpr.new
     end
 
     def consume(type)

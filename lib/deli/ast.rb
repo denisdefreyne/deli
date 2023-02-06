@@ -48,6 +48,12 @@ module Deli
       end
     end
 
+    NullExpr = Class.new do
+      def inspect
+        '(null)'
+      end
+    end
+
     UnaryExpr = Struct.new(:op, :expr) do
       def inspect
         "(unary #{op.lexeme} #{expr.inspect})"

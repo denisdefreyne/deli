@@ -127,6 +127,8 @@ module Deli
           Token.new(:KW_TRUE, @scanner.matched, nil, @scanner.span)
         when 'false'
           Token.new(:KW_FALSE, @scanner.matched, nil, @scanner.span)
+        when 'null'
+          Token.new(:KW_NULL, @scanner.matched, nil, @scanner.span)
         when 'print'
           Token.new(:KW_PRINT, @scanner.matched, nil, @scanner.span)
         when 'if'

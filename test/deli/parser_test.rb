@@ -27,12 +27,13 @@ class TestDeliParser < Minitest::Test
   end
 
   def test_unary_basic
-    stmts = parse('print bla; print 123; print true; print false;')
+    stmts = parse('print bla; print 123; print true; print false; print null;')
 
     assert_equal('(print (identifier "bla"))', stmts.shift.inspect)
     assert_equal('(print (integer 123))', stmts.shift.inspect)
     assert_equal('(print (true))', stmts.shift.inspect)
     assert_equal('(print (false))', stmts.shift.inspect)
+    assert_equal('(print (null))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 
