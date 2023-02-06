@@ -20,29 +20,35 @@ module Deli
       end
     end
 
-    def initialize(source, stmts)
-      @stmts = stmts
+    class Integer
+      attr_reader :value
 
-      @env = Env.new(source)
-    end
+      def initialize(value)
+        @value = value
+      end
 
-    def call
-      @stmts.each { eval_stmt(_1) }
-    end
+      def to_s
+        @value.to_s
+      end
 
-    private
+      def +(other)
+        Integer.new(@value + other.value)
+      end
 
-    def eval_stmt(stmt)
-      case stmt
-      when AST::VarStmt, AST::AssignStmt
-        # TODO: split var from assign
-        value = eval_expr(stmt.value_expr)
-        @env[stmt.identifier] = value
-      when AST::PrintStmt
-        value = eval_expr(stmt.expr)
-        puts value
-      else
-        raise Deli::InternalInconsistencyError, "Unexpected stmt class: #{stmt.class}"
+      def -(other)
+        Integer.new(@value - other.value)
+      end
+
+      def *(other)
+        Integer.new(@value * other.value)
+      end
+
+      def /(other)
+        Integer.new(@value / other.value)
+      end
+
+      def -@
+        Integer.new(-@value)
       end
     end
 
@@ -82,10 +88,36 @@ module Deli
       end
     end
 
+    def initialize(source, stmts)
+      @stmts = stmts
+
+      @env = Env.new(source)
+    end
+
+    def call
+      @stmts.each { eval_stmt(_1) }
+    end
+
+    private
+
+    def eval_stmt(stmt)
+      case stmt
+      when AST::VarStmt, AST::AssignStmt
+        # TODO: split var from assign
+        value = eval_expr(stmt.value_expr)
+        @env[stmt.identifier] = value
+      when AST::PrintStmt
+        value = eval_expr(stmt.expr)
+        puts value
+      else
+        raise Deli::InternalInconsistencyError, "Unexpected stmt class: #{stmt.class}"
+      end
+    end
+
     def eval_expr(expr)
       case expr
       when AST::IntegerExpr
-        expr.value
+        Integer.new(expr.value)
       when AST::IdentifierExpr
         @env[expr.identifier]
       when AST::TrueExpr
@@ -116,6 +148,10 @@ module Deli
           left_val + right_val
         when :MINUS
           left_val - right_val
+        when :ASTERISK
+          left_val * right_val
+        when :SLASH
+          left_val / right_val
         else
           raise Deli::InternalInconsistencyError, "Unexpected unary operator: #{expr.op}"
         end

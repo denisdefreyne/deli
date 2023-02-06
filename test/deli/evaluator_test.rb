@@ -54,6 +54,12 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("false\ntrue\ntrue\n", $stdout.string)
   end
 
+  def test_binary_operator
+    evaluate('print 2+3; print 2-3; print 2*3; print 8/3;')
+
+    assert_equal("5\n-1\n6\n2\n", $stdout.string)
+  end
+
   private
 
   def evaluate(string)
