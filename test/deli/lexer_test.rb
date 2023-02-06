@@ -4,11 +4,13 @@ require 'test_helper'
 
 class TestDeliLexer < Minitest::Test
   def test_numbers
-    tokens = lex('0 1 123')
+    tokens = lex('0 1 123 -8')
 
-    assert_token(:NUMBER, '0',   '0', tokens.shift)
-    assert_token(:NUMBER, '1',   '1', tokens.shift)
+    assert_token(:NUMBER, '0',   '0',   tokens.shift)
+    assert_token(:NUMBER, '1',   '1',   tokens.shift)
     assert_token(:NUMBER, '123', '123', tokens.shift)
+    assert_token(:MINUS,  '-',   nil,   tokens.shift)
+    assert_token(:NUMBER, '8',   '8',   tokens.shift)
     assert_nil(tokens.shift)
   end
 
