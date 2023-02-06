@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary = 'Denis’ Example Language (for Interpretation)'
   spec.description = 'The interpreter for DELI, a language for demonstrating how to write interpreters.'
-  spec.homepage = "https://deli.denisdefreyne.com"
+  spec.homepage = 'https://deli.denisdefreyne.com'
   spec.license = 'MIT'
   spec.required_ruby_version = '>= 3.2.0'
 
@@ -18,8 +18,8 @@ Gem::Specification.new do |spec|
   spec.metadata['rubygems_mfa_required'] = 'true'
 
   spec.metadata['homepage_uri'] = spec.homepage
-  spec.metadata['source_code_uri'] = "https://github.com/denisdefreyne/deli"
-  spec.metadata['changelog_uri'] = "https://github.com/denisdefreyne/deli/releases"
+  spec.metadata['source_code_uri'] = 'https://github.com/denisdefreyne/deli'
+  spec.metadata['changelog_uri'] = 'https://github.com/denisdefreyne/deli/releases'
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.

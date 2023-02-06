@@ -1,9 +1,13 @@
+PATH
+  remote: .
+  specs:
+    deli-lang (0.1.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.2)
     json (2.6.3)
-    language_server-protocol (3.17.0.3)
     minitest (5.17.0)
     parallel (1.22.1)
     parser (3.2.0.0)
@@ -26,29 +30,21 @@ GEM
       parser (>= 3.1.1.0)
     rubocop-minitest (0.27.0)
       rubocop (>= 0.90, < 2.0)
-    rubocop-performance (1.15.2)
-      rubocop (>= 1.7.0, < 2.0)
-      rubocop-ast (>= 0.4.0)
     rubocop-rake (0.6.0)
       rubocop (~> 1.0)
     ruby-progressbar (1.11.0)
-    standard (1.22.1)
-      language_server-protocol (~> 3.17.0.2)
-      rubocop (= 1.42.0)
-      rubocop-performance (= 1.15.2)
-    standardrb (1.0.1)
-      standard
     unicode-display_width (2.4.2)
 
 PLATFORMS
   arm64-darwin-22
 
 DEPENDENCIES
+  deli-lang!
   minitest (~> 5.17)
   rake (~> 13.0)
+  rubocop (~> 1.42)
   rubocop-minitest (~> 0.27.0)
   rubocop-rake (~> 0.6.0)
-  standardrb (~> 1.0)
 
 BUNDLED WITH
    2.4.6
