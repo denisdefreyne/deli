@@ -22,9 +22,9 @@ module Deli
 
       token = @tokens.shift
       case token.type
-      when :KEYWORD_VAR
+      when :KW_VAR
         parse_var_stmt
-      when :KEYWORD_PRINT
+      when :KW_PRINT
         parse_print_stmt
       when :IDENTIFIER
         parse_partial_identifier(token)
@@ -36,10 +36,10 @@ module Deli
     end
 
     def parse_var_stmt
-      # NOTE: :KEYWORD_VAR already consumed
+      # NOTE: :KW_VAR already consumed
 
       identifier_token = consume(:IDENTIFIER)
-      consume(:EQUAL)
+      consume(:EQ)
       value_expr = parse_expr
       consume(:SEMICOLON)
 
@@ -47,7 +47,7 @@ module Deli
     end
 
     def parse_print_stmt
-      # NOTE: :KEYWORD_PRINT already consumed
+      # NOTE: :KW_PRINT already consumed
 
       expr = parse_expr
       consume(:SEMICOLON)
@@ -60,7 +60,7 @@ module Deli
 
       token = @tokens.shift
       case token.type
-      when :EQUAL
+      when :EQ
         parse_assign(identifier_token)
       else
         raise Deli::LocatableError.new(
@@ -71,7 +71,7 @@ module Deli
 
     def parse_assign(identifier_token)
       # NOTE: :IDENTIFIER already consumed
-      # NOTE: :EQUAL already consumed
+      # NOTE: :EQ already consumed
 
       expr = parse_expr
       consume(:SEMICOLON)
@@ -80,11 +80,14 @@ module Deli
     end
 
     module Precedence
-      NONE = 0
+      NONE   = 0
+      LOWEST = 1
 
-      TERM   = 1
-      FACTOR = 2
-      UNARY  = 3
+      EQUALITY   = 1
+      COMPARISON = 2
+      TERM       = 3
+      FACTOR     = 4
+      UNARY      = 5
     end
 
     class ParseRule
@@ -102,17 +105,28 @@ module Deli
     PARSE_RULES = {
       IDENTIFIER: ParseRule.new(Precedence::NONE, prefix: :parse_variable),
       NUMBER:     ParseRule.new(Precedence::NONE, prefix: :parse_number),
+      KW_TRUE:    ParseRule.new(Precedence::NONE, prefix: :parse_true),
+      KW_FALSE:   ParseRule.new(Precedence::NONE, prefix: :parse_false),
+
+      EQ_EQ:      ParseRule.new(Precedence::EQUALITY, infix: :parse_binary),
+      BANG_EQ:    ParseRule.new(Precedence::EQUALITY, infix: :parse_binary),
+
+      LT:         ParseRule.new(Precedence::COMPARISON, infix: :parse_binary),
+      LTE:        ParseRule.new(Precedence::COMPARISON, infix: :parse_binary),
+      GT:         ParseRule.new(Precedence::COMPARISON, infix: :parse_binary),
+      GTE:        ParseRule.new(Precedence::COMPARISON, infix: :parse_binary),
 
       PLUS:       ParseRule.new(Precedence::TERM, prefix: :parse_unary, infix: :parse_binary),
       MINUS:      ParseRule.new(Precedence::TERM, prefix: :parse_unary, infix: :parse_binary),
-      ASTERISK:   ParseRule.new(Precedence::TERM, prefix: :parse_unary, infix: :parse_binary),
-      SLASH:      ParseRule.new(Precedence::TERM, prefix: :parse_unary, infix: :parse_binary),
+      ASTERISK:   ParseRule.new(Precedence::TERM, infix: :parse_binary),
+      SLASH:      ParseRule.new(Precedence::TERM, infix: :parse_binary),
+      BANG:       ParseRule.new(Precedence::TERM, prefix: :parse_unary),
 
       SEMICOLON:  ParseRule.new(Precedence::NONE),
     }.freeze
 
     def parse_expr
-      parse_precedence(Precedence::TERM)
+      parse_precedence(Precedence::LOWEST)
     end
 
     # TODO: handle right associativity
@@ -148,6 +162,14 @@ module Deli
 
     def parse_variable(token)
       Deli::AST::IdentifierExpr.new(token)
+    end
+
+    def parse_true(_token)
+      Deli::AST::TrueExpr.new
+    end
+
+    def parse_false(_token)
+      Deli::AST::FalseExpr.new
     end
 
     def consume(type)

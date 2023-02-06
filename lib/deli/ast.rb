@@ -36,6 +36,18 @@ module Deli
       end
     end
 
+    TrueExpr = Class.new do
+      def inspect
+        '(true)'
+      end
+    end
+
+    FalseExpr = Class.new do
+      def inspect
+        '(false)'
+      end
+    end
+
     UnaryExpr = Struct.new(:op, :expr) do
       def inspect
         "(unary #{op.lexeme} #{expr.inspect})"
