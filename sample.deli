@@ -1,12 +1,9 @@
-
-
-
-
-
-
-
-
-
 var area = 13;
-print aera;
-print eek;
+print area;
+
+var a = 0;
+while a < 5 {
+  print a;
+  a = a + 1;
+}
+print a;
