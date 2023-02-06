@@ -26,7 +26,7 @@ module Deli
 
     IdentifierExpr = Struct.new(:identifier) do
       def inspect
-        "(identifier #{identifier.inspect})"
+        "(identifier #{identifier.value.inspect})"
       end
     end
   end

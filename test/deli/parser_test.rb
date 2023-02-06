@@ -3,10 +3,18 @@
 require 'test_helper'
 
 class TestDeliParser < Minitest::Test
-  def test_parse_var
+  def test_var
     stmts = parse('var bloop = 123;')
 
     assert_equal('(var "bloop" (integer 123))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
+  def test_print
+    stmts = parse('print zing; print 123;')
+
+    assert_equal('(print (identifier "zing"))', stmts.shift.inspect)
+    assert_equal('(print (integer 123))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 
