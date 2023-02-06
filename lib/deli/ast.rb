@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Deli
   module AST
     VarStmt = Struct.new(:identifier, :value_expr)

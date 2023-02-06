@@ -1,9 +1,10 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-require_relative "../lib/deli"
+require_relative '../lib/deli'
 
 if ARGV.size != 1
-  warn "usage: deli [path]"
+  warn 'usage: deli [path]'
   exit 64
 end
 
@@ -19,6 +20,6 @@ begin
 
   evaluator = Deli::Evaluator.new(source_code, stmts)
   evaluator.call
-rescue Deli::Error => err
-  warn err.message
+rescue Deli::Error => e
+  warn e.message
 end

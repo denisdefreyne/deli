@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Deli
   class Parser
     def initialize(source_code, tokens)
@@ -16,9 +18,7 @@ module Deli
     private
 
     def parse_stmt
-      if @tokens.empty?
-        return nil
-      end
+      return nil if @tokens.empty?
 
       token = @tokens.shift
       case token.type
@@ -27,7 +27,7 @@ module Deli
       when :KEYWORD_PRINT
         parse_print_stmt
       else
-        raise "???"
+        raise '???'
       end
     end
 

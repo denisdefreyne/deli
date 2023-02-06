@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module Deli
   class SourceCode
-    attr_reader :filename
-    attr_reader :string
+    attr_reader :filename, :string
 
     def initialize(filename, string)
       @filename = filename
@@ -13,10 +14,10 @@ module Deli
     end
 
     def show_string(row, col, length)
-      col_string = format("  %d  |  ", row + 1)
+      col_string = format('  %d  |  ', row + 1)
 
-      indicator_indent = " " * (col_string.length + col)
-      indicator = "^" * length
+      indicator_indent = ' ' * (col_string.length + col)
+      indicator = '^' * length
 
       "#{col_string}#{lines[row]}\n#{indicator_indent}#{indicator}"
     end
