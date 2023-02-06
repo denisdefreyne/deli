@@ -115,6 +115,8 @@ module Deli
       parse_precedence(Precedence::TERM)
     end
 
+    # TODO: handle right associativity
+
     def parse_precedence(precedence)
       token = @tokens.shift
       rule = PARSE_RULES.fetch(token.type) # TODO: handle errors
