@@ -107,11 +107,11 @@ module Deli
       end
     end
 
-    FunStmt = Struct.new(:ident, :body_stmt) do
+    FunStmt = Struct.new(:ident, :params, :body_stmt) do
       include SExp
 
       def to_sexp
-        [:fun, ident.value, body_stmt]
+        [:fun, ident.value, *params, body_stmt]
       end
     end
 

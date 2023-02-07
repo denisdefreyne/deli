@@ -54,6 +54,32 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
+  def test_fun_def_one_param
+    stmts = parse('fun foo(a) {}')
+
+    assert_equal('(fun "foo" "a" (group))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
+  def test_fun_def_two_params
+    stmts = parse('fun foo(a, b) {}')
+
+    assert_equal('(fun "foo" "a" "b" (group))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
+  def test_fun_def_bad_a
+    error = assert_raises(Deli::LocatableError) { parse('fun foo(,) {}') }
+
+    assert_equal('parse error: expected identifier (IDENT), but got “,” (COMMA)', error.short_message)
+  end
+
+  def test_fun_def_bad_b
+    error = assert_raises(Deli::LocatableError) { parse('fun foo(a,) {}') }
+
+    assert_equal('parse error: expected identifier (IDENT), but got “)” (RPAREN)', error.short_message)
+  end
+
   def test_fun_call_no_params_no_return
     stmts = parse('print_hundred();')
 

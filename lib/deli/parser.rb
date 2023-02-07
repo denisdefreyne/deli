@@ -87,12 +87,21 @@ module Deli
 
       # Parameter list
       consume(TokenType::LPAREN)
+      params = []
+      if peek.type != TokenType::RPAREN
+        params << consume(TokenType::IDENT).value
+
+        while peek.type == TokenType::COMMA
+          advance # comma
+          params << consume(TokenType::IDENT).value
+        end
+      end
       consume(TokenType::RPAREN)
 
       # Body
       body_stmt = parse_group_stmt
 
-      Deli::AST::FunStmt.new(ident, body_stmt)
+      Deli::AST::FunStmt.new(ident, params, body_stmt)
     end
 
     def parse_return_stmt
