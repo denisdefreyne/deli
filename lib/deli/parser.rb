@@ -9,7 +9,7 @@ module Deli
 
     def call
       stmts = []
-      until peek.type == :EOF
+      until peek.type.symbol == :EOF
         stmts << parse_stmt
       end
       stmts
@@ -19,7 +19,7 @@ module Deli
 
     def parse_stmt
       token = advance
-      case token.type
+      case token.type.symbol
       when :KW_VAR
         parse_var_stmt
       when :KW_PRINT
@@ -38,7 +38,7 @@ module Deli
         raise Deli::LocatableError.new(
           @source_code,
           token.span,
-          "parse error: expected `var` or `print`, but got #{token.type}",
+          "parse error: unexpected #{token.type}",
         )
       end
     end
@@ -46,10 +46,10 @@ module Deli
     def parse_var_stmt
       # NOTE: :KW_VAR already consumed
 
-      ident_token = consume(:IDENT)
-      consume(:EQ)
+      ident_token = consume(TokenTypes::IDENT)
+      consume(TokenTypes::EQ)
       value_expr = parse_expr
-      consume(:SEMICOLON)
+      consume(TokenTypes::SEMICOLON)
 
       Deli::AST::VarStmt.new(ident_token, value_expr)
     end
@@ -58,7 +58,7 @@ module Deli
       # NOTE: :KW_PRINT already consumed
 
       expr = parse_expr
-      consume(:SEMICOLON)
+      consume(TokenTypes::SEMICOLON)
 
       Deli::AST::PrintStmt.new(expr)
     end
@@ -67,14 +67,14 @@ module Deli
       # NOTE: :KW_IF already consumed
 
       condition_expr = parse_expr
-      consume(:LBRACE)
+      consume(TokenTypes::LBRACE)
 
       true_stmt = parse_group_stmt
 
       false_stmt = nil
-      if peek&.type == :KW_ELSE
+      if peek.type.symbol == :KW_ELSE
         advance # consume :ELSE
-        consume(:LBRACE)
+        consume(TokenTypes::LBRACE)
         false_stmt = parse_group_stmt
       end
 
@@ -87,7 +87,7 @@ module Deli
       # NOTE: :KW_WHILE already consumed
 
       condition_expr = parse_expr
-      consume(:LBRACE)
+      consume(TokenTypes::LBRACE)
 
       body_stmt = parse_group_stmt
 
@@ -98,15 +98,15 @@ module Deli
     def parse_fun_stmt
       # NOTE: :KW_FUN already consumed
 
-      ident = consume(:IDENT)
+      ident = consume(TokenTypes::IDENT)
 
       # Parameter list
-      consume(:LPAREN)
+      consume(TokenTypes::LPAREN)
       # TODO: parameters
-      consume(:RPAREN)
+      consume(TokenTypes::RPAREN)
 
       # Body
-      consume(:LBRACE)
+      consume(TokenTypes::LBRACE)
       body_stmt = parse_group_stmt
 
       Deli::AST::FunStmt.new(ident, body_stmt)
@@ -115,12 +115,12 @@ module Deli
     def parse_return_stmt
       # NOTE: :KW_RETURN already consumed
 
-      if peek.type == :SEMICOLON
+      if peek.type.symbol == :SEMICOLON
         advance
         Deli::AST::ReturnStmt.new(nil)
       else
         expr = parse_expr
-        consume(:SEMICOLON)
+        consume(TokenTypes::SEMICOLON)
         Deli::AST::ReturnStmt.new(expr)
       end
     end
@@ -129,11 +129,11 @@ module Deli
       # NOTE: :LBRACE already consumed
 
       stmts = []
-      until peek.type == :RBRACE
+      until peek.type.symbol == :RBRACE
         stmts << parse_stmt
       end
 
-      consume(:RBRACE)
+      consume(TokenTypes::RBRACE)
 
       Deli::AST::GroupStmt.new(stmts)
     end
@@ -142,7 +142,7 @@ module Deli
       # NOTE: :IDENT already consumed
 
       token = advance
-      case token.type
+      case token.type.symbol
       when :EQ
         parse_assign_stmt(ident_token, token)
       when :LPAREN
@@ -151,7 +151,7 @@ module Deli
         raise Deli::LocatableError.new(
           @source_code,
           token.span,
-          "parse error: expected `=`, but got #{token.type}",
+          "parse error: unexpected #{token.type}",
         )
       end
     end
@@ -161,7 +161,7 @@ module Deli
       # NOTE: :EQ already consumed
 
       expr = parse_expr
-      consume(:SEMICOLON)
+      consume(TokenTypes::SEMICOLON)
 
       Deli::AST::AssignStmt.new(ident_token, expr)
     end
@@ -172,7 +172,7 @@ module Deli
 
       fun_expr = Deli::AST::IdentifierExpr.new(ident_token)
       expr = parse_call_expr(fun_expr, lparen_token)
-      consume(:SEMICOLON)
+      consume(TokenTypes::SEMICOLON)
       Deli::AST::ExprStmt.new(expr)
     end
 
@@ -338,20 +338,24 @@ module Deli
 
     def parse_precedence(precedence)
       token = advance
-      rule = PARSE_RULES[token.type]
+      rule = PARSE_RULES[token.type.symbol]
       unless rule.prefix
         raise Deli::LocatableError.new(
-          @source_code, token.span, "parse error: unexpected #{token.type}",
+          @source_code,
+          token.span,
+          "parse error: unexpected #{token.type}",
         )
       end
 
       expr = send(rule.prefix, token)
 
-      while (rule = PARSE_RULES[peek.type]).precedence >= precedence
+      while (rule = PARSE_RULES[peek.type.symbol]).precedence >= precedence
         token = advance
         unless rule.infix
           raise Deli::LocatableError.new(
-            @source_code, token.span, "parse error: #{token.type} cannot be used as an infix operator",
+            @source_code,
+            token.span,
+            "parse error: #{token.type} cannot be used as an infix operator",
           )
         end
 
@@ -371,7 +375,7 @@ module Deli
     end
 
     def parse_binary(left_expr, token)
-      rule = PARSE_RULES[token.type]
+      rule = PARSE_RULES[token.type.symbol]
       right_expr = parse_precedence(rule.precedence + 1)
       Deli::AST::BinaryExpr.new(token, left_expr, right_expr)
     end
@@ -382,7 +386,7 @@ module Deli
 
     def parse_call_expr(left_expr, _lparen_token)
       # TODO: arguments
-      consume(:RPAREN)
+      consume(TokenTypes::RPAREN)
 
       Deli::AST::CallExpr.new(left_expr)
     end

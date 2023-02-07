@@ -77,7 +77,7 @@ module Deli
 
       # Add EOF token
       @scanner.scan('')
-      tokens << new_token(:EOF)
+      tokens << new_token(TokenTypes::EOF)
 
       tokens
     end
@@ -94,79 +94,79 @@ module Deli
 
       # Two-character tokens
       elsif @scanner.scan('==')
-        new_token(:EQ_EQ)
+        new_token(TokenTypes::EQ_EQ)
       elsif @scanner.scan('!=')
-        new_token(:BANG_EQ)
+        new_token(TokenTypes::BANG_EQ)
       elsif @scanner.scan('<=')
-        new_token(:LTE)
+        new_token(TokenTypes::LTE)
       elsif @scanner.scan('>=')
-        new_token(:GTE)
+        new_token(TokenTypes::GTE)
 
       # One-character tokens
       elsif @scanner.scan('+')
-        new_token(:PLUS)
+        new_token(TokenTypes::PLUS)
       elsif @scanner.scan('-')
-        new_token(:MINUS)
+        new_token(TokenTypes::MINUS)
       elsif @scanner.scan('*')
-        new_token(:ASTERISK)
+        new_token(TokenTypes::ASTERISK)
       elsif @scanner.scan('/')
-        new_token(:SLASH)
+        new_token(TokenTypes::SLASH)
       elsif @scanner.scan('<')
-        new_token(:LT)
+        new_token(TokenTypes::LT)
       elsif @scanner.scan('>')
-        new_token(:GT)
+        new_token(TokenTypes::GT)
       elsif @scanner.scan(';')
-        new_token(:SEMICOLON)
+        new_token(TokenTypes::SEMICOLON)
       elsif @scanner.scan('=')
-        new_token(:EQ)
+        new_token(TokenTypes::EQ)
       elsif @scanner.scan('!')
-        new_token(:BANG)
+        new_token(TokenTypes::BANG)
       elsif @scanner.scan('(')
-        new_token(:LPAREN)
+        new_token(TokenTypes::LPAREN)
       elsif @scanner.scan(')')
-        new_token(:RPAREN)
+        new_token(TokenTypes::RPAREN)
       elsif @scanner.scan('{')
-        new_token(:LBRACE)
+        new_token(TokenTypes::LBRACE)
       elsif @scanner.scan('}')
-        new_token(:RBRACE)
+        new_token(TokenTypes::RBRACE)
       elsif @scanner.scan('[')
-        new_token(:LBRACKET)
+        new_token(TokenTypes::LBRACKET)
       elsif @scanner.scan(']')
-        new_token(:RBRACKET)
+        new_token(TokenTypes::RBRACKET)
 
       # Values
       elsif @scanner.scan(/\d+/)
-        new_token(:NUMBER, @scanner.matched)
+        new_token(TokenTypes::NUMBER, @scanner.matched)
       elsif @scanner.scan(/\w+/)
         case @scanner.matched
 
         # Keywords
         when 'true'
-          new_token(:KW_TRUE)
+          new_token(TokenTypes::KW_TRUE)
         when 'false'
-          new_token(:KW_FALSE)
+          new_token(TokenTypes::KW_FALSE)
         when 'null'
-          new_token(:KW_NULL)
+          new_token(TokenTypes::KW_NULL)
         when 'print'
-          new_token(:KW_PRINT)
+          new_token(TokenTypes::KW_PRINT)
         when 'if'
-          new_token(:KW_IF)
+          new_token(TokenTypes::KW_IF)
         when 'else'
-          new_token(:KW_ELSE)
+          new_token(TokenTypes::KW_ELSE)
         when 'fun'
-          new_token(:KW_FUN)
+          new_token(TokenTypes::KW_FUN)
         when 'return'
-          new_token(:KW_RETURN)
+          new_token(TokenTypes::KW_RETURN)
         when 'while'
-          new_token(:KW_WHILE)
+          new_token(TokenTypes::KW_WHILE)
         when 'for'
-          new_token(:KW_FOR)
+          new_token(TokenTypes::KW_FOR)
         when 'var'
-          new_token(:KW_VAR)
+          new_token(TokenTypes::KW_VAR)
 
         # Identifier
         else
-          new_token(:IDENT, @scanner.matched)
+          new_token(TokenTypes::IDENT, @scanner.matched)
         end
       else
         char = @scanner.getch

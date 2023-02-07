@@ -135,7 +135,7 @@ module Deli
       when AST::UnaryExpr
         val = eval_expr(expr.expr)
 
-        case expr.op.type
+        case expr.op.type.symbol
         when :PLUS
           val
         when :MINUS
@@ -150,7 +150,7 @@ module Deli
         left_val = eval_expr(expr.left)
         right_val = eval_expr(expr.right)
 
-        case expr.op.type
+        case expr.op.type.symbol
         when :PLUS
           left_val + right_val
         when :MINUS

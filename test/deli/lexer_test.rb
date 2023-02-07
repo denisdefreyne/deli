@@ -91,10 +91,10 @@ class TestDeliLexer < Minitest::Test
     Deli::Lexer.new(source_code).call
   end
 
-  def assert_token(expected_type, expected_lexeme, expected_value, token)
+  def assert_token(expected_type_symbol, expected_lexeme, expected_value, token)
     assert_equal(Deli::Token, token.class)
 
-    assert_equal(expected_type, token.type)
+    assert_equal(expected_type_symbol, token.type.symbol)
     assert_equal(expected_lexeme, token.lexeme)
 
     if expected_value
