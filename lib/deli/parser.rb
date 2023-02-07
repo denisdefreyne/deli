@@ -9,7 +9,7 @@ module Deli
 
     def call
       stmts = []
-      until peek.type.symbol == :EOF
+      until peek.type == TokenTypes::EOF
         stmts << parse_stmt
       end
       stmts
@@ -19,20 +19,20 @@ module Deli
 
     def parse_stmt
       token = advance
-      case token.type.symbol
-      when :KW_VAR
+      case token.type
+      when TokenTypes::KW_VAR
         parse_var_stmt
-      when :KW_PRINT
+      when TokenTypes::KW_PRINT
         parse_print_stmt
-      when :KW_IF
+      when TokenTypes::KW_IF
         parse_if_stmt
-      when :KW_WHILE
+      when TokenTypes::KW_WHILE
         parse_while_stmt
-      when :KW_FUN
+      when TokenTypes::KW_FUN
         parse_fun_stmt
-      when :KW_RETURN
+      when TokenTypes::KW_RETURN
         parse_return_stmt
-      when :IDENT
+      when TokenTypes::IDENT
         parse_partial_ident_stmt(token)
       else
         raise Deli::LocatableError.new(
@@ -72,7 +72,7 @@ module Deli
       true_stmt = parse_group_stmt
 
       false_stmt = nil
-      if peek.type.symbol == :KW_ELSE
+      if peek.type == TokenTypes::KW_ELSE
         advance # consume :ELSE
         consume(TokenTypes::LBRACE)
         false_stmt = parse_group_stmt
@@ -115,7 +115,7 @@ module Deli
     def parse_return_stmt
       # NOTE: :KW_RETURN already consumed
 
-      if peek.type.symbol == :SEMICOLON
+      if peek.type == TokenTypes::SEMICOLON
         advance
         Deli::AST::ReturnStmt.new(nil)
       else
@@ -129,7 +129,7 @@ module Deli
       # NOTE: :LBRACE already consumed
 
       stmts = []
-      until peek.type.symbol == :RBRACE
+      until peek.type == TokenTypes::RBRACE
         stmts << parse_stmt
       end
 
@@ -142,10 +142,10 @@ module Deli
       # NOTE: :IDENT already consumed
 
       token = advance
-      case token.type.symbol
-      when :EQ
+      case token.type
+      when TokenTypes::EQ
         parse_assign_stmt(ident_token, token)
-      when :LPAREN
+      when TokenTypes::LPAREN
         parse_call_stmt(ident_token, token)
       else
         raise Deli::LocatableError.new(
@@ -227,105 +227,105 @@ module Deli
     PARSE_RULES = ParseRules.new
 
     PARSE_RULES.register(
-      :IDENT,
+      TokenTypes::IDENT,
       Precedence::NONE,
       prefix: :parse_variable,
     )
 
     PARSE_RULES.register(
-      :NUMBER,
+      TokenTypes::NUMBER,
       Precedence::NONE,
       prefix: :parse_number,
     )
 
     PARSE_RULES.register(
-      :KW_TRUE,
+      TokenTypes::KW_TRUE,
       Precedence::NONE,
       prefix: :parse_true,
     )
 
     PARSE_RULES.register(
-      :KW_FALSE,
+      TokenTypes::KW_FALSE,
       Precedence::NONE,
       prefix: :parse_false,
     )
 
     PARSE_RULES.register(
-      :KW_NULL,
+      TokenTypes::KW_NULL,
       Precedence::NONE,
       prefix: :parse_null,
     )
 
     PARSE_RULES.register(
-      :EQ_EQ,
+      TokenTypes::EQ_EQ,
       Precedence::EQUALITY,
       infix: :parse_binary,
     )
 
     PARSE_RULES.register(
-      :BANG_EQ,
+      TokenTypes::BANG_EQ,
       Precedence::EQUALITY,
       infix: :parse_binary,
     )
 
     PARSE_RULES.register(
-      :LT,
+      TokenTypes::LT,
       Precedence::COMPARISON,
       infix: :parse_binary,
     )
 
     PARSE_RULES.register(
-      :LTE,
+      TokenTypes::LTE,
       Precedence::COMPARISON,
       infix: :parse_binary,
     )
 
     PARSE_RULES.register(
-      :GT,
+      TokenTypes::GT,
       Precedence::COMPARISON,
       infix: :parse_binary,
     )
 
     PARSE_RULES.register(
-      :GTE,
+      TokenTypes::GTE,
       Precedence::COMPARISON,
       infix: :parse_binary,
     )
 
     PARSE_RULES.register(
-      :PLUS,
+      TokenTypes::PLUS,
       Precedence::TERM,
       prefix: :parse_unary,
       infix: :parse_binary,
     )
 
     PARSE_RULES.register(
-      :MINUS,
+      TokenTypes::MINUS,
       Precedence::TERM,
       prefix: :parse_unary,
       infix: :parse_binary,
     )
 
     PARSE_RULES.register(
-      :ASTERISK,
+      TokenTypes::ASTERISK,
       Precedence::FACTOR,
       infix: :parse_binary,
     )
 
     PARSE_RULES.register(
-      :SLASH,
+      TokenTypes::SLASH,
       Precedence::FACTOR,
       infix: :parse_binary,
     )
 
     PARSE_RULES.register(
-      :BANG,
+      TokenTypes::BANG,
       Precedence::UNARY,
       prefix: :parse_unary,
     )
 
     PARSE_RULES.register(
-      :LPAREN,
+      TokenTypes::LPAREN,
       Precedence::CALL,
       infix: :parse_call_expr,
     )
@@ -338,7 +338,7 @@ module Deli
 
     def parse_precedence(precedence)
       token = advance
-      rule = PARSE_RULES[token.type.symbol]
+      rule = PARSE_RULES[token.type]
       unless rule.prefix
         raise Deli::LocatableError.new(
           @source_code,
@@ -349,7 +349,7 @@ module Deli
 
       expr = send(rule.prefix, token)
 
-      while (rule = PARSE_RULES[peek.type.symbol]).precedence >= precedence
+      while (rule = PARSE_RULES[peek.type]).precedence >= precedence
         token = advance
         unless rule.infix
           raise Deli::LocatableError.new(
@@ -375,7 +375,7 @@ module Deli
     end
 
     def parse_binary(left_expr, token)
-      rule = PARSE_RULES[token.type.symbol]
+      rule = PARSE_RULES[token.type]
       right_expr = parse_precedence(rule.precedence + 1)
       Deli::AST::BinaryExpr.new(token, left_expr, right_expr)
     end

@@ -135,12 +135,12 @@ module Deli
       when AST::UnaryExpr
         val = eval_expr(expr.expr)
 
-        case expr.op.type.symbol
-        when :PLUS
+        case expr.op.type
+        when TokenTypes::PLUS
           val
-        when :MINUS
+        when TokenTypes::MINUS
           -val
-        when :BANG
+        when TokenTypes::BANG
           !val
         else
           raise Deli::InternalInconsistencyError,
@@ -150,22 +150,22 @@ module Deli
         left_val = eval_expr(expr.left)
         right_val = eval_expr(expr.right)
 
-        case expr.op.type.symbol
-        when :PLUS
+        case expr.op.type
+        when TokenTypes::PLUS
           left_val + right_val
-        when :MINUS
+        when TokenTypes::MINUS
           left_val - right_val
-        when :ASTERISK
+        when TokenTypes::ASTERISK
           left_val * right_val
-        when :SLASH
+        when TokenTypes::SLASH
           left_val / right_val
-        when :LT
+        when TokenTypes::LT
           left_val < right_val
-        when :LTE
+        when TokenTypes::LTE
           left_val <= right_val
-        when :GT
+        when TokenTypes::GT
           left_val > right_val
-        when :GTE
+        when TokenTypes::GTE
           left_val >= right_val
         else
           raise Deli::InternalInconsistencyError,
