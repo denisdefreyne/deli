@@ -4,7 +4,7 @@ require 'test_helper'
 
 class TestDeliSymbolDefinerResolver < Minitest::Test
   def test_var
-    stmts = runx('var bloop = 123; print bloop;')
+    stmts = define_and_resolve('var bloop = 123; print bloop;')
 
     bloop_sym = stmts[0].scope['bloop']
 
@@ -14,7 +14,7 @@ class TestDeliSymbolDefinerResolver < Minitest::Test
 
   private
 
-  def runx(string)
+  def define_and_resolve(string)
     source_code = Deli::SourceCode.new('(test)', string)
     tokens = Deli::Lexer.new(source_code).call
     stmts = Deli::Parser.new(source_code, tokens).call
