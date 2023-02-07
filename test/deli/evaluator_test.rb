@@ -125,6 +125,26 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("8\n13\n21\n34\n", $stdout.string)
   end
 
+  # def test_fun_closures
+  #   evaluate(<<~SRC)
+  #     var a = 100;
+
+  #     fun bleep() {
+  #       fun print_a() {
+  #         print a;
+  #       }
+
+  #       print_a();
+  #       var a = 200;
+  #       print_a();
+  #     }
+
+  #     bleep();
+  #   SRC
+
+  #   assert_equal("100\n100\n", $stdout.string)
+  # end
+
   def test_unary
     evaluate('var bloop = -10; print bloop;')
 

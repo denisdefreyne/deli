@@ -48,6 +48,8 @@ module Deli
     end
 
     module SExp
+      attr_accessor :scope
+
       def inspect
         StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
       end
@@ -135,6 +137,8 @@ module Deli
 
     IdentifierExpr = Struct.new(:ident) do
       include SExp
+
+      attr_accessor :symbol
 
       def to_sexp
         [:ident, ident.value]

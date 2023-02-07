@@ -15,12 +15,16 @@ require_relative 'deli/span'
 # Primary models
 require_relative 'deli/token'
 require_relative 'deli/token_type'
+require_relative 'deli/deli_symbol'
+require_relative 'deli/scope'
 require_relative 'deli/ast'
 
 # Services
 require_relative 'deli/lexer'
 require_relative 'deli/parser'
 require_relative 'deli/evaluator'
+require_relative 'deli/symbol_definer'
+require_relative 'deli/symbol_resolver'
 
 # UI
 require_relative 'deli/cli'

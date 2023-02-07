@@ -40,6 +40,9 @@ Layout/SpaceInsideHashLiteralBraces:
 Style/HashSyntax:
   EnforcedShorthandSyntax: never
 
+Lint/DuplicateBranch:
+  Enabled: false
+
 ################################################################################
 # Disabling cops that are not useful
 
@@ -82,8 +85,6 @@ Lint/AmbiguousRange: # new in 1.19
 Lint/ConstantOverwrittenInRescue: # new in 1.31
   Enabled: true
 Lint/DeprecatedConstants: # new in 1.8
-  Enabled: true
-Lint/DuplicateBranch: # new in 1.3
   Enabled: true
 Lint/DuplicateMagicComment: # new in 1.37
   Enabled: true
