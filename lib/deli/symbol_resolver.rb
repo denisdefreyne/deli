@@ -46,7 +46,6 @@ module Deli
     def eval_expr(expr)
       case expr
       when AST::IntegerExpr
-        # Do nothing
       when AST::IdentifierExpr
         symbol = expr.scope[expr.ident.value]
         expr.symbol = symbol
@@ -54,17 +53,11 @@ module Deli
         eval_expr(expr.callee)
         expr.args.each { |a| eval_expr(a) }
       when AST::TrueExpr
-        # TODO
-        raise 'not implemented yet'
       when AST::FalseExpr
-        # TODO
-        raise 'not implemented yet'
       when AST::NullExpr
-        # TODO
-        raise 'not implemented yet'
       when AST::AssignExpr
-        # TODO
-        raise 'not implemented yet'
+        eval_expr(expr.left_expr)
+        eval_expr(expr.right_expr)
       when AST::UnaryExpr
         # TODO
         raise 'not implemented yet'
