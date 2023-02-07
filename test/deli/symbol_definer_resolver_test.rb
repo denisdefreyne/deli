@@ -12,6 +12,16 @@ class TestDeliSymbolDefinerResolver < Minitest::Test
     assert_equal(bloop_sym, stmts[1].expr.symbol)
   end
 
+  def test_if
+    stmts = define_and_resolve('var bloop = 100; if bloop < 10 { print 20; }')
+
+    bloop_sym = stmts[0].scope['bloop']
+
+    assert_equal('bloop', bloop_sym.name)
+    assert_equal(bloop_sym, stmts[1].cond_expr.scope['bloop'])
+    assert_equal(bloop_sym, stmts[1].cond_expr.left.symbol)
+  end
+
   private
 
   def define_and_resolve(string)

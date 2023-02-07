@@ -16,23 +16,25 @@ module Deli
     private
 
     def eval_stmt(stmt)
+      stmt.scope = @scope
+
       case stmt
       when AST::VarStmt
         eval_expr(stmt.value_expr)
         @scope.define(stmt.ident.value)
-        stmt.scope = @scope
       when AST::PrintStmt
         eval_expr(stmt.expr)
-        stmt.scope = @scope
       when AST::IfStmt
-        # TODO
-        raise 'not implemented yet'
+        eval_expr(stmt.cond_expr)
+        eval_stmt(stmt.true_stmt)
+        if stmt.false_stmt
+          eval_stmt(stmt.false_stmt)
+        end
       when AST::WhileStmt
         # TODO
         raise 'not implemented yet'
       when AST::GroupStmt
-        # TODO
-        raise 'not implemented yet'
+        stmt.stmts.each { |s| eval_stmt(s) }
       when AST::FunStmt
         # TODO
         raise 'not implemented yet'
@@ -49,11 +51,11 @@ module Deli
     end
 
     def eval_expr(expr)
+      expr.scope = @scope
+
       case expr
       when AST::IntegerExpr
-        expr.scope = @scope
       when AST::IdentifierExpr
-        expr.scope = @scope
       when AST::CallExpr
         # TODO
         raise 'not implemented yet'
@@ -73,8 +75,8 @@ module Deli
         # TODO
         raise 'not implemented yet'
       when AST::BinaryExpr
-        # TODO
-        raise 'not implemented yet'
+        eval_expr(expr.left)
+        eval_expr(expr.right)
       else
         raise Deli::InternalInconsistencyError,
           "Unexpected expr class: #{expr.class}"

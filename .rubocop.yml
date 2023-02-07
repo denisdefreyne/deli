@@ -43,6 +43,9 @@ Style/HashSyntax:
 Lint/DuplicateBranch:
   Enabled: false
 
+Lint/EmptyWhen:
+  Enabled: false
+
 ################################################################################
 # Disabling cops that are not useful
 

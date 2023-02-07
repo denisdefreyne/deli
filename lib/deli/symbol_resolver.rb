@@ -20,14 +20,16 @@ module Deli
       when AST::PrintStmt
         eval_expr(stmt.expr)
       when AST::IfStmt
-        # TODO
-        raise 'not implemented yet'
+        eval_expr(stmt.cond_expr)
+        eval_stmt(stmt.true_stmt)
+        if stmt.false_stmt
+          eval_stmt(stmt.false_stmt)
+        end
       when AST::WhileStmt
         # TODO
         raise 'not implemented yet'
       when AST::GroupStmt
-        # TODO
-        raise 'not implemented yet'
+        stmt.stmts.each { |s| eval_stmt(s) }
       when AST::FunStmt
         # TODO
         raise 'not implemented yet'
@@ -69,8 +71,8 @@ module Deli
         # TODO
         raise 'not implemented yet'
       when AST::BinaryExpr
-        # TODO
-        raise 'not implemented yet'
+        eval_expr(expr.left)
+        eval_expr(expr.right)
       else
         raise Deli::InternalInconsistencyError,
           "Unexpected expr class: #{expr.class}"
