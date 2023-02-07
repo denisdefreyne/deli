@@ -87,7 +87,6 @@ module Deli
 
       # Parameter list
       consume(TokenType::LPAREN)
-      # TODO: parameters
       consume(TokenType::RPAREN)
 
       # Body
@@ -304,8 +303,6 @@ module Deli
       parse_precedence(Precedence::LOWEST)
     end
 
-    # TODO: handle right associativity
-
     def parse_precedence(precedence)
       token = advance
       rule = PARSE_RULES[token.type]
@@ -360,7 +357,6 @@ module Deli
     end
 
     def parse_call_expr(left_expr, _lparen_token)
-      # TODO: arguments
       consume(TokenType::RPAREN)
 
       Deli::AST::CallExpr.new(left_expr)

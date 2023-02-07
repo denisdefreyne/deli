@@ -8,3 +8,5 @@
   - [ ] Testing of error handling
 - [ ] Scopes, symbols, bindings
 - [ ] Transpiler
+- [ ] Right associativity
+- [ ] Are function definitions statements?
