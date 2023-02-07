@@ -35,8 +35,7 @@ module Deli
       when AST::ExprStmt
         eval_expr(stmt.expr)
       when AST::ReturnStmt
-        # TODO
-        raise 'not implemented yet'
+        eval_expr(stmt.value)
       else
         raise Deli::InternalInconsistencyError,
           "Unexpected stmt class: #{stmt.class}"
@@ -59,8 +58,7 @@ module Deli
         eval_expr(expr.left_expr)
         eval_expr(expr.right_expr)
       when AST::UnaryExpr
-        # TODO
-        raise 'not implemented yet'
+        eval_expr(expr.expr)
       when AST::BinaryExpr
         eval_expr(expr.left)
         eval_expr(expr.right)

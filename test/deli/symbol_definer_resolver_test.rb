@@ -35,11 +35,30 @@ class TestDeliSymbolDefinerResolver < Minitest::Test
     assert_equal(bloop_sym, stmts[1].expr.callee.symbol)
   end
 
+  def test_return
+    stmts = define_and_resolve('var beep = 123; fun bloop() { return beep; }')
+
+    beep_sym = stmts[0].scope['beep']
+
+    assert_equal(stmts[0].scope, stmts[1].scope)
+    assert_equal(beep_sym, stmts[1].body_stmt.stmts[0].scope['beep'])
+  end
+
   def test_true_false_null
     stmts = define_and_resolve('var a = true; var b = false; var c = null;')
 
     assert_equal(stmts[0].scope, stmts[1].scope)
     assert_equal(stmts[0].scope, stmts[2].scope)
+  end
+
+  def test_unary
+    stmts = define_and_resolve('var beep = true; !beep;')
+
+    beep_sym = stmts[0].scope['beep']
+
+    assert_equal(stmts[0].scope, stmts[1].scope)
+    assert_equal(beep_sym, stmts[1].expr.scope['beep'])
+    assert_equal(beep_sym, stmts[1].expr.expr.symbol)
   end
 
   def test_assign
