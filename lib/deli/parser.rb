@@ -40,10 +40,10 @@ module Deli
       advance # `var` token
       ident_token = consume(TokenType::IDENT)
       consume(TokenType::EQ)
-      value_expr = parse_expr
+      expr = parse_expr
       consume(TokenType::SEMICOLON)
 
-      Deli::AST::VarStmt.new(ident_token, value_expr)
+      Deli::AST::VarStmt.new(ident_token, expr)
     end
 
     def parse_print_stmt

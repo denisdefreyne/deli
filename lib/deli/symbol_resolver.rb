@@ -16,7 +16,7 @@ module Deli
     def eval_stmt(stmt)
       case stmt
       when AST::VarStmt
-        eval_expr(stmt.value_expr)
+        eval_expr(stmt.expr)
       when AST::PrintStmt
         eval_expr(stmt.expr)
       when AST::IfStmt
@@ -35,7 +35,7 @@ module Deli
       when AST::ExprStmt
         eval_expr(stmt.expr)
       when AST::ReturnStmt
-        eval_expr(stmt.value)
+        eval_expr(stmt.expr)
       else
         raise Deli::InternalInconsistencyError,
           "Unexpected stmt class: #{stmt.class}"
@@ -50,7 +50,7 @@ module Deli
         expr.symbol = symbol
       when AST::CallExpr
         eval_expr(expr.callee)
-        expr.args.each { |a| eval_expr(a) }
+        expr.arg_exprs.each { |ae| eval_expr(ae) }
       when AST::TrueExpr
       when AST::FalseExpr
       when AST::NullExpr
@@ -60,8 +60,8 @@ module Deli
       when AST::UnaryExpr
         eval_expr(expr.expr)
       when AST::BinaryExpr
-        eval_expr(expr.left)
-        eval_expr(expr.right)
+        eval_expr(expr.left_expr)
+        eval_expr(expr.right_expr)
       else
         raise Deli::InternalInconsistencyError,
           "Unexpected expr class: #{expr.class}"

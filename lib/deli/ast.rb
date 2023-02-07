@@ -61,11 +61,11 @@ module Deli
 
     # Statements
 
-    VarStmt = Struct.new(:ident, :value_expr) do
+    VarStmt = Struct.new(:ident, :expr) do
       include SExp
 
       def to_sexp
-        [:var, ident.value, value_expr]
+        [:var, ident.value, expr]
       end
     end
 
@@ -117,11 +117,11 @@ module Deli
       end
     end
 
-    ReturnStmt = Struct.new(:value) do
+    ReturnStmt = Struct.new(:expr) do
       include SExp
 
       def to_sexp
-        [:return, value]
+        [:return, expr]
       end
     end
 
@@ -177,11 +177,11 @@ module Deli
       end
     end
 
-    CallExpr = Struct.new(:callee, :args) do
+    CallExpr = Struct.new(:callee, :arg_exprs) do
       include SExp
 
       def to_sexp
-        [:call, callee, *args]
+        [:call, callee, *arg_exprs]
       end
     end
 
@@ -193,11 +193,11 @@ module Deli
       end
     end
 
-    BinaryExpr = Struct.new(:op, :left, :right) do
+    BinaryExpr = Struct.new(:op, :left_expr, :right_expr) do
       include SExp
 
       def to_sexp
-        [:binary, op.lexeme, left, right]
+        [:binary, op.lexeme, left_expr, right_expr]
       end
     end
   end

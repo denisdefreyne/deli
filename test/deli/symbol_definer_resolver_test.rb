@@ -21,7 +21,7 @@ class TestDeliSymbolDefinerResolver < Minitest::Test
     assert_equal('bloop', bloop_sym.name)
     assert_equal(stmts[0].scope, stmts[1].scope)
     assert_equal(bloop_sym, stmts[1].cond_expr.scope['bloop'])
-    assert_equal(bloop_sym, stmts[1].cond_expr.left.symbol)
+    assert_equal(bloop_sym, stmts[1].cond_expr.left_expr.symbol)
   end
 
   def test_while
@@ -32,7 +32,7 @@ class TestDeliSymbolDefinerResolver < Minitest::Test
     assert_equal('x', x_sym.name)
     assert_equal(stmts[0].scope, stmts[1].scope)
     assert_equal(x_sym, stmts[1].cond_expr.scope['x'])
-    assert_equal(x_sym, stmts[1].cond_expr.left.symbol)
+    assert_equal(x_sym, stmts[1].cond_expr.left_expr.symbol)
     assert_equal(x_sym, stmts[1].body_stmt.stmts[0].expr.left_expr.symbol)
   end
 

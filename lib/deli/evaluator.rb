@@ -76,7 +76,7 @@ module Deli
     def eval_stmt(stmt)
       case stmt
       when AST::VarStmt
-        value = eval_expr(stmt.value_expr)
+        value = eval_expr(stmt.expr)
         # TODO: use symbol
         @env.assign_new(stmt.ident, nil, value)
       when AST::PrintStmt
@@ -104,8 +104,8 @@ module Deli
       when AST::ExprStmt
         eval_expr(stmt.expr)
       when AST::ReturnStmt
-        if stmt.value
-          throw :return, eval_expr(stmt.value)
+        if stmt.expr
+          throw :return, eval_expr(stmt.expr)
         else
           throw :return
         end
@@ -129,14 +129,14 @@ module Deli
           raise 'nope'
         end
 
-        unless callee.params.size == expr.args.size
+        unless callee.params.size == expr.arg_exprs.size
           raise 'args count mismatch'
         end
 
         push_env do
-          callee.params.zip(expr.args) do |param, arg|
+          callee.params.zip(expr.arg_exprs) do |param, arg_expr|
             # TODO: use symbol
-            @env.assign_new(param, nil, eval_expr(arg))
+            @env.assign_new(param, nil, eval_expr(arg_expr))
           end
 
           catch :return do
@@ -176,8 +176,8 @@ module Deli
             "Unexpected unary operator: #{expr.op}"
         end
       when AST::BinaryExpr
-        left_val = eval_expr(expr.left)
-        right_val = eval_expr(expr.right)
+        left_val = eval_expr(expr.left_expr)
+        right_val = eval_expr(expr.right_expr)
 
         case expr.op.type
         when TokenType::PLUS
