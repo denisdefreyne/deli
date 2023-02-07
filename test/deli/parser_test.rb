@@ -22,7 +22,7 @@ class TestDeliParser < Minitest::Test
     stmts = parse('var bloop = 123; bloop = 234;')
 
     assert_equal('(var "bloop" (integer 123))', stmts.shift.inspect)
-    assert_equal('(assign "bloop" (integer 234))', stmts.shift.inspect)
+    assert_equal('(expr (assign (ident "bloop") (integer 234)))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 
@@ -43,7 +43,7 @@ class TestDeliParser < Minitest::Test
   def test_while
     stmts = parse('while a { a = !a; }')
 
-    assert_equal('(while (ident "a") (group (assign "a" (unary "!" (ident "a")))))', stmts.shift.inspect)
+    assert_equal('(while (ident "a") (group (expr (assign (ident "a") (unary "!" (ident "a"))))))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 

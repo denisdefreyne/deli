@@ -67,14 +67,6 @@ module Deli
       end
     end
 
-    AssignStmt = Struct.new(:ident, :value_expr) do
-      include SExp
-
-      def to_sexp
-        [:assign, ident.value, value_expr]
-      end
-    end
-
     ExprStmt = Struct.new(:expr) do
       include SExp
 
@@ -170,6 +162,14 @@ module Deli
 
       def to_sexp
         [:null]
+      end
+    end
+
+    AssignExpr = Struct.new(:left_expr, :right_expr) do
+      include SExp
+
+      def to_sexp
+        [:assign, left_expr, right_expr]
       end
     end
 

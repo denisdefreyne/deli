@@ -75,9 +75,6 @@ module Deli
       when AST::VarStmt
         value = eval_expr(stmt.value_expr)
         @env.assign_new(stmt.ident, value)
-      when AST::AssignStmt
-        value = eval_expr(stmt.value_expr)
-        @env.assign_existing(stmt.ident, value)
       when AST::PrintStmt
         value = eval_expr(stmt.expr)
         puts(stringify(value))
@@ -132,6 +129,17 @@ module Deli
         false
       when AST::NullExpr
         nil
+      when AST::AssignExpr
+        unless expr.left_expr.is_a?(AST::IdentifierExpr)
+          raise Deli::LocatableError.new(
+            @source_code,
+            expr.token.span,
+            "Unknown name: #{token.value}",
+          )
+        end
+
+        right_value = eval_expr(expr.right_expr)
+        @env.assign_existing(expr.left_expr.ident, right_value)
       when AST::UnaryExpr
         val = eval_expr(expr.expr)
 

@@ -18,8 +18,7 @@ module Deli
     private
 
     def parse_stmt
-      token = advance
-      case token.type
+      case peek.type
       when TokenType::KW_VAR
         parse_var_stmt
       when TokenType::KW_PRINT
@@ -32,20 +31,13 @@ module Deli
         parse_fun_stmt
       when TokenType::KW_RETURN
         parse_return_stmt
-      when TokenType::IDENT
-        parse_partial_ident_stmt(token)
       else
-        raise Deli::LocatableError.new(
-          @source_code,
-          token.span,
-          "parse error: unexpected #{token.type}",
-        )
+        parse_expr_stmt
       end
     end
 
     def parse_var_stmt
-      # NOTE: :KW_VAR already consumed
-
+      advance # `var` token
       ident_token = consume(TokenType::IDENT)
       consume(TokenType::EQ)
       value_expr = parse_expr
@@ -55,8 +47,7 @@ module Deli
     end
 
     def parse_print_stmt
-      # NOTE: :KW_PRINT already consumed
-
+      advance # `print` token
       expr = parse_expr
       consume(TokenType::SEMICOLON)
 
@@ -64,17 +55,14 @@ module Deli
     end
 
     def parse_if_stmt
-      # NOTE: :KW_IF already consumed
-
+      advance # `if` token
       condition_expr = parse_expr
-      consume(TokenType::LBRACE)
 
       true_stmt = parse_group_stmt
 
       false_stmt = nil
       if peek.type == TokenType::KW_ELSE
         advance # consume :ELSE
-        consume(TokenType::LBRACE)
         false_stmt = parse_group_stmt
       end
 
@@ -84,11 +72,8 @@ module Deli
     end
 
     def parse_while_stmt
-      # NOTE: :KW_WHILE already consumed
-
+      advance # `while` token
       condition_expr = parse_expr
-      consume(TokenType::LBRACE)
-
       body_stmt = parse_group_stmt
 
       Deli::AST::WhileStmt.new(condition_expr, body_stmt)
@@ -96,7 +81,7 @@ module Deli
 
     # FIXME: is this really a statement?
     def parse_fun_stmt
-      # NOTE: :KW_FUN already consumed
+      advance # `fun` token
 
       ident = consume(TokenType::IDENT)
 
@@ -106,14 +91,13 @@ module Deli
       consume(TokenType::RPAREN)
 
       # Body
-      consume(TokenType::LBRACE)
       body_stmt = parse_group_stmt
 
       Deli::AST::FunStmt.new(ident, body_stmt)
     end
 
     def parse_return_stmt
-      # NOTE: :KW_RETURN already consumed
+      advance # `return` token
 
       if peek.type == TokenType::SEMICOLON
         advance
@@ -126,7 +110,7 @@ module Deli
     end
 
     def parse_group_stmt
-      # NOTE: :LBRACE already consumed
+      advance # `{` token
 
       stmts = []
       until peek.type == TokenType::RBRACE
@@ -138,32 +122,11 @@ module Deli
       Deli::AST::GroupStmt.new(stmts)
     end
 
-    def parse_partial_ident_stmt(ident_token)
-      # NOTE: :IDENT already consumed
-
-      token = advance
-      case token.type
-      when TokenType::EQ
-        parse_assign_stmt(ident_token, token)
-      when TokenType::LPAREN
-        parse_call_stmt(ident_token, token)
-      else
-        raise Deli::LocatableError.new(
-          @source_code,
-          token.span,
-          "parse error: unexpected #{token.type}",
-        )
-      end
-    end
-
-    def parse_assign_stmt(ident_token, _eq_token)
-      # NOTE: :IDENT already consumed
-      # NOTE: :EQ already consumed
-
+    def parse_expr_stmt
       expr = parse_expr
       consume(TokenType::SEMICOLON)
 
-      Deli::AST::AssignStmt.new(ident_token, expr)
+      Deli::AST::ExprStmt.new(expr)
     end
 
     def parse_call_stmt(ident_token, lparen_token)
@@ -180,12 +143,13 @@ module Deli
       NONE   = 0
       LOWEST = 1
 
-      EQUALITY   = 1 # == !=
-      COMPARISON = 2 # > >= < <=
-      TERM       = 3 # + -
-      FACTOR     = 4 # * /
-      UNARY      = 5 # - !
-      CALL       = 6 # ( .
+      ASSIGN     = 1 # =
+      EQUALITY   = 2 # == !=
+      COMPARISON = 3 # > >= < <=
+      TERM       = 4 # + -
+      FACTOR     = 5 # * /
+      UNARY      = 6 # - !
+      CALL       = 7 # ( .
     end
 
     class ParseRule
@@ -254,6 +218,12 @@ module Deli
       TokenType::KW_NULL,
       Precedence::NONE,
       prefix: :parse_null,
+    )
+
+    PARSE_RULES.register(
+      TokenType::EQ,
+      Precedence::ASSIGN,
+      infix: :parse_assign,
     )
 
     PARSE_RULES.register(
@@ -372,6 +342,13 @@ module Deli
     def parse_unary(token)
       expr = parse_precedence(Precedence::UNARY)
       Deli::AST::UnaryExpr.new(token, expr)
+    end
+
+    def parse_assign(left_expr, _token)
+      # TODO: verify left_expr of correct type (can’t assign to just everything)
+
+      right_expr = parse_precedence(Precedence::ASSIGN + 1)
+      Deli::AST::AssignExpr.new(left_expr, right_expr)
     end
 
     def parse_binary(left_expr, token)

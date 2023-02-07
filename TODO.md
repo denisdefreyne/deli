@@ -1,4 +1,8 @@
 - [ ] Functions
+  - [x] No args, no return
+  - [x] Return
+  - [ ] Args
+- [x] Generalized expression statements
 - [ ] Error handling
   - [ ] End-of-input handling
   - [ ] Testing of error handling
