@@ -16,7 +16,6 @@ require_relative 'deli/span'
 # Primary models
 require_relative 'deli/token'
 require_relative 'deli/token_type'
-require_relative 'deli/token_types'
 require_relative 'deli/ast'
 
 # Services

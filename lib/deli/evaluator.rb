@@ -136,11 +136,11 @@ module Deli
         val = eval_expr(expr.expr)
 
         case expr.op.type
-        when TokenTypes::PLUS
+        when TokenType::PLUS
           val
-        when TokenTypes::MINUS
+        when TokenType::MINUS
           -val
-        when TokenTypes::BANG
+        when TokenType::BANG
           !val
         else
           raise Deli::InternalInconsistencyError,
@@ -151,21 +151,21 @@ module Deli
         right_val = eval_expr(expr.right)
 
         case expr.op.type
-        when TokenTypes::PLUS
+        when TokenType::PLUS
           left_val + right_val
-        when TokenTypes::MINUS
+        when TokenType::MINUS
           left_val - right_val
-        when TokenTypes::ASTERISK
+        when TokenType::ASTERISK
           left_val * right_val
-        when TokenTypes::SLASH
+        when TokenType::SLASH
           left_val / right_val
-        when TokenTypes::LT
+        when TokenType::LT
           left_val < right_val
-        when TokenTypes::LTE
+        when TokenType::LTE
           left_val <= right_val
-        when TokenTypes::GT
+        when TokenType::GT
           left_val > right_val
-        when TokenTypes::GTE
+        when TokenType::GTE
           left_val >= right_val
         else
           raise Deli::InternalInconsistencyError,

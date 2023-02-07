@@ -9,7 +9,7 @@ module Deli
 
     def call
       stmts = []
-      until peek.type == TokenTypes::EOF
+      until peek.type == TokenType::EOF
         stmts << parse_stmt
       end
       stmts
@@ -20,19 +20,19 @@ module Deli
     def parse_stmt
       token = advance
       case token.type
-      when TokenTypes::KW_VAR
+      when TokenType::KW_VAR
         parse_var_stmt
-      when TokenTypes::KW_PRINT
+      when TokenType::KW_PRINT
         parse_print_stmt
-      when TokenTypes::KW_IF
+      when TokenType::KW_IF
         parse_if_stmt
-      when TokenTypes::KW_WHILE
+      when TokenType::KW_WHILE
         parse_while_stmt
-      when TokenTypes::KW_FUN
+      when TokenType::KW_FUN
         parse_fun_stmt
-      when TokenTypes::KW_RETURN
+      when TokenType::KW_RETURN
         parse_return_stmt
-      when TokenTypes::IDENT
+      when TokenType::IDENT
         parse_partial_ident_stmt(token)
       else
         raise Deli::LocatableError.new(
@@ -46,10 +46,10 @@ module Deli
     def parse_var_stmt
       # NOTE: :KW_VAR already consumed
 
-      ident_token = consume(TokenTypes::IDENT)
-      consume(TokenTypes::EQ)
+      ident_token = consume(TokenType::IDENT)
+      consume(TokenType::EQ)
       value_expr = parse_expr
-      consume(TokenTypes::SEMICOLON)
+      consume(TokenType::SEMICOLON)
 
       Deli::AST::VarStmt.new(ident_token, value_expr)
     end
@@ -58,7 +58,7 @@ module Deli
       # NOTE: :KW_PRINT already consumed
 
       expr = parse_expr
-      consume(TokenTypes::SEMICOLON)
+      consume(TokenType::SEMICOLON)
 
       Deli::AST::PrintStmt.new(expr)
     end
@@ -67,14 +67,14 @@ module Deli
       # NOTE: :KW_IF already consumed
 
       condition_expr = parse_expr
-      consume(TokenTypes::LBRACE)
+      consume(TokenType::LBRACE)
 
       true_stmt = parse_group_stmt
 
       false_stmt = nil
-      if peek.type == TokenTypes::KW_ELSE
+      if peek.type == TokenType::KW_ELSE
         advance # consume :ELSE
-        consume(TokenTypes::LBRACE)
+        consume(TokenType::LBRACE)
         false_stmt = parse_group_stmt
       end
 
@@ -87,7 +87,7 @@ module Deli
       # NOTE: :KW_WHILE already consumed
 
       condition_expr = parse_expr
-      consume(TokenTypes::LBRACE)
+      consume(TokenType::LBRACE)
 
       body_stmt = parse_group_stmt
 
@@ -98,15 +98,15 @@ module Deli
     def parse_fun_stmt
       # NOTE: :KW_FUN already consumed
 
-      ident = consume(TokenTypes::IDENT)
+      ident = consume(TokenType::IDENT)
 
       # Parameter list
-      consume(TokenTypes::LPAREN)
+      consume(TokenType::LPAREN)
       # TODO: parameters
-      consume(TokenTypes::RPAREN)
+      consume(TokenType::RPAREN)
 
       # Body
-      consume(TokenTypes::LBRACE)
+      consume(TokenType::LBRACE)
       body_stmt = parse_group_stmt
 
       Deli::AST::FunStmt.new(ident, body_stmt)
@@ -115,12 +115,12 @@ module Deli
     def parse_return_stmt
       # NOTE: :KW_RETURN already consumed
 
-      if peek.type == TokenTypes::SEMICOLON
+      if peek.type == TokenType::SEMICOLON
         advance
         Deli::AST::ReturnStmt.new(nil)
       else
         expr = parse_expr
-        consume(TokenTypes::SEMICOLON)
+        consume(TokenType::SEMICOLON)
         Deli::AST::ReturnStmt.new(expr)
       end
     end
@@ -129,11 +129,11 @@ module Deli
       # NOTE: :LBRACE already consumed
 
       stmts = []
-      until peek.type == TokenTypes::RBRACE
+      until peek.type == TokenType::RBRACE
         stmts << parse_stmt
       end
 
-      consume(TokenTypes::RBRACE)
+      consume(TokenType::RBRACE)
 
       Deli::AST::GroupStmt.new(stmts)
     end
@@ -143,9 +143,9 @@ module Deli
 
       token = advance
       case token.type
-      when TokenTypes::EQ
+      when TokenType::EQ
         parse_assign_stmt(ident_token, token)
-      when TokenTypes::LPAREN
+      when TokenType::LPAREN
         parse_call_stmt(ident_token, token)
       else
         raise Deli::LocatableError.new(
@@ -161,7 +161,7 @@ module Deli
       # NOTE: :EQ already consumed
 
       expr = parse_expr
-      consume(TokenTypes::SEMICOLON)
+      consume(TokenType::SEMICOLON)
 
       Deli::AST::AssignStmt.new(ident_token, expr)
     end
@@ -172,7 +172,7 @@ module Deli
 
       fun_expr = Deli::AST::IdentifierExpr.new(ident_token)
       expr = parse_call_expr(fun_expr, lparen_token)
-      consume(TokenTypes::SEMICOLON)
+      consume(TokenType::SEMICOLON)
       Deli::AST::ExprStmt.new(expr)
     end
 
@@ -227,105 +227,105 @@ module Deli
     PARSE_RULES = ParseRules.new
 
     PARSE_RULES.register(
-      TokenTypes::IDENT,
+      TokenType::IDENT,
       Precedence::NONE,
       prefix: :parse_variable,
     )
 
     PARSE_RULES.register(
-      TokenTypes::NUMBER,
+      TokenType::NUMBER,
       Precedence::NONE,
       prefix: :parse_number,
     )
 
     PARSE_RULES.register(
-      TokenTypes::KW_TRUE,
+      TokenType::KW_TRUE,
       Precedence::NONE,
       prefix: :parse_true,
     )
 
     PARSE_RULES.register(
-      TokenTypes::KW_FALSE,
+      TokenType::KW_FALSE,
       Precedence::NONE,
       prefix: :parse_false,
     )
 
     PARSE_RULES.register(
-      TokenTypes::KW_NULL,
+      TokenType::KW_NULL,
       Precedence::NONE,
       prefix: :parse_null,
     )
 
     PARSE_RULES.register(
-      TokenTypes::EQ_EQ,
+      TokenType::EQ_EQ,
       Precedence::EQUALITY,
       infix: :parse_binary,
     )
 
     PARSE_RULES.register(
-      TokenTypes::BANG_EQ,
+      TokenType::BANG_EQ,
       Precedence::EQUALITY,
       infix: :parse_binary,
     )
 
     PARSE_RULES.register(
-      TokenTypes::LT,
+      TokenType::LT,
       Precedence::COMPARISON,
       infix: :parse_binary,
     )
 
     PARSE_RULES.register(
-      TokenTypes::LTE,
+      TokenType::LTE,
       Precedence::COMPARISON,
       infix: :parse_binary,
     )
 
     PARSE_RULES.register(
-      TokenTypes::GT,
+      TokenType::GT,
       Precedence::COMPARISON,
       infix: :parse_binary,
     )
 
     PARSE_RULES.register(
-      TokenTypes::GTE,
+      TokenType::GTE,
       Precedence::COMPARISON,
       infix: :parse_binary,
     )
 
     PARSE_RULES.register(
-      TokenTypes::PLUS,
+      TokenType::PLUS,
       Precedence::TERM,
       prefix: :parse_unary,
       infix: :parse_binary,
     )
 
     PARSE_RULES.register(
-      TokenTypes::MINUS,
+      TokenType::MINUS,
       Precedence::TERM,
       prefix: :parse_unary,
       infix: :parse_binary,
     )
 
     PARSE_RULES.register(
-      TokenTypes::ASTERISK,
+      TokenType::ASTERISK,
       Precedence::FACTOR,
       infix: :parse_binary,
     )
 
     PARSE_RULES.register(
-      TokenTypes::SLASH,
+      TokenType::SLASH,
       Precedence::FACTOR,
       infix: :parse_binary,
     )
 
     PARSE_RULES.register(
-      TokenTypes::BANG,
+      TokenType::BANG,
       Precedence::UNARY,
       prefix: :parse_unary,
     )
 
     PARSE_RULES.register(
-      TokenTypes::LPAREN,
+      TokenType::LPAREN,
       Precedence::CALL,
       infix: :parse_call_expr,
     )
@@ -386,7 +386,7 @@ module Deli
 
     def parse_call_expr(left_expr, _lparen_token)
       # TODO: arguments
-      consume(TokenTypes::RPAREN)
+      consume(TokenType::RPAREN)
 
       Deli::AST::CallExpr.new(left_expr)
     end
