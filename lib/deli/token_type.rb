@@ -14,18 +14,6 @@ module Deli
       "#{name} (#{symbol})"
     end
 
-    def eql?(other)
-      self.class == other.class && symbol == other.symbol
-    end
-
-    def ==(other)
-      eql?(other)
-    end
-
-    def hash
-      [self.class, @symbol].hash
-    end
-
     EOF       = TokenType.new(:EOF,       'end of input')
 
     EQ_EQ     = TokenType.new(:EQ_EQ,     '“==”')
