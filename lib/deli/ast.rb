@@ -165,7 +165,7 @@ module Deli
       end
     end
 
-    AssignExpr = Struct.new(:left_expr, :right_expr) do
+    AssignExpr = Struct.new(:left_expr, :token, :right_expr) do
       include SExp
 
       def to_sexp

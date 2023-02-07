@@ -344,11 +344,9 @@ module Deli
       Deli::AST::UnaryExpr.new(token, expr)
     end
 
-    def parse_assign(left_expr, _token)
-      # TODO: verify left_expr of correct type (can’t assign to just everything)
-
+    def parse_assign(left_expr, token)
       right_expr = parse_precedence(Precedence::ASSIGN + 1)
-      Deli::AST::AssignExpr.new(left_expr, right_expr)
+      Deli::AST::AssignExpr.new(left_expr, token, right_expr)
     end
 
     def parse_binary(left_expr, token)

@@ -30,6 +30,12 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal('Unknown name: r', error.short_message)
   end
 
+  def test_assign_invalid
+    error = assert_raises(Deli::LocatableError) { evaluate('r() = 100;') }
+
+    assert_equal('Left-hand side cannot be assigned to', error.short_message)
+  end
+
   def test_if_without_else_true
     evaluate('if 2 < 3 { print 100; }')
 

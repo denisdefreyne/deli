@@ -134,7 +134,7 @@ module Deli
           raise Deli::LocatableError.new(
             @source_code,
             expr.token.span,
-            "Unknown name: #{token.value}",
+            'Left-hand side cannot be assigned to',
           )
         end
 
