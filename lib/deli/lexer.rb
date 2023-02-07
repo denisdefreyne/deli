@@ -115,6 +115,8 @@ module Deli
         new_token(TokenType::LT)
       elsif @scanner.scan('>')
         new_token(TokenType::GT)
+      elsif @scanner.scan(',')
+        new_token(TokenType::COMMA)
       elsif @scanner.scan(';')
         new_token(TokenType::SEMICOLON)
       elsif @scanner.scan('=')

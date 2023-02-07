@@ -173,11 +173,11 @@ module Deli
       end
     end
 
-    CallExpr = Struct.new(:target) do
+    CallExpr = Struct.new(:callee, :args) do
       include SExp
 
       def to_sexp
-        [:call, target]
+        [:call, callee, *args]
       end
     end
 

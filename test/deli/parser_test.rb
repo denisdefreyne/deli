@@ -61,6 +61,32 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
+  def test_fun_call_one_param
+    stmts = parse('thing(1);')
+
+    assert_equal('(expr (call (ident "thing") (integer 1)))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
+  def test_fun_call_two_params
+    stmts = parse('thing(1, 2);')
+
+    assert_equal('(expr (call (ident "thing") (integer 1) (integer 2)))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
+  def test_fun_call_broken_a
+    error = assert_raises(Deli::LocatableError) { parse('thing(,)') }
+
+    assert_equal('parse error: unexpected “,” (COMMA)', error.short_message)
+  end
+
+  def test_fun_call_broken_b
+    error = assert_raises(Deli::LocatableError) { parse('thing(1,)') }
+
+    assert_equal('parse error: unexpected “)” (RPAREN)', error.short_message)
+  end
+
   def test_fun_return
     stmts = parse('fun hundred() { return 100; }')
 

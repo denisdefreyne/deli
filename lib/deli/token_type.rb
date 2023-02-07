@@ -27,6 +27,7 @@ module Deli
     SLASH     = TokenType.new(:SLASH,     '“/”')
     LT        = TokenType.new(:LT,        '“<”')
     GT        = TokenType.new(:GT,        '“>”')
+    COMMA     = TokenType.new(:COMMA,     '“,”')
     SEMICOLON = TokenType.new(:SEMICOLON, '“;”')
     EQ        = TokenType.new(:EQ,        '“=”')
     BANG      = TokenType.new(:BANG,      '“!”')

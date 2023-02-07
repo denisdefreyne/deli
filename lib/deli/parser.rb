@@ -357,9 +357,19 @@ module Deli
     end
 
     def parse_call_expr(left_expr, _lparen_token)
+      args = []
+      if peek.type != TokenType::RPAREN
+        args << parse_expr
+
+        while peek.type == TokenType::COMMA
+          advance # comma
+          args << parse_expr
+        end
+      end
+
       consume(TokenType::RPAREN)
 
-      Deli::AST::CallExpr.new(left_expr)
+      Deli::AST::CallExpr.new(left_expr, args)
     end
 
     def parse_true(_token)

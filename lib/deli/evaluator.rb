@@ -117,10 +117,10 @@ module Deli
       when AST::IdentifierExpr
         @env[expr.ident]
       when AST::CallExpr
-        target = eval_expr(expr.target)
+        callee = eval_expr(expr.callee)
         push_env do
           catch :return do
-            eval_stmt(target.body_stmt)
+            eval_stmt(callee.body_stmt)
           end
         end
       when AST::TrueExpr
