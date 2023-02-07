@@ -90,6 +90,41 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("15\n", $stdout.string)
   end
 
+  def test_fun_recursive_a
+    evaluate(<<~SRC)
+      fun plus(a, b) {
+        if a > 0 {
+          return plus(a - 1, b + 1);
+        } else {
+          return b;
+        }
+      }
+
+      print plus(3, 4);
+    SRC
+
+    assert_equal("7\n", $stdout.string)
+  end
+
+  def test_fun_recursive_b
+    evaluate(<<~SRC)
+      fun fib(a) {
+        if a < 2 {
+          return 1;
+        }
+
+        return fib(a - 1) + fib(a - 2);
+      }
+
+      print fib(5);
+      print fib(6);
+      print fib(7);
+      print fib(8);
+    SRC
+
+    assert_equal("8\n13\n21\n34\n", $stdout.string)
+  end
+
   def test_unary
     evaluate('var bloop = -10; print bloop;')
 

@@ -203,9 +203,9 @@ module Deli
 
     def push_env
       @env = Env.new(@source_code, parent: @env)
-      res = yield
+      yield
+    ensure
       @env = @env.parent
-      res
     end
 
     def stringify(obj)
