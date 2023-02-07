@@ -31,11 +31,9 @@ module Deli
       when AST::GroupStmt
         stmt.stmts.each { |s| eval_stmt(s) }
       when AST::FunStmt
-        # TODO
-        raise 'not implemented yet'
+        eval_stmt(stmt.body_stmt)
       when AST::ExprStmt
-        # TODO
-        raise 'not implemented yet'
+        eval_expr(stmt.expr)
       when AST::ReturnStmt
         # TODO
         raise 'not implemented yet'
@@ -53,8 +51,8 @@ module Deli
         symbol = expr.scope[expr.ident.value]
         expr.symbol = symbol
       when AST::CallExpr
-        # TODO
-        raise 'not implemented yet'
+        eval_expr(expr.callee)
+        expr.args.each { |a| eval_expr(a) }
       when AST::TrueExpr
         # TODO
         raise 'not implemented yet'

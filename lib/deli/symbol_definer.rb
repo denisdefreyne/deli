@@ -36,11 +36,10 @@ module Deli
       when AST::GroupStmt
         stmt.stmts.each { |s| eval_stmt(s) }
       when AST::FunStmt
-        # TODO
-        raise 'not implemented yet'
+        eval_stmt(stmt.body_stmt)
+        @scope.define(stmt.ident.value)
       when AST::ExprStmt
-        # TODO
-        raise 'not implemented yet'
+        eval_expr(stmt.expr)
       when AST::ReturnStmt
         # TODO
         raise 'not implemented yet'
@@ -57,8 +56,8 @@ module Deli
       when AST::IntegerExpr
       when AST::IdentifierExpr
       when AST::CallExpr
-        # TODO
-        raise 'not implemented yet'
+        eval_expr(expr.callee)
+        expr.args.each { |a| eval_expr(a) }
       when AST::TrueExpr
         # TODO
         raise 'not implemented yet'

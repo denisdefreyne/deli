@@ -22,6 +22,16 @@ class TestDeliSymbolDefinerResolver < Minitest::Test
     assert_equal(bloop_sym, stmts[1].cond_expr.left.symbol)
   end
 
+  def test_fun_and_call
+    stmts = define_and_resolve('fun bloop() {} bloop();')
+
+    bloop_sym = stmts[0].scope['bloop']
+
+    assert_equal('bloop', bloop_sym.name)
+    assert_equal(bloop_sym, stmts[1].expr.scope['bloop'])
+    assert_equal(bloop_sym, stmts[1].expr.callee.symbol)
+  end
+
   private
 
   def define_and_resolve(string)
