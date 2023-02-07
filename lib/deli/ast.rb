@@ -111,7 +111,7 @@ module Deli
       include SExp
 
       def to_sexp
-        [:fun, ident.value, *params, body_stmt]
+        [:fun, ident.value, *params.map(&:value), body_stmt]
       end
     end
 

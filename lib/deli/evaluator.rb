@@ -50,9 +50,11 @@ module Deli
     end
 
     class Fun
+      attr_reader :params
       attr_reader :body_stmt
 
-      def initialize(body_stmt)
+      def initialize(params, body_stmt)
+        @params = params
         @body_stmt = body_stmt
       end
     end
@@ -94,7 +96,7 @@ module Deli
           stmt.stmts.each { eval_stmt(_1) }
         end
       when AST::FunStmt
-        fn = Fun.new(stmt.body_stmt)
+        fn = Fun.new(stmt.params, stmt.body_stmt)
         @env.assign_new(stmt.ident, fn)
       when AST::ExprStmt
         eval_expr(stmt.expr)
@@ -118,7 +120,21 @@ module Deli
         @env[expr.ident]
       when AST::CallExpr
         callee = eval_expr(expr.callee)
+
+        unless callee.is_a?(Fun)
+          # TODO: raise locatable error
+          raise 'nope'
+        end
+
+        unless callee.params.size == expr.args.size
+          raise 'args count mismatch'
+        end
+
         push_env do
+          callee.params.zip(expr.args) do |param, arg|
+            @env.assign_new(param, eval_expr(arg))
+          end
+
           catch :return do
             eval_stmt(callee.body_stmt)
           end

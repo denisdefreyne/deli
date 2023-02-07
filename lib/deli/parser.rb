@@ -89,11 +89,11 @@ module Deli
       consume(TokenType::LPAREN)
       params = []
       if peek.type != TokenType::RPAREN
-        params << consume(TokenType::IDENT).value
+        params << consume(TokenType::IDENT)
 
         while peek.type == TokenType::COMMA
           advance # comma
-          params << consume(TokenType::IDENT).value
+          params << consume(TokenType::IDENT)
         end
       end
       consume(TokenType::RPAREN)
