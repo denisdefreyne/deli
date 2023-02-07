@@ -26,8 +26,8 @@ module Deli
           eval_stmt(stmt.false_stmt)
         end
       when AST::WhileStmt
-        # TODO
-        raise 'not implemented yet'
+        eval_expr(stmt.cond_expr)
+        eval_stmt(stmt.body_stmt)
       when AST::GroupStmt
         stmt.stmts.each { |s| eval_stmt(s) }
       when AST::FunStmt
