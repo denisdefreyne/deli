@@ -13,7 +13,9 @@ module Deli
     end
 
     def define(name)
-      @contents[name] = DeliSymbol.new(name)
+      symbol = DeliSymbol.new(name)
+      @contents[name] = symbol
+      symbol
     end
 
     def resolve(name, span)
