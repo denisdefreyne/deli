@@ -66,7 +66,6 @@ module Deli
     end
 
     def initialize(source_code)
-      @source_code = source_code
       @scanner = TrackingStringScanner.new(source_code)
     end
 
