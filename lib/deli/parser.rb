@@ -319,9 +319,8 @@ module Deli
       rule = PARSE_RULES[token.type]
       unless rule.prefix
         raise Deli::LocatableError.new(
-          @source_code,
-          token.span,
           "parse error: unexpected #{token.type}",
+          token.span,
         )
       end
 
@@ -331,9 +330,8 @@ module Deli
         token = advance
         unless rule.infix
           raise Deli::LocatableError.new(
-            @source_code,
-            token.span,
             "parse error: #{token.type} cannot be used as an infix operator",
+            token.span,
           )
         end
 
@@ -400,9 +398,8 @@ module Deli
         @tokens.shift
       else
         raise Deli::LocatableError.new(
-          @source_code,
-          peek.span,
           "parse error: expected #{type}, but got #{peek.type}",
+          peek.span,
         )
       end
     end

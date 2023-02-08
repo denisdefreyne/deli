@@ -24,9 +24,8 @@ module Deli
           @parent.resolve(name, span)
         else
           raise Deli::LocatableError.new(
-            @source_code,
-            span,
             "Unknown name: #{name}",
+            span,
           )
         end
       end

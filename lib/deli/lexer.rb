@@ -173,9 +173,8 @@ module Deli
       else
         char = @scanner.getch
         raise Deli::LocatableError.new(
-          @source_code,
-          @scanner.span,
           "Unknown character: #{char}",
+          @scanner.span,
         )
       end
     end

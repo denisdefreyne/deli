@@ -22,9 +22,8 @@ module Deli
             @parent.lookup(symbol, span)
           else
             raise Deli::LocatableError.new(
-              @source_code,
-              span,
               "Unknown name: #{symbol.name}",
+              span,
             )
           end
         end
@@ -39,16 +38,14 @@ module Deli
           raise 'symbol cannot be nil'
         end
 
-        # TODO: use symbol
         if @values.key?(symbol)
           @values[symbol] = value
         elsif @parent
           @parent.assign_existing(symbol, value, span)
         else
           raise Deli::LocatableError.new(
-            @source_code,
-            span,
             "Unknown name: #{symbol.name}",
+            span,
           )
         end
       end
@@ -168,9 +165,8 @@ module Deli
     def handle_assign_expr(expr)
       unless expr.left_expr.is_a?(AST::IdentifierExpr)
         raise Deli::LocatableError.new(
-          @source_code,
-          expr.token.span,
           'Left-hand side cannot be assigned to',
+          expr.token.span,
         )
       end
 
