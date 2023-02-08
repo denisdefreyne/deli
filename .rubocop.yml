@@ -46,6 +46,12 @@ Lint/DuplicateBranch:
 Lint/EmptyWhen:
   Enabled: false
 
+Style/GuardClause:
+  Enabled: false
+
+Style/EmptyMethod:
+  EnforcedStyle: expanded
+
 ################################################################################
 # Disabling cops that are not useful
 

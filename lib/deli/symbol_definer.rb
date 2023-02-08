@@ -10,79 +10,147 @@ module Deli
     end
 
     def call
-      @stmts.each { eval_stmt(_1) }
+      @stmts.each { handle_stmt(_1) }
     end
 
     private
 
-    def eval_stmt(stmt)
+    def handle_stmt(stmt)
       stmt.scope = @scope
 
       case stmt
       when AST::VarStmt
-        eval_expr(stmt.expr)
-        symbol = @scope.define(stmt.ident.value)
-        stmt.symbol = symbol
+        handle_var_stmt(stmt)
       when AST::PrintStmt
-        eval_expr(stmt.expr)
+        handle_print_stmt(stmt)
       when AST::IfStmt
-        eval_expr(stmt.cond_expr)
-        eval_stmt(stmt.true_stmt)
-        if stmt.false_stmt
-          eval_stmt(stmt.false_stmt)
-        end
+        handle_if_stmt(stmt)
       when AST::WhileStmt
-        eval_expr(stmt.cond_expr)
-        eval_stmt(stmt.body_stmt)
+        handle_while_stmt(stmt)
       when AST::GroupStmt
-        push_scope do
-          stmt.stmts.each { |s| eval_stmt(s) }
-        end
+        handle_group_stmt(stmt)
       when AST::FunStmt
-        symbol = @scope.define(stmt.ident.value)
-        stmt.symbol = symbol
-
-        push_scope do
-          stmt.params.each do |param|
-            param.symbol = @scope.define(param.name.value)
-          end
-
-          eval_stmt(stmt.body_stmt)
-        end
+        handle_fun_stmt(stmt)
       when AST::ExprStmt
-        eval_expr(stmt.expr)
+        handle_expr_stmt(stmt)
       when AST::ReturnStmt
-        eval_expr(stmt.expr)
+        handle_return_stmt(stmt)
       else
         raise Deli::InternalInconsistencyError,
           "Unexpected stmt class: #{stmt.class}"
       end
     end
 
-    def eval_expr(expr)
+    def handle_expr(expr)
       expr.scope = @scope
 
       case expr
       when AST::IntegerExpr
+        handle_integer_expr(expr)
       when AST::IdentifierExpr
+        handle_identifier_expr(expr)
       when AST::CallExpr
-        eval_expr(expr.callee)
-        expr.arg_exprs.each { |ae| eval_expr(ae) }
+        handle_call_expr(expr)
       when AST::TrueExpr
+        handle_true_expr(expr)
       when AST::FalseExpr
+        handle_false_expr(expr)
       when AST::NullExpr
+        handle_null_expr(expr)
       when AST::AssignExpr
-        eval_expr(expr.left_expr)
-        eval_expr(expr.right_expr)
+        handle_assign_expr(expr)
       when AST::UnaryExpr
-        eval_expr(expr.expr)
+        handle_unary_expr(expr)
       when AST::BinaryExpr
-        eval_expr(expr.left_expr)
-        eval_expr(expr.right_expr)
+        handle_binary_expr(expr)
       else
         raise Deli::InternalInconsistencyError,
           "Unexpected expr class: #{expr.class}"
       end
+    end
+
+    def handle_var_stmt(stmt)
+      handle_expr(stmt.expr)
+      symbol = @scope.define(stmt.ident.value)
+      stmt.symbol = symbol
+    end
+
+    def handle_print_stmt(stmt)
+      handle_expr(stmt.expr)
+    end
+
+    def handle_if_stmt(stmt)
+      handle_expr(stmt.cond_expr)
+      handle_stmt(stmt.true_stmt)
+      if stmt.false_stmt
+        handle_stmt(stmt.false_stmt)
+      end
+    end
+
+    def handle_while_stmt(stmt)
+      handle_expr(stmt.cond_expr)
+      handle_stmt(stmt.body_stmt)
+    end
+
+    def handle_group_stmt(stmt)
+      push_scope do
+        stmt.stmts.each { |s| handle_stmt(s) }
+      end
+    end
+
+    def handle_fun_stmt(stmt)
+      symbol = @scope.define(stmt.ident.value)
+      stmt.symbol = symbol
+
+      push_scope do
+        stmt.params.each do |param|
+          param.symbol = @scope.define(param.name.value)
+        end
+
+        handle_stmt(stmt.body_stmt)
+      end
+    end
+
+    def handle_expr_stmt(stmt)
+      handle_expr(stmt.expr)
+    end
+
+    def handle_return_stmt(stmt)
+      handle_expr(stmt.expr)
+    end
+
+    def handle_integer_expr(expr)
+    end
+
+    def handle_identifier_expr(expr)
+    end
+
+    def handle_call_expr(expr)
+      handle_expr(expr.callee)
+      expr.arg_exprs.each { |ae| handle_expr(ae) }
+    end
+
+    def handle_true_expr(expr)
+    end
+
+    def handle_false_expr(expr)
+    end
+
+    def handle_null_expr(expr)
+    end
+
+    def handle_assign_expr(expr)
+      handle_expr(expr.left_expr)
+      handle_expr(expr.right_expr)
+    end
+
+    def handle_unary_expr(expr)
+      handle_expr(expr.expr)
+    end
+
+    def handle_binary_expr(expr)
+      handle_expr(expr.left_expr)
+      handle_expr(expr.right_expr)
     end
 
     def push_scope
