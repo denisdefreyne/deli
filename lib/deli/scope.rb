@@ -2,7 +2,11 @@
 
 module Deli
   class Scope
-    def initialize(parent: nil)
+    attr_reader :source_code
+    attr_reader :parent
+
+    def initialize(source_code:, parent: nil)
+      @source_code = source_code
       @parent = parent
 
       @contents = {}
@@ -12,8 +16,18 @@ module Deli
       @contents[name] = DeliSymbol.new(name)
     end
 
-    def [](name)
-      @contents[name]
+    def resolve(name, span)
+      @contents.fetch(name) do
+        if @parent
+          @parent.resolve(name, span)
+        else
+          raise Deli::LocatableError.new(
+            @source_code,
+            span,
+            "Unknown name: #{name}",
+          )
+        end
+      end
     end
   end
 end

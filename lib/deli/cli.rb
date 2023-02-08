@@ -50,6 +50,9 @@ module Deli
         warn
       end
 
+      Deli::SymbolDefiner.new(source_code, stmts).call
+      Deli::SymbolResolver.new(source_code, stmts).call
+
       evaluator = Deli::Evaluator.new(source_code, stmts)
       evaluator.call
     rescue Deli::Error => e

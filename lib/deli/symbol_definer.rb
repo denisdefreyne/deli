@@ -6,7 +6,7 @@ module Deli
       @source_code = source_code
       @stmts = stmts
 
-      @scope = Scope.new
+      @scope = Scope.new(source_code: @source_code)
     end
 
     def call
@@ -21,7 +21,8 @@ module Deli
       case stmt
       when AST::VarStmt
         eval_expr(stmt.expr)
-        @scope.define(stmt.ident.value)
+        symbol = @scope.define(stmt.ident.value)
+        stmt.symbol = symbol
       when AST::PrintStmt
         eval_expr(stmt.expr)
       when AST::IfStmt
@@ -34,10 +35,20 @@ module Deli
         eval_expr(stmt.cond_expr)
         eval_stmt(stmt.body_stmt)
       when AST::GroupStmt
-        stmt.stmts.each { |s| eval_stmt(s) }
+        push_scope do
+          stmt.stmts.each { |s| eval_stmt(s) }
+        end
       when AST::FunStmt
-        eval_stmt(stmt.body_stmt)
-        @scope.define(stmt.ident.value)
+        symbol = @scope.define(stmt.ident.value)
+        stmt.symbol = symbol
+
+        push_scope do
+          stmt.params.each do |param|
+            @scope.define(param.value)
+          end
+
+          eval_stmt(stmt.body_stmt)
+        end
       when AST::ExprStmt
         eval_expr(stmt.expr)
       when AST::ReturnStmt
@@ -72,6 +83,13 @@ module Deli
         raise Deli::InternalInconsistencyError,
           "Unexpected expr class: #{expr.class}"
       end
+    end
+
+    def push_scope
+      @scope = Scope.new(source_code: @scope.source_code, parent: @scope)
+      yield
+    ensure
+      @scope = @scope.parent
     end
   end
 end

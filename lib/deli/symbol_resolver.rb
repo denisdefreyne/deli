@@ -46,7 +46,7 @@ module Deli
       case expr
       when AST::IntegerExpr
       when AST::IdentifierExpr
-        symbol = expr.scope[expr.ident.value]
+        symbol = expr.scope.resolve(expr.ident.value, expr.ident.span)
         expr.symbol = symbol
       when AST::CallExpr
         eval_expr(expr.callee)

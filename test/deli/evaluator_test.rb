@@ -31,7 +31,7 @@ class TestDeliEvaluator < Minitest::Test
   end
 
   def test_assign_invalid
-    error = assert_raises(Deli::LocatableError) { evaluate('r() = 100;') }
+    error = assert_raises(Deli::LocatableError) { evaluate('var r = 1; r() = 100;') }
 
     assert_equal('Left-hand side cannot be assigned to', error.short_message)
   end
@@ -193,6 +193,8 @@ class TestDeliEvaluator < Minitest::Test
     source_code = Deli::SourceCode.new('(test)', string)
     tokens = Deli::Lexer.new(source_code).call
     stmts = Deli::Parser.new(source_code, tokens).call
+    Deli::SymbolDefiner.new(source_code, stmts).call
+    Deli::SymbolResolver.new(source_code, stmts).call
     Deli::Evaluator.new(source_code, stmts).call
   end
 end

@@ -64,6 +64,8 @@ module Deli
     VarStmt = Struct.new(:ident, :expr) do
       include SExp
 
+      attr_accessor :symbol
+
       def to_sexp
         [:var, ident.value, expr]
       end
@@ -111,6 +113,8 @@ module Deli
 
     FunStmt = Struct.new(:ident, :params, :body_stmt) do
       include SExp
+
+      attr_accessor :symbol
 
       def to_sexp
         [:fun, ident.value, *params.map(&:value), body_stmt]
@@ -171,6 +175,8 @@ module Deli
 
     AssignExpr = Struct.new(:left_expr, :token, :right_expr) do
       include SExp
+
+      attr_accessor :symbol
 
       def to_sexp
         [:assign, left_expr, right_expr]

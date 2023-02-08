@@ -12,39 +12,43 @@ module Deli
         @values = {}
       end
 
-      def lookup(symbol, token)
-        # TODO: use symbol
-        # TODO: maybe pass only token, not symbol
+      def lookup(symbol, span)
+        unless symbol
+          raise 'symbol cannot be nil'
+        end
 
-        @values.fetch(token.value) do
+        @values.fetch(symbol) do
           if @parent
-            @parent.lookup(symbol, token)
+            @parent.lookup(symbol, span)
           else
             raise Deli::LocatableError.new(
               @source_code,
-              token.span,
-              "Unknown name: #{token.value}",
+              span,
+              "Unknown name: #{symbol.name}",
             )
           end
         end
       end
 
-      def assign_new(token, _symbol, value)
-        # TODO: use symbol
-        @values[token.value] = value
+      def assign_new(symbol, value)
+        @values[symbol] = value
       end
 
-      def assign_existing(token, symbol, value)
+      def assign_existing(symbol, value, span)
+        unless symbol
+          raise 'symbol cannot be nil'
+        end
+
         # TODO: use symbol
-        if @values.key?(token.value)
-          @values[token.value] = value
+        if @values.key?(symbol)
+          @values[symbol] = value
         elsif @parent
-          @parent.assign_existing(token, symbol, value)
+          @parent.assign_existing(symbol, value, span)
         else
           raise Deli::LocatableError.new(
             @source_code,
-            token.span,
-            "Unknown name: #{token.value}",
+            span,
+            "Unknown name: #{symbol.name}",
           )
         end
       end
@@ -77,8 +81,7 @@ module Deli
       case stmt
       when AST::VarStmt
         value = eval_expr(stmt.expr)
-        # TODO: use symbol
-        @env.assign_new(stmt.ident, nil, value)
+        @env.assign_new(stmt.symbol, value)
       when AST::PrintStmt
         value = eval_expr(stmt.expr)
         puts(stringify(value))
@@ -99,8 +102,7 @@ module Deli
         end
       when AST::FunStmt
         fn = Fun.new(stmt.params, stmt.body_stmt)
-        # TODO: use symbol
-        @env.assign_new(stmt.ident, nil, fn)
+        @env.assign_new(stmt.symbol, fn)
       when AST::ExprStmt
         eval_expr(stmt.expr)
       when AST::ReturnStmt
@@ -120,7 +122,7 @@ module Deli
       when AST::IntegerExpr
         expr.value
       when AST::IdentifierExpr
-        @env.lookup(expr.symbol, expr.ident)
+        @env.lookup(expr.symbol, expr.ident.span)
       when AST::CallExpr
         callee = eval_expr(expr.callee)
 
@@ -135,8 +137,8 @@ module Deli
 
         push_env do
           callee.params.zip(expr.arg_exprs) do |param, arg_expr|
-            # TODO: use symbol
-            @env.assign_new(param, nil, eval_expr(arg_expr))
+            param_symbol = callee.body_stmt.scope.resolve(param.value, param.span)
+            @env.assign_new(param_symbol, eval_expr(arg_expr))
           end
 
           catch :return do
@@ -159,8 +161,7 @@ module Deli
         end
 
         right_value = eval_expr(expr.right_expr)
-        # TODO: use symbol
-        @env.assign_existing(expr.left_expr.ident, nil, right_value)
+        @env.assign_existing(expr.left_expr.symbol, right_value, expr.left_expr.ident.span)
       when AST::UnaryExpr
         val = eval_expr(expr.expr)
 
