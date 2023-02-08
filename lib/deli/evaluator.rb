@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Deli
-  class Evaluator
+  class Evaluator < AbstractWalker
     class Env
       attr_reader :parent
 
@@ -65,144 +65,159 @@ module Deli
     end
 
     def initialize(source_code, stmts)
+      super(stmts)
+
       @source_code = source_code
-      @stmts = stmts
 
       @env = Env.new(source_code)
     end
 
-    def call
-      @stmts.each { eval_stmt(_1) }
-    end
-
     private
 
-    def eval_stmt(stmt)
-      case stmt
-      when AST::VarStmt
-        value = eval_expr(stmt.expr)
-        @env.assign_new(stmt.symbol, value)
-      when AST::PrintStmt
-        value = eval_expr(stmt.expr)
-        puts(stringify(value))
-      when AST::IfStmt
-        value = eval_expr(stmt.cond_expr)
-        if value
-          eval_stmt(stmt.true_stmt)
-        elsif stmt.false_stmt
-          eval_stmt(stmt.false_stmt)
-        end
-      when AST::WhileStmt
-        while eval_expr(stmt.cond_expr)
-          eval_stmt(stmt.body_stmt)
-        end
-      when AST::GroupStmt
-        push_env do
-          stmt.stmts.each { eval_stmt(_1) }
-        end
-      when AST::FunStmt
-        fn = Fun.new(stmt.params, stmt.body_stmt)
-        @env.assign_new(stmt.symbol, fn)
-      when AST::ExprStmt
-        eval_expr(stmt.expr)
-      when AST::ReturnStmt
-        if stmt.expr
-          throw :return, eval_expr(stmt.expr)
-        else
-          throw :return
-        end
-      else
-        raise Deli::InternalInconsistencyError,
-          "Unexpected stmt class: #{stmt.class}"
+    def handle_var_stmt(stmt)
+      value = handle(stmt.expr)
+      @env.assign_new(stmt.symbol, value)
+    end
+
+    def handle_print_stmt(stmt)
+      value = handle(stmt.expr)
+      puts(stringify(value))
+    end
+
+    def handle_if_stmt(stmt)
+      value = handle(stmt.cond_expr)
+      if value
+        handle(stmt.true_stmt)
+      elsif stmt.false_stmt
+        handle(stmt.false_stmt)
       end
     end
 
-    def eval_expr(expr)
-      case expr
-      when AST::IntegerExpr
-        expr.value
-      when AST::IdentifierExpr
-        @env.lookup(expr.symbol, expr.ident.span)
-      when AST::CallExpr
-        callee = eval_expr(expr.callee)
+    def handle_while_stmt(stmt)
+      while handle(stmt.cond_expr)
+        handle(stmt.body_stmt)
+      end
+    end
 
-        unless callee.is_a?(Fun)
-          # TODO: raise locatable error
-          raise 'nope'
+    def handle_group_stmt(stmt)
+      push_env do
+        stmt.stmts.each { handle(_1) }
+      end
+    end
+
+    def handle_fun_stmt(stmt)
+      fn = Fun.new(stmt.params, stmt.body_stmt)
+      @env.assign_new(stmt.symbol, fn)
+    end
+
+    def handle_expr_stmt(stmt)
+      handle(stmt.expr)
+    end
+
+    def handle_return_stmt(stmt)
+      if stmt.expr
+        throw :return, handle(stmt.expr)
+      else
+        throw :return
+      end
+    end
+
+    def handle_integer_expr(expr)
+      expr.value
+    end
+
+    def handle_identifier_expr(expr)
+      @env.lookup(expr.symbol, expr.ident.span)
+    end
+
+    def handle_call_expr(expr)
+      callee = handle(expr.callee)
+
+      unless callee.is_a?(Fun)
+        # TODO: raise locatable error
+        raise 'nope'
+      end
+
+      unless callee.params.size == expr.arg_exprs.size
+        raise 'args count mismatch'
+      end
+
+      push_env do
+        callee.params.zip(expr.arg_exprs) do |param, arg_expr|
+          @env.assign_new(param.symbol, handle(arg_expr))
         end
 
-        unless callee.params.size == expr.arg_exprs.size
-          raise 'args count mismatch'
+        catch :return do
+          handle(callee.body_stmt)
         end
+      end
+    end
 
-        push_env do
-          callee.params.zip(expr.arg_exprs) do |param, arg_expr|
-            @env.assign_new(param.symbol, eval_expr(arg_expr))
-          end
+    def handle_true_expr(_expr)
+      true
+    end
 
-          catch :return do
-            eval_stmt(callee.body_stmt)
-          end
-        end
-      when AST::TrueExpr
-        true
-      when AST::FalseExpr
-        false
-      when AST::NullExpr
-        nil
-      when AST::AssignExpr
-        unless expr.left_expr.is_a?(AST::IdentifierExpr)
-          raise Deli::LocatableError.new(
-            @source_code,
-            expr.token.span,
-            'Left-hand side cannot be assigned to',
-          )
-        end
+    def handle_false_expr(_expr)
+      false
+    end
 
-        right_value = eval_expr(expr.right_expr)
-        @env.assign_existing(expr.left_expr.symbol, right_value, expr.left_expr.ident.span)
-      when AST::UnaryExpr
-        val = eval_expr(expr.expr)
+    def handle_null_expr(_expr)
+      nil
+    end
 
-        case expr.op.type
-        when TokenType::PLUS
-          val
-        when TokenType::MINUS
-          -val
-        when TokenType::BANG
-          !val
-        else
-          raise Deli::InternalInconsistencyError,
-            "Unexpected unary operator: #{expr.op}"
-        end
-      when AST::BinaryExpr
-        left_val = eval_expr(expr.left_expr)
-        right_val = eval_expr(expr.right_expr)
+    def handle_assign_expr(expr)
+      unless expr.left_expr.is_a?(AST::IdentifierExpr)
+        raise Deli::LocatableError.new(
+          @source_code,
+          expr.token.span,
+          'Left-hand side cannot be assigned to',
+        )
+      end
 
-        case expr.op.type
-        when TokenType::PLUS
-          left_val + right_val
-        when TokenType::MINUS
-          left_val - right_val
-        when TokenType::ASTERISK
-          left_val * right_val
-        when TokenType::SLASH
-          left_val / right_val
-        when TokenType::LT
-          left_val < right_val
-        when TokenType::LTE
-          left_val <= right_val
-        when TokenType::GT
-          left_val > right_val
-        when TokenType::GTE
-          left_val >= right_val
-        else
-          raise Deli::InternalInconsistencyError,
-            "Unexpected unary operator: #{expr.op}"
-        end
+      right_value = handle(expr.right_expr)
+      @env.assign_existing(expr.left_expr.symbol, right_value, expr.left_expr.ident.span)
+    end
+
+    def handle_unary_expr(expr)
+      val = handle(expr.expr)
+
+      case expr.op.type
+      when TokenType::PLUS
+        val
+      when TokenType::MINUS
+        -val
+      when TokenType::BANG
+        !val
       else
         raise Deli::InternalInconsistencyError,
-          "Unexpected expr class: #{expr.class}"
+          "Unexpected unary operator: #{expr.op}"
+      end
+    end
+
+    def handle_binary_expr(expr)
+      left_val = handle(expr.left_expr)
+      right_val = handle(expr.right_expr)
+
+      case expr.op.type
+      when TokenType::PLUS
+        left_val + right_val
+      when TokenType::MINUS
+        left_val - right_val
+      when TokenType::ASTERISK
+        left_val * right_val
+      when TokenType::SLASH
+        left_val / right_val
+      when TokenType::LT
+        left_val < right_val
+      when TokenType::LTE
+        left_val <= right_val
+      when TokenType::GT
+        left_val > right_val
+      when TokenType::GTE
+        left_val >= right_val
+      else
+        raise Deli::InternalInconsistencyError,
+          "Unexpected unary operator: #{expr.op}"
       end
     end
 
