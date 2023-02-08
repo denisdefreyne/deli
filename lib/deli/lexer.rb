@@ -2,71 +2,9 @@
 
 module Deli
   class Lexer
-    class TrackingStringScanner
-      def initialize(source_code)
-        @scanner = StringScanner.new(source_code.string)
-        @filename = source_code.filename
-
-        @prev_row = 0
-        @prev_col = 0
-
-        @row = 0
-        @col = 0
-      end
-
-      def eos?
-        @scanner.eos?
-      end
-
-      def scan_newline
-        res = @scanner.scan(/\n+/)
-        return nil if res.nil?
-
-        advance
-        @row += res.size
-        @col = 0
-
-        res
-      end
-
-      def scan(pattern)
-        res = @scanner.scan(pattern)
-        return nil if res.nil?
-
-        advance
-        @col += res.size
-
-        res
-      end
-
-      def span
-        Span.new(@filename, @prev_row, @prev_col, matched.length)
-      end
-
-      def matched
-        @scanner.matched
-      end
-
-      def getch
-        res = @scanner.getch
-        return nil if res.nil?
-
-        advance
-        @col += res.size
-
-        res
-      end
-
-      private
-
-      def advance
-        @prev_row = @row
-        @prev_col = @col
-      end
-    end
-
     def initialize(source_code)
-      @scanner = TrackingStringScanner.new(source_code)
+      @source_code = source_code
+      @scanner = StringScanner.new(source_code.string)
     end
 
     def call
@@ -89,7 +27,8 @@ module Deli
         nil
 
       # Whitespace
-      elsif @scanner.scan_newline || @scanner.scan(/[^\S\n]+/)
+      # TODO: combine
+      elsif @scanner.scan(/\n+/) || @scanner.scan(/[^\S\n]+/)
         lex_token
 
       # Two-character tokens
@@ -180,11 +119,17 @@ module Deli
     end
 
     def new_token(type, value = nil)
+      span = Span.new(
+        @source_code.filename,
+        @scanner.pos - @scanner.matched.length,
+        @scanner.matched.length,
+      )
+
       Token.new(
         type: type,
         lexeme: @scanner.matched,
         value: value,
-        span: @scanner.span,
+        span: span,
       )
     end
   end

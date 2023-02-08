@@ -56,8 +56,7 @@ module Deli
       evaluator = Deli::Evaluator.new(stmts)
       evaluator.call
     rescue Deli::LocatableError => e
-      warn "#{e.span.filename}:#{e.span.row + 1}: #{e.message}"
-      warn source_code.show_span(e.span)
+      warn source_code.show_span(e.span, e.message)
       exit 1
     rescue Deli::Error => e
       warn e.message

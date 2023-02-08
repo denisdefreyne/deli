@@ -85,7 +85,7 @@ class TestDeliSymbolDefinerResolver < Minitest::Test
   private
 
   def span
-    Deli::Span.new('abc.deli', 2, 3, 4)
+    Deli::Span.new('abc.deli', 12, 4)
   end
 
   def define_and_resolve(string)
