@@ -44,7 +44,7 @@ module Deli
 
         push_scope do
           stmt.params.each do |param|
-            @scope.define(param.value)
+            param.symbol = @scope.define(param.name.value)
           end
 
           eval_stmt(stmt.body_stmt)

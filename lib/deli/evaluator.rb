@@ -137,8 +137,7 @@ module Deli
 
         push_env do
           callee.params.zip(expr.arg_exprs) do |param, arg_expr|
-            param_symbol = callee.body_stmt.scope.resolve(param.value, param.span)
-            @env.assign_new(param_symbol, eval_expr(arg_expr))
+            @env.assign_new(param.symbol, eval_expr(arg_expr))
           end
 
           catch :return do

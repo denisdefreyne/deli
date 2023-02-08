@@ -111,13 +111,23 @@ module Deli
       end
     end
 
+    Param = Struct.new(:name) do
+      include SExp
+
+      attr_accessor :symbol
+
+      def to_sexp
+        [:param, name.value]
+      end
+    end
+
     FunStmt = Struct.new(:ident, :params, :body_stmt) do
       include SExp
 
       attr_accessor :symbol
 
       def to_sexp
-        [:fun, ident.value, *params.map(&:value), body_stmt]
+        [:fun, ident.value, *params, body_stmt]
       end
     end
 

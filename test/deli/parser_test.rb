@@ -57,14 +57,14 @@ class TestDeliParser < Minitest::Test
   def test_fun_def_one_param
     stmts = parse('fun foo(a) {}')
 
-    assert_equal('(fun "foo" "a" (group))', stmts.shift.inspect)
+    assert_equal('(fun "foo" (param "a") (group))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 
   def test_fun_def_two_params
     stmts = parse('fun foo(a, b) {}')
 
-    assert_equal('(fun "foo" "a" "b" (group))', stmts.shift.inspect)
+    assert_equal('(fun "foo" (param "a") (param "b") (group))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 
