@@ -2,12 +2,10 @@
 
 module Deli
   class SymbolDefiner < AbstractWalker
-    def initialize(source_code, stmts)
+    def initialize(stmts)
       super(stmts)
 
-      @source_code = source_code
-
-      @scope = Scope.new(source_code: @source_code)
+      @scope = Scope.new
     end
 
     private
@@ -103,7 +101,7 @@ module Deli
     end
 
     def push_scope
-      @scope = Scope.new(source_code: @scope.source_code, parent: @scope)
+      @scope = Scope.new(parent: @scope)
       yield
     ensure
       @scope = @scope.parent

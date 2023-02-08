@@ -192,8 +192,8 @@ class TestDeliEvaluator < Minitest::Test
   def evaluate(string)
     source_code = Deli::SourceCode.new('(test)', string)
     tokens = Deli::Lexer.new(source_code).call
-    stmts = Deli::Parser.new(source_code, tokens).call
-    Deli::SymbolDefiner.new(source_code, stmts).call
+    stmts = Deli::Parser.new(tokens).call
+    Deli::SymbolDefiner.new(stmts).call
     Deli::SymbolResolver.new(stmts).call
     Deli::Evaluator.new(stmts).call
   end

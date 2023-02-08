@@ -3,8 +3,9 @@
 module Deli
   class Lexer
     class TrackingStringScanner
-      def initialize(string)
-        @scanner = StringScanner.new(string)
+      def initialize(source_code)
+        @scanner = StringScanner.new(source_code.string)
+        @filename = source_code.filename
 
         @prev_row = 0
         @prev_col = 0
@@ -39,7 +40,7 @@ module Deli
       end
 
       def span
-        Span.new(@prev_row, @prev_col, matched.length)
+        Span.new(@filename, @prev_row, @prev_col, matched.length)
       end
 
       def matched
@@ -66,7 +67,7 @@ module Deli
 
     def initialize(source_code)
       @source_code = source_code
-      @scanner = TrackingStringScanner.new(source_code.string)
+      @scanner = TrackingStringScanner.new(source_code)
     end
 
     def call

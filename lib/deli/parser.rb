@@ -2,8 +2,7 @@
 
 module Deli
   class Parser
-    def initialize(source_code, tokens)
-      @source_code = source_code
+    def initialize(tokens)
       @tokens = tokens.dup
     end
 

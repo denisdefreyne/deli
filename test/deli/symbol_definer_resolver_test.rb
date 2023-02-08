@@ -85,14 +85,14 @@ class TestDeliSymbolDefinerResolver < Minitest::Test
   private
 
   def span
-    Deli::Span.new(2, 3, 4)
+    Deli::Span.new('abc.deli', 2, 3, 4)
   end
 
   def define_and_resolve(string)
     source_code = Deli::SourceCode.new('(test)', string)
     tokens = Deli::Lexer.new(source_code).call
-    stmts = Deli::Parser.new(source_code, tokens).call
-    Deli::SymbolDefiner.new(source_code, stmts).call
+    stmts = Deli::Parser.new(tokens).call
+    Deli::SymbolDefiner.new(stmts).call
     Deli::SymbolResolver.new(stmts).call
     stmts
   end

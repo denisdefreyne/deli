@@ -38,7 +38,7 @@ module Deli
         warn
       end
 
-      parser = Deli::Parser.new(source_code, tokens)
+      parser = Deli::Parser.new(tokens)
       stmts = parser.call
       if options.fetch(:dump_ast, false)
         warn '--- AST'
@@ -50,13 +50,13 @@ module Deli
         warn
       end
 
-      Deli::SymbolDefiner.new(source_code, stmts).call
+      Deli::SymbolDefiner.new(stmts).call
       Deli::SymbolResolver.new(stmts).call
 
       evaluator = Deli::Evaluator.new(stmts)
       evaluator.call
     rescue Deli::LocatableError => e
-      warn "#{source_code.filename}:#{e.span.row + 1}: #{e.message}"
+      warn "#{e.span.filename}:#{e.span.row + 1}: #{e.message}"
       warn source_code.show_span(e.span)
       exit 1
     rescue Deli::Error => e

@@ -222,6 +222,6 @@ class TestDeliParser < Minitest::Test
   def parse(string)
     source_code = Deli::SourceCode.new('(test)', string)
     tokens = Deli::Lexer.new(source_code).call
-    Deli::Parser.new(source_code, tokens).call
+    Deli::Parser.new(tokens).call
   end
 end

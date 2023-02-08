@@ -2,11 +2,9 @@
 
 module Deli
   class Scope
-    attr_reader :source_code
     attr_reader :parent
 
-    def initialize(source_code:, parent: nil)
-      @source_code = source_code
+    def initialize(parent: nil)
       @parent = parent
 
       @contents = {}
