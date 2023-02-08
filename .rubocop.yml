@@ -275,3 +275,11 @@ Minitest/UnspecifiedException: # new in 0.10
   Enabled: true
 Minitest/UselessAssertion: # new in 0.26
   Enabled: true
+Gemspec/DevelopmentDependencies: # new in 1.44
+  Enabled: true
+Lint/UselessRescue: # new in 1.43
+  Enabled: true
+Style/ComparableClamp: # new in 1.44
+  Enabled: true
+Style/RedundantHeredocDelimiterQuotes: # new in 1.45
+  Enabled: true
