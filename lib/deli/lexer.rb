@@ -27,8 +27,7 @@ module Deli
         nil
 
       # Whitespace
-      # TODO: combine
-      elsif @scanner.scan(/\n+/) || @scanner.scan(/[^\S\n]+/)
+      elsif @scanner.scan(/\s+/)
         lex_token
 
       # Two-character tokens
