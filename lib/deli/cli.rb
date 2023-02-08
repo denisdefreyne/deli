@@ -53,7 +53,7 @@ module Deli
       Deli::SymbolDefiner.new(source_code, stmts).call
       Deli::SymbolResolver.new(stmts).call
 
-      evaluator = Deli::Evaluator.new(source_code, stmts)
+      evaluator = Deli::Evaluator.new(stmts)
       evaluator.call
     rescue Deli::LocatableError => e
       warn "#{source_code.filename}:#{e.span.row + 1}: #{e.message}"

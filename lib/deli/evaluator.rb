@@ -5,8 +5,7 @@ module Deli
     class Env
       attr_reader :parent
 
-      def initialize(source_code, parent: nil)
-        @source_code = source_code
+      def initialize(parent: nil)
         @parent = parent
 
         @values = {}
@@ -61,12 +60,10 @@ module Deli
       end
     end
 
-    def initialize(source_code, stmts)
+    def initialize(stmts)
       super(stmts)
 
-      @source_code = source_code
-
-      @env = Env.new(source_code)
+      @env = Env.new
     end
 
     private
@@ -218,7 +215,7 @@ module Deli
     end
 
     def push_env
-      @env = Env.new(@source_code, parent: @env)
+      @env = Env.new(parent: @env)
       yield
     ensure
       @env = @env.parent

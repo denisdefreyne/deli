@@ -27,13 +27,13 @@ class TestDeliEvaluator < Minitest::Test
   def test_assign_unknown
     error = assert_raises(Deli::LocatableError) { evaluate('r = 100;') }
 
-    assert_equal('Unknown name: r', error.short_message)
+    assert_equal('Unknown name: r', error.message)
   end
 
   def test_assign_invalid
     error = assert_raises(Deli::LocatableError) { evaluate('var r = 1; r() = 100;') }
 
-    assert_equal('Left-hand side cannot be assigned to', error.short_message)
+    assert_equal('Left-hand side cannot be assigned to', error.message)
   end
 
   def test_if_without_else_true
@@ -195,6 +195,6 @@ class TestDeliEvaluator < Minitest::Test
     stmts = Deli::Parser.new(source_code, tokens).call
     Deli::SymbolDefiner.new(source_code, stmts).call
     Deli::SymbolResolver.new(stmts).call
-    Deli::Evaluator.new(source_code, stmts).call
+    Deli::Evaluator.new(stmts).call
   end
 end
