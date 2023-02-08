@@ -1,6 +1,5 @@
 - [ ] Error handling
   - [ ] Testing of error handling
-- [ ] Scopes, symbols, bindings
 - [ ] Returnable functions
 
 Maybe later:
