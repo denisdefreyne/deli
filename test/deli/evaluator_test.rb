@@ -194,7 +194,7 @@ class TestDeliEvaluator < Minitest::Test
     tokens = Deli::Lexer.new(source_code).call
     stmts = Deli::Parser.new(source_code, tokens).call
     Deli::SymbolDefiner.new(source_code, stmts).call
-    Deli::SymbolResolver.new(source_code, stmts).call
+    Deli::SymbolResolver.new(stmts).call
     Deli::Evaluator.new(source_code, stmts).call
   end
 end

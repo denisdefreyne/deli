@@ -11,6 +11,7 @@ require_relative 'deli/version'
 require_relative 'deli/source_code'
 require_relative 'deli/error'
 require_relative 'deli/span'
+require_relative 'deli/abstract_walker'
 
 # Primary models
 require_relative 'deli/token'

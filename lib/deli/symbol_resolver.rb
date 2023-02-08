@@ -1,71 +1,78 @@
 # frozen_string_literal: true
 
 module Deli
-  class SymbolResolver
-    def initialize(source_code, stmts)
-      @source_code = source_code
-      @stmts = stmts
+  class SymbolResolver < AbstractWalker
+    def handle_var_stmt(stmt)
+      handle(stmt.expr)
     end
 
-    def call
-      @stmts.each { eval_stmt(_1) }
+    def handle_print_stmt(stmt)
+      handle(stmt.expr)
     end
 
-    private
-
-    def eval_stmt(stmt)
-      case stmt
-      when AST::VarStmt
-        eval_expr(stmt.expr)
-      when AST::PrintStmt
-        eval_expr(stmt.expr)
-      when AST::IfStmt
-        eval_expr(stmt.cond_expr)
-        eval_stmt(stmt.true_stmt)
-        if stmt.false_stmt
-          eval_stmt(stmt.false_stmt)
-        end
-      when AST::WhileStmt
-        eval_expr(stmt.cond_expr)
-        eval_stmt(stmt.body_stmt)
-      when AST::GroupStmt
-        stmt.stmts.each { |s| eval_stmt(s) }
-      when AST::FunStmt
-        eval_stmt(stmt.body_stmt)
-      when AST::ExprStmt
-        eval_expr(stmt.expr)
-      when AST::ReturnStmt
-        eval_expr(stmt.expr)
-      else
-        raise Deli::InternalInconsistencyError,
-          "Unexpected stmt class: #{stmt.class}"
+    def handle_if_stmt(stmt)
+      handle(stmt.cond_expr)
+      handle(stmt.true_stmt)
+      if stmt.false_stmt
+        handle(stmt.false_stmt)
       end
     end
 
-    def eval_expr(expr)
-      case expr
-      when AST::IntegerExpr
-      when AST::IdentifierExpr
-        symbol = expr.scope.resolve(expr.ident.value, expr.ident.span)
-        expr.symbol = symbol
-      when AST::CallExpr
-        eval_expr(expr.callee)
-        expr.arg_exprs.each { |ae| eval_expr(ae) }
-      when AST::TrueExpr
-      when AST::FalseExpr
-      when AST::NullExpr
-      when AST::AssignExpr
-        eval_expr(expr.left_expr)
-        eval_expr(expr.right_expr)
-      when AST::UnaryExpr
-        eval_expr(expr.expr)
-      when AST::BinaryExpr
-        eval_expr(expr.left_expr)
-        eval_expr(expr.right_expr)
-      else
-        raise Deli::InternalInconsistencyError,
-          "Unexpected expr class: #{expr.class}"
-      end
+    def handle_while_stmt(stmt)
+      handle(stmt.cond_expr)
+      handle(stmt.body_stmt)
+    end
+
+    def handle_group_stmt(stmt)
+      stmt.stmts.each { |s| handle(s) }
+    end
+
+    def handle_fun_stmt(stmt)
+      handle(stmt.body_stmt)
+    end
+
+    def handle_expr_stmt(stmt)
+      handle(stmt.expr)
+    end
+
+    def handle_return_stmt(stmt)
+      handle(stmt.expr)
+    end
+
+    def handle_integer_expr(expr)
+    end
+
+    def handle_identifier_expr(expr)
+      symbol = expr.scope.resolve(expr.ident.value, expr.ident.span)
+      expr.symbol = symbol
+    end
+
+    def handle_call_expr(expr)
+      handle(expr.callee)
+      expr.arg_exprs.each { |ae| handle(ae) }
+    end
+
+    def handle_true_expr(expr)
+    end
+
+    def handle_false_expr(expr)
+    end
+
+    def handle_null_expr(expr)
+    end
+
+    def handle_assign_expr(expr)
+      handle(expr.left_expr)
+      handle(expr.right_expr)
+    end
+
+    def handle_unary_expr(expr)
+      handle(expr.expr)
+    end
+
+    def handle_binary_expr(expr)
+      handle(expr.left_expr)
+      handle(expr.right_expr)
     end
   end
 end
