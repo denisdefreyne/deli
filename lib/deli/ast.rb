@@ -149,6 +149,14 @@ module Deli
       end
     end
 
+    StringExpr = Struct.new(:value) do
+      include SExp
+
+      def to_sexp
+        [:string, value]
+      end
+    end
+
     IdentifierExpr = Struct.new(:ident) do
       include SExp
 

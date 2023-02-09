@@ -74,6 +74,10 @@ module Deli
       elsif @scanner.scan(']')
         new_token(TokenType::RBRACKET)
 
+      # String
+      elsif @scanner.scan(/"[^"]+"/)
+        new_token(TokenType::STRING, @scanner.matched[1..-2])
+
       # Values
       elsif @scanner.scan(/\d+/)
         new_token(TokenType::NUMBER, @scanner.matched)

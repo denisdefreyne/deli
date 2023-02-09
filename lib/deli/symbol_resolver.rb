@@ -42,6 +42,9 @@ module Deli
     def handle_integer_expr(expr)
     end
 
+    def handle_string_expr(expr)
+    end
+
     def handle_identifier_expr(expr)
       symbol = expr.scope.resolve(expr.ident.value, expr.ident.span)
       expr.symbol = symbol

@@ -120,6 +120,10 @@ module Deli
       expr.value
     end
 
+    def handle_string_expr(expr)
+      expr.value
+    end
+
     def handle_identifier_expr(expr)
       @env.lookup(expr.symbol, expr.ident.span)
     end

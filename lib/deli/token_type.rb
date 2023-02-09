@@ -38,6 +38,7 @@ module Deli
     LBRACKET  = TokenType.new(:LBRACKET,  '“[”')
     RBRACKET  = TokenType.new(:RBRACKET,  '“]”')
 
+    STRING    = TokenType.new(:STRING,    'string')
     NUMBER    = TokenType.new(:NUMBER,    'number')
     IDENT     = TokenType.new(:IDENT,     'identifier')
 

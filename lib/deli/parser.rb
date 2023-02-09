@@ -212,6 +212,12 @@ module Deli
     )
 
     PARSE_RULES.register(
+      TokenType::STRING,
+      Precedence::NONE,
+      prefix: :parse_string,
+    )
+
+    PARSE_RULES.register(
       TokenType::KW_TRUE,
       Precedence::NONE,
       prefix: :parse_true,
@@ -338,6 +344,10 @@ module Deli
       end
 
       expr
+    end
+
+    def parse_string(token)
+      Deli::AST::StringExpr.new(token.value)
     end
 
     def parse_number(token)

@@ -187,6 +187,12 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("true\ntrue\nfalse\nfalse\n", $stdout.string)
   end
 
+  def test_string_basic
+    evaluate('print "Hello, world!";')
+
+    assert_equal("Hello, world!\n", $stdout.string)
+  end
+
   private
 
   def evaluate(string)
