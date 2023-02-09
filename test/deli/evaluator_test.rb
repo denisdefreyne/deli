@@ -193,6 +193,19 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("Hello, world!\n", $stdout.string)
   end
 
+  def test_string_concat
+    evaluate('print "Hello, " + "world!";')
+
+    assert_equal("Hello, world!\n", $stdout.string)
+  end
+
+  # FIXME: This should be its own error
+  def test_string_minus
+    error = assert_raises(NoMethodError) { evaluate('"hello" - "world";') }
+
+    assert_equal("undefined method `-' for \"hello\":String", error.message)
+  end
+
   private
 
   def evaluate(string)
