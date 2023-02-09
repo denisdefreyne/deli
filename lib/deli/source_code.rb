@@ -30,15 +30,15 @@ module Deli
       row = 0
       col = 0
 
-      while !scanner.eos? && scanner.pos < offset
+      while !scanner.eos? && scanner.charpos < offset
         if scanner.scan(/\n/)
           row += 1
           col = 0
         elsif scanner.scan(/[^\n]+/)
           col += scanner.matched.length
 
-          if scanner.pos > offset
-            col -= (scanner.pos - offset)
+          if scanner.charpos > offset
+            col -= (scanner.charpos - offset)
           end
         end
       end

@@ -120,7 +120,7 @@ module Deli
     def new_token(type, value = nil)
       span = Span.new(
         @source_code.filename,
-        @scanner.pos - @scanner.matched.length,
+        @scanner.charpos - @scanner.matched.length,
         @scanner.matched.length,
       )
 
