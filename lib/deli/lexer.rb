@@ -112,18 +112,20 @@ module Deli
         char = @scanner.getch
         raise Deli::LocatableError.new(
           "Unknown character: #{char}",
-          @scanner.span,
+          span,
         )
       end
     end
 
-    def new_token(type, value = nil)
-      span = Span.new(
+    def span
+      Span.new(
         @source_code.filename,
         @scanner.charpos - @scanner.matched.length,
         @scanner.matched.length,
       )
+    end
 
+    def new_token(type, value = nil)
       Token.new(
         type: type,
         lexeme: @scanner.matched,

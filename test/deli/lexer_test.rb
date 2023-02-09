@@ -84,6 +84,12 @@ class TestDeliLexer < Minitest::Test
     assert_nil(tokens.shift)
   end
 
+  def test_error
+    error = assert_raises(Deli::LocatableError) { lex('#') }
+
+    assert_equal('Unknown character: #', error.message)
+  end
+
   private
 
   def lex(string)
