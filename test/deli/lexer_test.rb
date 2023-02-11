@@ -88,50 +88,50 @@ class TestDeliLexer < Minitest::Test
   def test_string_basic
     tokens = lex('"stuff"')
 
-    assert_token(:STRING_START,    '"',     nil,     tokens.shift)
-    assert_token(:STRING_PART_LIT, 'stuff', 'stuff', tokens.shift)
-    assert_token(:STRING_END,      '"',     nil,     tokens.shift)
-    assert_token(:EOF,             '',      nil,     tokens.shift)
+    assert_token(:DQUO, '"',     nil,     tokens.shift)
+    assert_token(:LIT,  'stuff', 'stuff', tokens.shift)
+    assert_token(:DQUO, '"',     nil,     tokens.shift)
+    assert_token(:EOF,  '',      nil,     tokens.shift)
     assert_nil(tokens.shift)
   end
 
   def test_string_escape
     tokens = lex('"abc \" xyz"')
 
-    assert_token(:STRING_START,    '"',    nil,     tokens.shift)
-    assert_token(:STRING_PART_LIT, 'abc ', 'abc ',  tokens.shift)
-    assert_token(:STRING_PART_LIT, '\\"',  '"',     tokens.shift)
-    assert_token(:STRING_PART_LIT, ' xyz', ' xyz',  tokens.shift)
-    assert_token(:STRING_END,      '"',    nil,     tokens.shift)
-    assert_token(:EOF,             '',     nil,     tokens.shift)
+    assert_token(:DQUO, '"',    nil,     tokens.shift)
+    assert_token(:LIT,  'abc ', 'abc ',  tokens.shift)
+    assert_token(:LIT,  '\\"',  '"',     tokens.shift)
+    assert_token(:LIT,  ' xyz', ' xyz',  tokens.shift)
+    assert_token(:DQUO, '"',    nil,     tokens.shift)
+    assert_token(:EOF,  '',     nil,     tokens.shift)
     assert_nil(tokens.shift)
   end
 
   def test_string_dollar
     tokens = lex('"a$z"')
 
-    assert_token(:STRING_START,    '"', nil,  tokens.shift)
-    assert_token(:STRING_PART_LIT, 'a', 'a',  tokens.shift)
-    assert_token(:STRING_PART_LIT, '$', '$',  tokens.shift)
-    assert_token(:STRING_PART_LIT, 'z', 'z',  tokens.shift)
-    assert_token(:STRING_END,      '"', nil,  tokens.shift)
-    assert_token(:EOF,             '',  nil,  tokens.shift)
+    assert_token(:DQUO, '"', nil,  tokens.shift)
+    assert_token(:LIT,  'a', 'a',  tokens.shift)
+    assert_token(:LIT,  '$', '$',  tokens.shift)
+    assert_token(:LIT,  'z', 'z',  tokens.shift)
+    assert_token(:DQUO, '"', nil,  tokens.shift)
+    assert_token(:EOF,  '',  nil,  tokens.shift)
     assert_nil(tokens.shift)
   end
 
   def test_string_interpolation
     tokens = lex('"abc ${12+34} xyz"')
 
-    assert_token(:STRING_START,         '"',    nil,    tokens.shift)
-    assert_token(:STRING_PART_LIT,      'abc ', 'abc ', tokens.shift)
-    assert_token(:STRING_INTERP_START,  '${',   nil,    tokens.shift)
-    assert_token(:NUMBER,               '12',   '12',   tokens.shift)
-    assert_token(:PLUS,                 '+',    nil,    tokens.shift)
-    assert_token(:NUMBER,               '34',   '34',   tokens.shift)
-    assert_token(:STRING_INTERP_END,    '}',    nil,    tokens.shift)
-    assert_token(:STRING_PART_LIT,      ' xyz', ' xyz', tokens.shift)
-    assert_token(:STRING_END,           '"',    nil,    tokens.shift)
-    assert_token(:EOF,                  '',     nil,    tokens.shift)
+    assert_token(:DQUO,          '"',    nil,    tokens.shift)
+    assert_token(:LIT,           'abc ', 'abc ', tokens.shift)
+    assert_token(:DOLLAR_LBRACE, '${',   nil,    tokens.shift)
+    assert_token(:NUMBER,        '12',   '12',   tokens.shift)
+    assert_token(:PLUS,          '+',    nil,    tokens.shift)
+    assert_token(:NUMBER,        '34',   '34',   tokens.shift)
+    assert_token(:RBRACE,        '}',    nil,    tokens.shift)
+    assert_token(:LIT,           ' xyz', ' xyz', tokens.shift)
+    assert_token(:DQUO,          '"',    nil,    tokens.shift)
+    assert_token(:EOF,           '',     nil,    tokens.shift)
     assert_nil(tokens.shift)
   end
 

@@ -244,7 +244,7 @@ module Deli
     )
 
     PARSE_RULES.register(
-      TokenType::STRING_START,
+      TokenType::DQUO,
       Precedence::NONE,
       prefix: :parse_string,
     )
@@ -381,21 +381,21 @@ module Deli
     def parse_string(_token)
       parts = []
 
-      until peek.type == TokenType::STRING_END
+      until peek.type == TokenType::DQUO
         case peek.type
-        when TokenType::STRING_PART_LIT
+        when TokenType::LIT
           parts << Deli::AST::StringPartLitExpr.new(advance.value)
-        when TokenType::STRING_INTERP_START
+        when TokenType::DOLLAR_LBRACE
           advance
           parts << Deli::AST::StringPartInterpExpr.new(parse_expr)
-          consume(TokenType::STRING_INTERP_END)
+          consume(TokenType::RBRACE)
         else
           # TODO
           raise '???'
         end
       end
 
-      consume(TokenType::STRING_END)
+      consume(TokenType::DQUO)
 
       Deli::AST::StringExpr.new(parts)
     end

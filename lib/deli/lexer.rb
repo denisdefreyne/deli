@@ -111,7 +111,7 @@ module Deli
       elsif @scanner.scan('"')
         mode = StringLexerMode.new(source_code, scanner)
         mode_stack.push(mode)
-        new_token(TokenType::STRING_START)
+        new_token(TokenType::DQUO)
 
       # Values
       elsif scanner.scan(/\d+/)
@@ -165,17 +165,17 @@ module Deli
         nil
       elsif @scanner.scan('"')
         mode_stack.pop
-        new_token(TokenType::STRING_END)
+        new_token(TokenType::DQUO)
       elsif @scanner.scan(/\\"/)
-        new_token(TokenType::STRING_PART_LIT, '"')
+        new_token(TokenType::LIT, '"')
       elsif @scanner.scan('${')
         mode = InterpolationLexerMode.new(source_code, scanner)
         mode_stack.push(mode)
-        new_token(TokenType::STRING_INTERP_START)
+        new_token(TokenType::DOLLAR_LBRACE)
       elsif @scanner.scan('$')
-        new_token(TokenType::STRING_PART_LIT, '$')
+        new_token(TokenType::LIT, '$')
       elsif @scanner.scan(/[^"\\$]+/)
-        new_token(TokenType::STRING_PART_LIT, scanner.matched)
+        new_token(TokenType::LIT, scanner.matched)
       else
         char = scanner.getch
         raise Deli::LocatableError.new(
@@ -195,7 +195,7 @@ module Deli
       def lex_token(mode_stack)
         if @scanner.scan('}')
           mode_stack.pop
-          new_token(TokenType::STRING_INTERP_END)
+          new_token(TokenType::RBRACE)
         else
           @delegate.lex_token(mode_stack)
         end
