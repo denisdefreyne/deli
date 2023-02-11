@@ -6,14 +6,14 @@ fun fib(a) {
   return fib(a - 1) + fib(a - 2);
 }
 
-print fib(0);
-print fib(1);
-print fibf(2);
-print fib(3);
-print fib(4);
-print fib(5);
-print fib(6);
-print fib(10);
-print fib(15);
-print fib(20);
-print fib(25);
+print "fib(0) = ${fib(0)}";
+print "fib(1) = ${fib(1)}";
+print "fib(2) = ${fib(2)}";
+print "fib(3) = ${fib(3)}";
+print "fib(4) = ${fib(4)}";
+print "fib(5) = ${fib(5)}";
+print "fib(6) = ${fib(6)}";
+print "fib(10) = ${fib(10)}";
+print "fib(15) = ${fib(15)}";
+print "fib(20) = ${fib(20)}";
+print "fib(25) = ${fib(25)}";

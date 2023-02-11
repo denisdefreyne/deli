@@ -5,8 +5,8 @@
 - [ ] Strings
   - [x] Basic strings
   - [ ] String operations
-  - [ ] Escaping
-  - [ ] Interpolation
+  - [x] Escaping
+  - [x] Interpolation
 - [ ] Structs
 - [ ] Lists
 - [ ] Maps
