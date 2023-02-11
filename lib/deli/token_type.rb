@@ -38,9 +38,12 @@ module Deli
     LBRACKET  = TokenType.new(:LBRACKET,  '“[”')
     RBRACKET  = TokenType.new(:RBRACKET,  '“]”')
 
-    STRING    = TokenType.new(:STRING,    'string')
     NUMBER    = TokenType.new(:NUMBER,    'number')
     IDENT     = TokenType.new(:IDENT,     'identifier')
+
+    STRING_START    = TokenType.new(:STRING_START,    'start of string')
+    STRING_PART_LIT = TokenType.new(:STRING_PART_LIT, 'string part (literal)')
+    STRING_END      = TokenType.new(:STRING_END,      'end of string')
 
     KW_TRUE   = TokenType.new(:KW_TRUE,   '“true”')
     KW_FALSE  = TokenType.new(:KW_FALSE,  '“false”')

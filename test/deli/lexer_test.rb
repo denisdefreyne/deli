@@ -84,6 +84,16 @@ class TestDeliLexer < Minitest::Test
     assert_nil(tokens.shift)
   end
 
+  def test_string_basic
+    tokens = lex('"stuff"')
+
+    assert_token(:STRING_START,    '"',     nil,     tokens.shift)
+    assert_token(:STRING_PART_LIT, 'stuff', 'stuff', tokens.shift)
+    assert_token(:STRING_END,      '"',     nil,     tokens.shift)
+    assert_token(:EOF,             '',      nil,     tokens.shift)
+    assert_nil(tokens.shift)
+  end
+
   def test_error
     error = assert_raises(Deli::LocatableError) { lex('#') }
 

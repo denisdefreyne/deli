@@ -149,11 +149,19 @@ module Deli
       end
     end
 
-    StringExpr = Struct.new(:value) do
+    StringPartLitExpr = Struct.new(:value) do
       include SExp
 
       def to_sexp
-        [:string, value]
+        [:string_part_lit, value]
+      end
+    end
+
+    StringExpr = Struct.new(:parts) do
+      include SExp
+
+      def to_sexp
+        [:string, *parts]
       end
     end
 

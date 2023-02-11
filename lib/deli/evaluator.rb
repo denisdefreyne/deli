@@ -120,8 +120,12 @@ module Deli
       expr.value
     end
 
-    def handle_string_expr(expr)
+    def handle_string_part_lit_expr(expr)
       expr.value
+    end
+
+    def handle_string_expr(expr)
+      expr.parts.map { |part| handle(part) }.join
     end
 
     def handle_identifier_expr(expr)

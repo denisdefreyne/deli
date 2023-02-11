@@ -32,6 +32,8 @@ module Deli
         handle_return_stmt(node)
       when AST::IntegerExpr
         handle_integer_expr(node)
+      when AST::StringPartLitExpr
+        handle_string_part_lit_expr(node)
       when AST::StringExpr
         handle_string_expr(node)
       when AST::IdentifierExpr

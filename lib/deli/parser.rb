@@ -212,7 +212,7 @@ module Deli
     )
 
     PARSE_RULES.register(
-      TokenType::STRING,
+      TokenType::STRING_START,
       Precedence::NONE,
       prefix: :parse_string,
     )
@@ -346,8 +346,22 @@ module Deli
       expr
     end
 
-    def parse_string(token)
-      Deli::AST::StringExpr.new(token.value)
+    def parse_string(_token)
+      parts = []
+
+      until peek.type == TokenType::STRING_END
+        case peek.type
+        when TokenType::STRING_PART_LIT
+          parts << Deli::AST::StringPartLitExpr.new(advance.value)
+        else
+          # TODO
+          raise '???'
+        end
+      end
+
+      consume(TokenType::STRING_END)
+
+      Deli::AST::StringExpr.new(parts)
     end
 
     def parse_number(token)

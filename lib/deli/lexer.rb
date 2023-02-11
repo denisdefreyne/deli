@@ -28,6 +28,7 @@ module Deli
   end
 
   class AbstractLexerMode
+    attr_reader :source_code
     attr_reader :scanner
 
     def initialize(source_code, scanner)
@@ -107,8 +108,10 @@ module Deli
         new_token(TokenType::RBRACKET)
 
       # String
-      elsif scanner.scan(/"[^"]+"/)
-        new_token(TokenType::STRING, scanner.matched[1..-2])
+      elsif @scanner.scan('"')
+        mode = StringLexerMode.new(source_code, scanner)
+        mode_stack.push(mode)
+        new_token(TokenType::STRING_START)
 
       # Values
       elsif scanner.scan(/\d+/)
@@ -144,6 +147,25 @@ module Deli
         else
           new_token(TokenType::IDENT, scanner.matched)
         end
+      else
+        char = scanner.getch
+        raise Deli::LocatableError.new(
+          "Unknown character: #{char}",
+          span,
+        )
+      end
+    end
+  end
+
+  class StringLexerMode < AbstractLexerMode
+    def lex_token(mode_stack)
+      if @scanner.eos?
+        nil
+      elsif @scanner.scan('"')
+        mode_stack.pop
+        new_token(TokenType::STRING_END)
+      elsif @scanner.scan(/[^"$]+/)
+        new_token(TokenType::STRING_PART_LIT, scanner.matched)
       else
         char = scanner.getch
         raise Deli::LocatableError.new(

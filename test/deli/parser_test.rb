@@ -184,7 +184,7 @@ class TestDeliParser < Minitest::Test
   def test_string
     stmts = parse('print "Hello, world!";')
 
-    assert_equal('(print (string "Hello, world!"))', stmts.shift.inspect)
+    assert_equal('(print (string (string_part_lit "Hello, world!")))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 

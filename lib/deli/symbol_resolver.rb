@@ -42,7 +42,11 @@ module Deli
     def handle_integer_expr(expr)
     end
 
+    def handle_string_part_lit_expr(expr)
+    end
+
     def handle_string_expr(expr)
+      expr.parts.each { |part| handle(part) }
     end
 
     def handle_identifier_expr(expr)
