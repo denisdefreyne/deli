@@ -157,6 +157,14 @@ module Deli
       end
     end
 
+    StringPartInterpExpr = Struct.new(:expr) do
+      include SExp
+
+      def to_sexp
+        [:string_part_interp, expr]
+      end
+    end
+
     StringExpr = Struct.new(:parts) do
       include SExp
 

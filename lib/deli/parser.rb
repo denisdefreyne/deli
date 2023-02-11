@@ -353,6 +353,10 @@ module Deli
         case peek.type
         when TokenType::STRING_PART_LIT
           parts << Deli::AST::StringPartLitExpr.new(advance.value)
+        when TokenType::STRING_INTERP_START
+          advance
+          parts << Deli::AST::StringPartInterpExpr.new(parse_expr)
+          consume(TokenType::STRING_INTERP_END)
         else
           # TODO
           raise '???'
