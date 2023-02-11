@@ -120,30 +120,30 @@ module Deli
         case scanner.matched
 
         # Keywords
-        when 'true'
-          new_token(TokenType::KW_TRUE)
+        when 'else'
+          new_token(TokenType::KW_ELSE)
         when 'false'
           new_token(TokenType::KW_FALSE)
+        when 'for'
+          new_token(TokenType::KW_FOR)
+        when 'fun'
+          new_token(TokenType::KW_FUN)
+        when 'if'
+          new_token(TokenType::KW_IF)
         when 'null'
           new_token(TokenType::KW_NULL)
         when 'print'
           new_token(TokenType::KW_PRINT)
-        when 'if'
-          new_token(TokenType::KW_IF)
-        when 'else'
-          new_token(TokenType::KW_ELSE)
-        when 'fun'
-          new_token(TokenType::KW_FUN)
         when 'return'
           new_token(TokenType::KW_RETURN)
-        when 'while'
-          new_token(TokenType::KW_WHILE)
-        when 'for'
-          new_token(TokenType::KW_FOR)
         when 'struct'
           new_token(TokenType::KW_STRUCT)
+        when 'true'
+          new_token(TokenType::KW_TRUE)
         when 'var'
           new_token(TokenType::KW_VAR)
+        when 'while'
+          new_token(TokenType::KW_WHILE)
 
         # Identifier
         else
