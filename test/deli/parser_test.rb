@@ -202,14 +202,19 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
-  def test_string_interpolate_once
+  def test_string_interpolate
     stmts = parse('print "a${10}b";')
 
     assert_equal('(print (string (string_part_lit "a") (string_part_interp (integer 10)) (string_part_lit "b")))', stmts.shift.inspect)
     assert_nil(stmts.shift)
   end
 
-  # TODO: def test_string_interp_nested
+  def test_string_interpolate_nested
+    stmts = parse('print "a${"${10}"}b";')
+
+    assert_equal('(print (string (string_part_lit "a") (string_part_interp (string (string_part_interp (integer 10)))) (string_part_lit "b")))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
 
   def test_error_unknown_infix
     error = assert_raises(Deli::LocatableError) { parse('var x = a var b') }

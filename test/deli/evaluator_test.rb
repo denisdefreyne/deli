@@ -199,13 +199,17 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("Hello, \"world\"!\n", $stdout.string)
   end
 
-  def test_string_interp
+  def test_string_interpolate
     evaluate('print "a${12+34}z";')
 
     assert_equal("a46z\n", $stdout.string)
   end
 
-  # TODO: def test_string_interp_nested
+  def test_string_interpolate_nested
+    evaluate('print "a${"${10}"}b";')
+
+    assert_equal("a10b\n", $stdout.string)
+  end
 
   def test_string_concat
     evaluate('print "Hello, " + "world!";')
