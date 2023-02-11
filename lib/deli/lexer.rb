@@ -166,6 +166,12 @@ module Deli
         new_token(TokenType::STRING_END)
       elsif @scanner.scan(/\\"/)
         new_token(TokenType::STRING_PART_LIT, '"')
+      elsif @scanner.scan('${')
+        mode = InterpolationLexerMode.new(source_code, scanner)
+        mode_stack.push(mode)
+        new_token(TokenType::STRING_INTERP_START)
+      elsif @scanner.scan('$')
+        new_token(TokenType::STRING_PART_LIT, '$')
       elsif @scanner.scan(/[^"\\$]+/)
         new_token(TokenType::STRING_PART_LIT, scanner.matched)
       else
@@ -174,6 +180,23 @@ module Deli
           "Unknown character: #{char}",
           span,
         )
+      end
+    end
+
+    class InterpolationLexerMode < AbstractLexerMode
+      def initialize(source_code, scanner)
+        super
+
+        @delegate = MainLexerMode.new(source_code, scanner)
+      end
+
+      def lex_token(mode_stack)
+        if @scanner.scan('}')
+          mode_stack.pop
+          new_token(TokenType::STRING_INTERP_END)
+        else
+          @delegate.lex_token(mode_stack)
+        end
       end
     end
   end

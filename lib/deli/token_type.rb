@@ -41,9 +41,11 @@ module Deli
     NUMBER    = TokenType.new(:NUMBER,    'number')
     IDENT     = TokenType.new(:IDENT,     'identifier')
 
-    STRING_START    = TokenType.new(:STRING_START,    'start of string')
-    STRING_PART_LIT = TokenType.new(:STRING_PART_LIT, 'string part (literal)')
-    STRING_END      = TokenType.new(:STRING_END,      'end of string')
+    STRING_START        = TokenType.new(:STRING_START,        'start of string (")')
+    STRING_PART_LIT     = TokenType.new(:STRING_PART_LIT,     'string part (literal)')
+    STRING_INTERP_START = TokenType.new(:STRING_INTERP_START, '“${”')
+    STRING_INTERP_END   = TokenType.new(:STRING_INTERP_END,   '“}”')
+    STRING_END          = TokenType.new(:STRING_END,          'end of string (")')
 
     KW_TRUE   = TokenType.new(:KW_TRUE,   '“true”')
     KW_FALSE  = TokenType.new(:KW_FALSE,  '“false”')
