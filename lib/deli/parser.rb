@@ -28,6 +28,8 @@ module Deli
         parse_while_stmt
       when TokenType::KW_FUN
         parse_fun_stmt
+      when TokenType::KW_STRUCT
+        parse_struct_stmt
       when TokenType::KW_RETURN
         parse_return_stmt
       else
@@ -80,7 +82,7 @@ module Deli
 
     # FIXME: is this really a statement?
     def parse_fun_stmt
-      advance # `fun` token
+      advance # `fun` tokena
 
       ident = consume(TokenType::IDENT)
 
@@ -103,6 +105,33 @@ module Deli
       body_stmt = parse_group_stmt
 
       Deli::AST::FunStmt.new(ident, params, body_stmt)
+    end
+
+    def parse_struct_stmt
+      advance # `struct` token
+
+      ident = consume(TokenType::IDENT)
+      consume(TokenType::LBRACE)
+      props = []
+      if peek.type != TokenType::RBRACE
+        prop_token = consume(TokenType::IDENT)
+        props << AST::Prop.new(prop_token)
+
+        while peek.type == TokenType::COMMA
+          advance # comma
+
+          # Handle trailing comma
+          if peek.type == TokenType::RBRACE
+            break
+          end
+
+          prop_token = consume(TokenType::IDENT)
+          props << AST::Prop.new(prop_token)
+        end
+      end
+      consume(TokenType::RBRACE)
+
+      Deli::AST::StructStmt.new(ident, props)
     end
 
     def parse_return_stmt
@@ -139,9 +168,6 @@ module Deli
     end
 
     def parse_call_stmt(ident_token, lparen_token)
-      # NOTE: :IDENT already consumed
-      # NOTE: :LPAREN already consumed
-
       fun_expr = Deli::AST::IdentifierExpr.new(ident_token)
       expr = parse_call_expr(fun_expr, lparen_token)
       consume(TokenType::SEMICOLON)

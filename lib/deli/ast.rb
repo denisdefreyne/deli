@@ -121,6 +121,16 @@ module Deli
       end
     end
 
+    Prop = Struct.new(:name) do
+      include SExp
+
+      attr_accessor :symbol
+
+      def to_sexp
+        [:prop, name.value]
+      end
+    end
+
     FunStmt = Struct.new(:ident, :params, :body_stmt) do
       include SExp
 
@@ -128,6 +138,16 @@ module Deli
 
       def to_sexp
         [:fun, ident.value, *params, body_stmt]
+      end
+    end
+
+    StructStmt = Struct.new(:ident, :props) do
+      include SExp
+
+      attr_accessor :symbol
+
+      def to_sexp
+        [:struct, ident.value, *props]
       end
     end
 

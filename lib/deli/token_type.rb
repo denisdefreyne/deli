@@ -57,6 +57,7 @@ module Deli
     KW_RETURN = TokenType.new(:KW_RETURN, '“return”')
     KW_WHILE  = TokenType.new(:KW_WHILE,  '“while”')
     KW_FOR    = TokenType.new(:KW_FOR,    '“for”')
+    KW_STRUCT = TokenType.new(:KW_STRUCT, '“struct”')
     KW_VAR    = TokenType.new(:KW_VAR,    '“var”')
   end
 end

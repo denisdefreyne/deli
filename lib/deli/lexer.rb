@@ -140,6 +140,8 @@ module Deli
           new_token(TokenType::KW_WHILE)
         when 'for'
           new_token(TokenType::KW_FOR)
+        when 'struct'
+          new_token(TokenType::KW_STRUCT)
         when 'var'
           new_token(TokenType::KW_VAR)
 

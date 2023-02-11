@@ -120,6 +120,34 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
+  def test_struct_empty
+    stmts = parse('struct Person {}')
+
+    assert_equal('(struct "Person")', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
+  def test_struct_one_prop
+    stmts = parse('struct Person { name }')
+
+    assert_equal('(struct "Person" (prop "name"))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
+  def test_struct_one_prop_trailing_comma
+    stmts = parse('struct Person { name, }')
+
+    assert_equal('(struct "Person" (prop "name"))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
+  def test_struct_two_props
+    stmts = parse('struct Person { firstName, lastName }')
+
+    assert_equal('(struct "Person" (prop "firstName") (prop "lastName"))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
   def test_unary_basic
     stmts = parse('print bla; print 123; print true; print false; print null;')
 
