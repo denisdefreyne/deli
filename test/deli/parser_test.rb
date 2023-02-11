@@ -74,10 +74,11 @@ class TestDeliParser < Minitest::Test
     assert_equal('parse error: expected identifier (IDENT), but got “,” (COMMA)', error.message)
   end
 
-  def test_fun_def_bad_b
-    error = assert_raises(Deli::LocatableError) { parse('fun foo(a,) {}') }
+  def test_fun_def_trailing_comma
+    stmts = parse('fun foo(a,) {}')
 
-    assert_equal('parse error: expected identifier (IDENT), but got “)” (RPAREN)', error.message)
+    assert_equal('(fun "foo" (param "a") (group))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
   end
 
   def test_fun_call_no_params_no_return
@@ -107,10 +108,11 @@ class TestDeliParser < Minitest::Test
     assert_equal('parse error: unexpected “,” (COMMA)', error.message)
   end
 
-  def test_fun_call_broken_b
-    error = assert_raises(Deli::LocatableError) { parse('thing(1,)') }
+  def test_fun_call_trailing_comma
+    stmts = parse('thing(1,);')
 
-    assert_equal('parse error: unexpected “)” (RPAREN)', error.message)
+    assert_equal('(expr (call (ident "thing") (integer 1)))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
   end
 
   def test_fun_return

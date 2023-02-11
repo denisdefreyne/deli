@@ -95,6 +95,12 @@ module Deli
 
         while peek.type == TokenType::COMMA
           advance # comma
+
+          # Handle trailing comma
+          if peek.type == TokenType::RPAREN
+            break
+          end
+
           param_token = consume(TokenType::IDENT)
           params << AST::Param.new(param_token)
         end
@@ -425,6 +431,12 @@ module Deli
 
         while peek.type == TokenType::COMMA
           advance # comma
+
+          # Handle trailing comma
+          if peek.type == TokenType::RPAREN
+            break
+          end
+
           args << parse_expr
         end
       end
