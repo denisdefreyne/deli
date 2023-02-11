@@ -21,7 +21,7 @@ module Deli
       sexp.drop(1).each do |child|
         out << ' '
         if child.respond_to?(:to_sexp)
-          dump_sexp(child.to_sexp, out, indent + 1)
+          dump_sexp_oneline(child.to_sexp, out, indent + 1)
         else
           out << child.inspect
         end

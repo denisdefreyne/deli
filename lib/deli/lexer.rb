@@ -164,7 +164,9 @@ module Deli
       elsif @scanner.scan('"')
         mode_stack.pop
         new_token(TokenType::STRING_END)
-      elsif @scanner.scan(/[^"$]+/)
+      elsif @scanner.scan(/\\"/)
+        new_token(TokenType::STRING_PART_LIT, '"')
+      elsif @scanner.scan(/[^"\\$]+/)
         new_token(TokenType::STRING_PART_LIT, scanner.matched)
       else
         char = scanner.getch

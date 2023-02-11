@@ -193,6 +193,12 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("Hello, world!\n", $stdout.string)
   end
 
+  def test_string_escape
+    evaluate('print "Hello, \\"world\\"!";')
+
+    assert_equal("Hello, \"world\"!\n", $stdout.string)
+  end
+
   def test_string_concat
     evaluate('print "Hello, " + "world!";')
 

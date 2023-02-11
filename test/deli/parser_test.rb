@@ -188,6 +188,13 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
+  def test_string_escape
+    stmts = parse('print "Hello\\"world!";')
+
+    assert_equal('(print (string (string_part_lit "Hello") (string_part_lit "\\"") (string_part_lit "world!")))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
   def test_error_unknown_infix
     error = assert_raises(Deli::LocatableError) { parse('var x = a var b') }
 

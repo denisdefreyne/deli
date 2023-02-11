@@ -94,6 +94,18 @@ class TestDeliLexer < Minitest::Test
     assert_nil(tokens.shift)
   end
 
+  def test_string_escape
+    tokens = lex('"abc \" xyz"')
+
+    assert_token(:STRING_START,    '"',    nil,     tokens.shift)
+    assert_token(:STRING_PART_LIT, 'abc ', 'abc ',  tokens.shift)
+    assert_token(:STRING_PART_LIT, '\\"',  '"',     tokens.shift)
+    assert_token(:STRING_PART_LIT, ' xyz', ' xyz',  tokens.shift)
+    assert_token(:STRING_END,      '"',    nil,     tokens.shift)
+    assert_token(:EOF,             '',     nil,     tokens.shift)
+    assert_nil(tokens.shift)
+  end
+
   def test_error
     error = assert_raises(Deli::LocatableError) { lex('#') }
 
