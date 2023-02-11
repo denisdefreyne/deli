@@ -124,6 +124,10 @@ module Deli
       expr.value
     end
 
+    def handle_string_part_interp_expr(expr)
+      handle(expr.expr).to_s
+    end
+
     def handle_string_expr(expr)
       expr.parts.map { |part| handle(part) }.join
     end

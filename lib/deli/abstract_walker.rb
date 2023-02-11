@@ -34,6 +34,8 @@ module Deli
         handle_integer_expr(node)
       when AST::StringPartLitExpr
         handle_string_part_lit_expr(node)
+      when AST::StringPartInterpExpr
+        handle_string_part_interp_expr(node)
       when AST::StringExpr
         handle_string_expr(node)
       when AST::IdentifierExpr

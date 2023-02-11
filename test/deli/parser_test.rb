@@ -209,7 +209,7 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
-  # TODO: test interpolate twice
+  # TODO: def test_string_interp_nested
 
   def test_error_unknown_infix
     error = assert_raises(Deli::LocatableError) { parse('var x = a var b') }

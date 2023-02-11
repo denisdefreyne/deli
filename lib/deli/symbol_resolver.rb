@@ -45,6 +45,10 @@ module Deli
     def handle_string_part_lit_expr(expr)
     end
 
+    def handle_string_part_interp_expr(expr)
+      handle(expr.expr)
+    end
+
     def handle_string_expr(expr)
       expr.parts.each { |part| handle(part) }
     end
