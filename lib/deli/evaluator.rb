@@ -265,7 +265,14 @@ module Deli
       hash = {}
       struct.props.each do |prop|
         kwarg = expr.kwargs.find { |kwa| kwa.key.lexeme == prop.name.lexeme }
-        # TODO: handle not found
+
+        unless kwarg
+          raise Deli::LocatableError.new(
+            "Required prop not specified: #{prop.name.lexeme}",
+            expr.ident.span,
+          )
+        end
+
         hash[prop.name] = handle(kwarg.value)
       end
 

@@ -1,5 +1,5 @@
 struct Person {
-  firstName String
+  firstName
 }
 
-puts Person("Denis")
+print new Person(firstName="Denis");

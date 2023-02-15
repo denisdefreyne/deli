@@ -248,8 +248,22 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("a Person(firstName=\"Denis\", lastName=\"Defreyne\")\n", $stdout.string)
   end
 
+
+  def test_struct_kwargs_missing
+    error = assert_raises(Deli::LocatableError) { evaluate(<<~CODE) }
+      struct Person {
+        firstName,
+        lastName,
+      }
+
+      var denis = new Person(firstName="Denis");
+      print denis;
+    CODE
+
+    assert_equal('Required prop not specified: lastName', error.message)
+  end
+
   # TODO: test too many props provided
-  # TODO: test too few props provided
 
   private
 
