@@ -150,6 +150,46 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
+  def test_struct_initialize_empty
+    stmts = parse(<<~CODE)
+      struct Person {}
+      var denis = new Person();
+    CODE
+
+    assert_equal('(struct "Person")', stmts.shift.inspect)
+    assert_equal('(var "denis" (new "Person"))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
+  def test_struct_initialize_one_prop
+    stmts = parse(<<~CODE)
+      struct Person {
+        name,
+      }
+
+      var denis = new Person(name="Denis");
+    CODE
+
+    assert_equal('(struct "Person" (prop "name"))', stmts.shift.inspect)
+    assert_equal('(var "denis" (new "Person" (kwarg "name" (string (string_part_lit "Denis")))))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
+  def test_struct_initialize_two_props
+    stmts = parse(<<~CODE)
+      struct Person {
+        firstName,
+        lastName,
+      }
+
+      var denis = new Person(firstName="Denis", lastName="Defreyne");
+    CODE
+
+    assert_equal('(struct "Person" (prop "firstName") (prop "lastName"))', stmts.shift.inspect)
+    assert_equal('(var "denis" (new "Person" (kwarg "firstName" (string (string_part_lit "Denis"))) (kwarg "lastName" (string (string_part_lit "Defreyne")))))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
   def test_unary_basic
     stmts = parse('print bla; print 123; print true; print false; print null;')
 

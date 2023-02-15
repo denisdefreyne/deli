@@ -130,6 +130,8 @@ module Deli
           new_token(TokenType::KW_FUN)
         when 'if'
           new_token(TokenType::KW_IF)
+        when 'new'
+          new_token(TokenType::KW_NEW)
         when 'null'
           new_token(TokenType::KW_NULL)
         when 'print'

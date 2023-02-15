@@ -88,5 +88,9 @@ module Deli
       handle(expr.left_expr)
       handle(expr.right_expr)
     end
+
+    def handle_new_expr(_expr)
+      # TODO
+    end
   end
 end

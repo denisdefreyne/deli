@@ -90,6 +90,29 @@ class TestDeliSymbolDefinerResolver < Minitest::Test
     assert_equal(person_sym, stmts[0].symbol)
   end
 
+  def test_struct_nonempty
+    stmts = define_and_resolve('struct Person { firstName, lastName }')
+
+    person_sym = stmts[0].scope.resolve('Person', span)
+
+    assert_equal(person_sym, stmts[0].symbol)
+  end
+
+  def test_struct_instantiation
+    stmts = define_and_resolve(<<~CODE)
+      struct Person {
+        firstName,
+        lastName
+      }
+
+      var denis = new Person(firstName="Denis", lastName="Defreyne");
+    CODE
+
+    person_sym = stmts[0].scope.resolve('Person', span)
+
+    assert_equal(person_sym, stmts[0].symbol)
+  end
+
   private
 
   def span

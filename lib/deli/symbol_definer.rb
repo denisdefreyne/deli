@@ -116,6 +116,10 @@ module Deli
       handle(expr.right_expr)
     end
 
+    def handle_new_expr(_expr)
+      # TODO
+    end
+
     def push_scope
       @scope = Scope.new(parent: @scope)
       yield

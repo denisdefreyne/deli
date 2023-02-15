@@ -260,5 +260,23 @@ module Deli
         [:binary, op.lexeme, left_expr, right_expr]
       end
     end
+
+    Kwarg = Struct.new(:key, :value) do
+      include SExp
+
+      attr_accessor :symbol
+
+      def to_sexp
+        [:kwarg, key.lexeme, value]
+      end
+    end
+
+    NewExpr = Struct.new(:name, :kwargs) do
+      include SExp
+
+      def to_sexp
+        [:new, name.lexeme, *kwargs]
+      end
+    end
   end
 end

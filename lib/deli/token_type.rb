@@ -47,6 +47,7 @@ module Deli
     KW_TRUE       = TokenType.new(:KW_TRUE,       '“true”')
     KW_FALSE      = TokenType.new(:KW_FALSE,      '“false”')
     KW_NULL       = TokenType.new(:KW_NULL,       '“null”')
+    KW_NEW        = TokenType.new(:KW_NEW,        '“new”')
     KW_PRINT      = TokenType.new(:KW_PRINT,      '“print”')
     KW_IF         = TokenType.new(:KW_IF,         '“if”')
     KW_ELSE       = TokenType.new(:KW_ELSE,       '“else”')

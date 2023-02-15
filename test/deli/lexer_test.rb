@@ -56,7 +56,7 @@ class TestDeliLexer < Minitest::Test
   end
 
   def test_keywords_and_idents
-    tokens = lex('if else for while fun struct return true false null gecko serif format')
+    tokens = lex('if else for while fun struct return true false null new gecko serif format')
 
     assert_token(:KW_IF,      'if',     nil,      tokens.shift)
     assert_token(:KW_ELSE,    'else',   nil,      tokens.shift)
@@ -68,6 +68,7 @@ class TestDeliLexer < Minitest::Test
     assert_token(:KW_TRUE,    'true',   nil,      tokens.shift)
     assert_token(:KW_FALSE,   'false',  nil,      tokens.shift)
     assert_token(:KW_NULL,    'null',   nil,      tokens.shift)
+    assert_token(:KW_NEW,     'new',    nil,      tokens.shift)
     assert_token(:IDENT,      'gecko',  'gecko',  tokens.shift)
     assert_token(:IDENT,      'serif',  'serif',  tokens.shift)
     assert_token(:IDENT,      'format', 'format', tokens.shift)

@@ -189,7 +189,7 @@ module Deli
       COMPARISON = 3 # > >= < <=
       TERM       = 4 # + -
       FACTOR     = 5 # * /
-      UNARY      = 6 # - !
+      UNARY      = 6 # - ! new
       CALL       = 7 # ( .
     end
 
@@ -342,6 +342,12 @@ module Deli
     )
 
     PARSE_RULES.register(
+      TokenType::KW_NEW,
+      Precedence::UNARY,
+      prefix: :parse_new,
+    )
+
+    PARSE_RULES.register(
       TokenType::LPAREN,
       Precedence::CALL,
       infix: :parse_call_expr,
@@ -407,6 +413,38 @@ module Deli
     def parse_unary(token)
       expr = parse_precedence(Precedence::UNARY)
       Deli::AST::UnaryExpr.new(token, expr)
+    end
+
+    def parse_new(_token)
+      struct_name = consume(TokenType::IDENT)
+
+      consume(TokenType::LPAREN)
+
+      kwargs = []
+      if peek.type != TokenType::RPAREN
+        key = consume(TokenType::IDENT)
+        consume(TokenType::EQ)
+        value = parse_expr
+        kwargs << Deli::AST::Kwarg.new(key, value)
+
+        while peek.type == TokenType::COMMA
+          advance # comma
+
+          # Handle trailing comma
+          if peek.type == TokenType::RPAREN
+            break
+          end
+
+          key = consume(TokenType::IDENT)
+          consume(TokenType::EQ)
+          value = parse_expr
+          kwargs << Deli::AST::Kwarg.new(key, value)
+        end
+      end
+
+      consume(TokenType::RPAREN)
+
+      Deli::AST::NewExpr.new(struct_name, kwargs)
     end
 
     def parse_assign(left_expr, token)

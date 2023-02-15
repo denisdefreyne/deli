@@ -230,6 +230,10 @@ module Deli
       end
     end
 
+    def handle_new_expr(_expr)
+      # TODO
+    end
+
     def push_env
       @env = Env.new(parent: @env)
       yield
