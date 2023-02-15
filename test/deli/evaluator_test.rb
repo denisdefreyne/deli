@@ -234,6 +234,23 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("a Person()\n", $stdout.string)
   end
 
+  def test_struct_kwargs
+    evaluate(<<~CODE)
+      struct Person {
+        firstName,
+        lastName,
+      }
+
+      var denis = new Person(firstName="Denis", lastName="Defreyne");
+      print denis;
+    CODE
+
+    assert_equal("a Person(firstName=\"Denis\", lastName=\"Defreyne\")\n", $stdout.string)
+  end
+
+  # TODO: test too many props provided
+  # TODO: test too few props provided
+
   private
 
   def evaluate(string)

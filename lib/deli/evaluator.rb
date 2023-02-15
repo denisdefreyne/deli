@@ -76,16 +76,15 @@ module Deli
 
     class Instance
       attr_reader :struct
-      attr_reader :kwargs
+      attr_reader :ivars
 
-      def initialize(struct, kwargs)
+      def initialize(struct, ivars)
         @struct = struct
-        @kwargs = kwargs
+        @ivars = ivars
       end
 
       def to_s
-        # TODO: add kwargs
-        "a #{struct}()"
+        "a #{struct}(#{ivars.map { |k, v| [k.lexeme, '=', v.inspect].join }.join(', ')})"
       end
     end
 
@@ -263,10 +262,14 @@ module Deli
     def handle_new_expr(expr)
       struct = @env.lookup(expr.symbol, expr.ident.span)
 
-      raise 'not supported yet' unless struct.props.empty?
-      raise 'not supported yet' unless expr.kwargs.empty?
+      hash = {}
+      struct.props.each do |prop|
+        kwarg = expr.kwargs.find { |kwa| kwa.key.lexeme == prop.name.lexeme }
+        # TODO: handle not found
+        hash[prop.name] = handle(kwarg.value)
+      end
 
-      Instance.new(struct, {})
+      Instance.new(struct, hash)
     end
 
     def push_env
