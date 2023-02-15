@@ -111,6 +111,7 @@ class TestDeliSymbolDefinerResolver < Minitest::Test
     person_sym = stmts[0].scope.resolve('Person', span)
 
     assert_equal(person_sym, stmts[0].symbol)
+    assert_equal(person_sym, stmts[1].expr.symbol)
   end
 
   private

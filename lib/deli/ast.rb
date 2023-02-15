@@ -271,11 +271,13 @@ module Deli
       end
     end
 
-    NewExpr = Struct.new(:name, :kwargs) do
+    NewExpr = Struct.new(:ident, :kwargs) do
       include SExp
 
+      attr_accessor :symbol
+
       def to_sexp
-        [:new, name.lexeme, *kwargs]
+        [:new, ident.lexeme, *kwargs]
       end
     end
   end

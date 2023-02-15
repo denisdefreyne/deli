@@ -89,8 +89,13 @@ module Deli
       handle(expr.right_expr)
     end
 
-    def handle_new_expr(_expr)
-      # TODO
+    def handle_new_expr(expr)
+      symbol = expr.scope.resolve(expr.ident.value, expr.ident.span)
+      expr.symbol = symbol
+
+      expr.kwargs.each do |kwarg|
+        handle(kwarg.value)
+      end
     end
   end
 end

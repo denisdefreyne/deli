@@ -116,8 +116,10 @@ module Deli
       handle(expr.right_expr)
     end
 
-    def handle_new_expr(_expr)
-      # TODO
+    def handle_new_expr(expr)
+      expr.kwargs.each do |kwarg|
+        handle(kwarg.value)
+      end
     end
 
     def push_scope

@@ -416,7 +416,7 @@ module Deli
     end
 
     def parse_new(_token)
-      struct_name = consume(TokenType::IDENT)
+      ident = consume(TokenType::IDENT)
 
       consume(TokenType::LPAREN)
 
@@ -444,7 +444,7 @@ module Deli
 
       consume(TokenType::RPAREN)
 
-      Deli::AST::NewExpr.new(struct_name, kwargs)
+      Deli::AST::NewExpr.new(ident, kwargs)
     end
 
     def parse_assign(left_expr, token)
