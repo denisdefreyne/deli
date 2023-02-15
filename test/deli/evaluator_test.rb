@@ -248,7 +248,6 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("a Person(firstName=\"Denis\", lastName=\"Defreyne\")\n", $stdout.string)
   end
 
-
   def test_struct_kwargs_missing
     error = assert_raises(Deli::LocatableError) { evaluate(<<~CODE) }
       struct Person {
@@ -263,7 +262,18 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal('Required prop not specified: lastName', error.message)
   end
 
-  # TODO: test too many props provided
+  def test_struct_kwargs_superfluous
+    error = assert_raises(Deli::LocatableError) { evaluate(<<~CODE) }
+      struct Person {
+        name,
+      }
+
+      var denis = new Person(name="Denis", job="Entreprenernneneurr");
+      print denis;
+    CODE
+
+    assert_equal('Unknown prop specified: job', error.message)
+  end
 
   private
 

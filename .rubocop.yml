@@ -70,6 +70,9 @@ Style/IfUnlessModifier:
 Style/WhileUntilModifier:
   Enabled: false
 
+Style/Next:
+  Enabled: false
+
 ################################################################################
 # Enabling new cops
 

@@ -276,6 +276,18 @@ module Deli
         hash[prop.name] = handle(kwarg.value)
       end
 
+      # Find superfluous
+      expr.kwargs.each do |kwarg|
+        prop = struct.props.find { |pr| kwarg.key.lexeme == pr.name.lexeme }
+
+        unless prop
+          raise Deli::LocatableError.new(
+            "Unknown prop specified: #{kwarg.key.lexeme}",
+            kwarg.key.span,
+          )
+        end
+      end
+
       Instance.new(struct, hash)
     end
 

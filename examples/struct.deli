@@ -2,4 +2,4 @@ struct Person {
   firstName
 }
 
-print new Person(firstName="Denis");
+print new Person(firstName="Denis", job=2);
