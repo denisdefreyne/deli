@@ -31,6 +31,9 @@ module Deli
       handle(stmt.body_stmt)
     end
 
+    def handle_struct_stmt(stmt)
+    end
+
     def handle_expr_stmt(stmt)
       handle(stmt.expr)
     end

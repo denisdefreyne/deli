@@ -104,6 +104,10 @@ module Deli
       @env.assign_new(stmt.symbol, fn)
     end
 
+    def handle_struct_stmt(_stmt)
+      raise 'TODO'
+    end
+
     def handle_expr_stmt(stmt)
       handle(stmt.expr)
     end

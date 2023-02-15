@@ -82,6 +82,14 @@ class TestDeliSymbolDefinerResolver < Minitest::Test
     assert_equal(bloop_sym, stmts[1].expr.left_expr.symbol)
   end
 
+  def test_struct_empty
+    stmts = define_and_resolve('struct Person {}')
+
+    person_sym = stmts[0].scope.resolve('Person', span)
+
+    assert_equal(person_sym, stmts[0].symbol)
+  end
+
   private
 
   def span

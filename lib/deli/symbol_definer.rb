@@ -58,6 +58,11 @@ module Deli
       end
     end
 
+    def handle_struct_stmt(stmt)
+      symbol = @scope.define(stmt.ident.value)
+      stmt.symbol = symbol
+    end
+
     def handle_expr_stmt(stmt)
       handle(stmt.expr)
     end

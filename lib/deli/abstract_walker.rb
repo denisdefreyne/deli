@@ -26,6 +26,8 @@ module Deli
         handle_group_stmt(node)
       when AST::FunStmt
         handle_fun_stmt(node)
+      when AST::StructStmt
+        handle_struct_stmt(node)
       when AST::ExprStmt
         handle_expr_stmt(node)
       when AST::ReturnStmt
