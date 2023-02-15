@@ -224,6 +224,16 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("undefined method `-' for \"hello\":String", error.message)
   end
 
+  def test_struct_empty
+    evaluate(<<~CODE)
+      struct Person {}
+      var denis = new Person();
+      print denis;
+    CODE
+
+    assert_equal("a Person()\n", $stdout.string)
+  end
+
   private
 
   def evaluate(string)

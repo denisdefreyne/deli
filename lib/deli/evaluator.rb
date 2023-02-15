@@ -60,6 +60,35 @@ module Deli
       end
     end
 
+    class DeliStruct
+      attr_reader :ident
+      attr_reader :props
+
+      def initialize(ident, props)
+        @ident = ident
+        @props = props
+      end
+
+      def to_s
+        ident.name
+      end
+    end
+
+    class Instance
+      attr_reader :struct
+      attr_reader :kwargs
+
+      def initialize(struct, kwargs)
+        @struct = struct
+        @kwargs = kwargs
+      end
+
+      def to_s
+        # TODO: add kwargs
+        "a #{struct}()"
+      end
+    end
+
     def initialize(stmts)
       super(stmts)
 
@@ -104,8 +133,9 @@ module Deli
       @env.assign_new(stmt.symbol, fn)
     end
 
-    def handle_struct_stmt(_stmt)
-      raise 'TODO'
+    def handle_struct_stmt(stmt)
+      struct = DeliStruct.new(stmt.symbol, stmt.props)
+      @env.assign_new(stmt.symbol, struct)
     end
 
     def handle_expr_stmt(stmt)
@@ -230,8 +260,13 @@ module Deli
       end
     end
 
-    def handle_new_expr(_expr)
-      # TODO
+    def handle_new_expr(expr)
+      struct = @env.lookup(expr.symbol, expr.ident.span)
+
+      raise 'not supported yet' unless struct.props.empty?
+      raise 'not supported yet' unless expr.kwargs.empty?
+
+      Instance.new(struct, {})
     end
 
     def push_env
