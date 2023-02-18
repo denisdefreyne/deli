@@ -56,12 +56,10 @@ module Deli
 
   class MainLexerMode < AbstractLexerMode
     def lex_token(mode_stack)
+      scanner.skip(/\s+/)
+
       if scanner.eos?
         nil
-
-      # Whitespace
-      elsif scanner.scan(/\s+/)
-        lex_token(mode_stack)
 
       # Two-character tokens
       elsif scanner.scan('==')
