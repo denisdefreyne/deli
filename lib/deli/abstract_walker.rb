@@ -44,6 +44,8 @@ module Deli
         handle_identifier_expr(node)
       when AST::CallExpr
         handle_call_expr(node)
+      when AST::DotExpr
+        handle_dot_expr(node)
       when AST::TrueExpr
         handle_true_expr(node)
       when AST::FalseExpr

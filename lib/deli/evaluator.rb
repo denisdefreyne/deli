@@ -84,7 +84,7 @@ module Deli
       end
 
       def to_s
-        "a #{struct}(#{ivars.map { |k, v| [k.lexeme, '=', v.inspect].join }.join(', ')})"
+        "a #{struct}(#{ivars.map { |k, v| [k, '=', v.inspect].join }.join(', ')})"
       end
     end
 
@@ -192,6 +192,20 @@ module Deli
       end
     end
 
+    def handle_dot_expr(expr)
+      target = handle(expr.target)
+
+      unless target.is_a?(Instance)
+        # TODO: raise locatable error
+        raise 'nope1'
+      end
+
+      target.ivars.fetch(expr.ident.value) do
+        # TODO: raise locatable error
+        raise 'nope2'
+      end
+    end
+
     def handle_true_expr(_expr)
       true
     end
@@ -273,7 +287,7 @@ module Deli
           )
         end
 
-        hash[prop.name] = handle(kwarg.value)
+        hash[prop.name.lexeme] = handle(kwarg.value)
       end
 
       # Find superfluous

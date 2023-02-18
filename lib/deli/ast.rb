@@ -245,6 +245,14 @@ module Deli
       end
     end
 
+    DotExpr = Struct.new(:target, :ident) do
+      include SExp
+
+      def to_sexp
+        [:dot, target, ident.value]
+      end
+    end
+
     UnaryExpr = Struct.new(:op, :expr) do
       include SExp
 

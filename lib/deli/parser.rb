@@ -353,6 +353,12 @@ module Deli
       infix: :parse_call_expr,
     )
 
+    PARSE_RULES.register(
+      TokenType::DOT,
+      Precedence::CALL,
+      infix: :parse_dot_expr,
+    )
+
     def parse_expr
       parse_precedence(Precedence::LOWEST)
     end
@@ -482,6 +488,11 @@ module Deli
       consume(TokenType::RPAREN)
 
       Deli::AST::CallExpr.new(left_expr, args)
+    end
+
+    def parse_dot_expr(left_expr, _dot_token)
+      ident = consume(TokenType::IDENT)
+      Deli::AST::DotExpr.new(left_expr, ident)
     end
 
     def parse_true(_token)

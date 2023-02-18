@@ -190,6 +190,15 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
+  def test_struct_prop
+    stmts = parse(<<~CODE)
+      print person.name;
+    CODE
+
+    assert_equal('(print (dot (ident "person") "name"))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
   def test_unary_basic
     stmts = parse('print bla; print 123; print true; print false; print null;')
 

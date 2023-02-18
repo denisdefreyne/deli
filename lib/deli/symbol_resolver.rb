@@ -66,6 +66,10 @@ module Deli
       expr.arg_exprs.each { |ae| handle(ae) }
     end
 
+    def handle_dot_expr(expr)
+      handle(expr.target)
+    end
+
     def handle_true_expr(expr)
     end
 
