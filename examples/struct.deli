@@ -2,4 +2,6 @@ struct Person {
   firstName
 }
 
-print new Person(firstName="Denis", job=2);
+var denis = new Person(firstName="Denis");
+denis =123;
+print denis.firstName;

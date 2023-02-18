@@ -196,8 +196,10 @@ module Deli
       target = handle(expr.target)
 
       unless target.is_a?(Instance)
-        # TODO: raise locatable error
-        raise 'nope1'
+        raise Deli::LocatableError.new(
+          "Cannot get property of something that is not a struct instance",
+          expr.ident.span,
+        )
       end
 
       target.ivars.fetch(expr.ident.value) do

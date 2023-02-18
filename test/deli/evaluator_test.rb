@@ -301,6 +301,16 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal('No such property: fav_hobby', error.message)
   end
 
+
+  def test_dot_non_instance
+    error = assert_raises(Deli::LocatableError) { evaluate(<<~CODE) }
+      var denis = 100;
+      print denis.name;
+    CODE
+
+    assert_equal('Cannot get property of something that is not a struct instance', error.message)
+  end
+
   private
 
   def evaluate(string)
