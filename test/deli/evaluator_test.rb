@@ -275,7 +275,7 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal('Unknown prop specified: job', error.message)
   end
 
-  def test_struct_prop
+  def test_dot_instance_ok
     evaluate(<<~CODE)
       struct Person {
         name,
@@ -286,6 +286,19 @@ class TestDeliEvaluator < Minitest::Test
     CODE
 
     assert_equal("Denis\n", $stdout.string)
+  end
+
+  def test_dot_instance_no_such_prop
+    error = assert_raises(Deli::LocatableError) { evaluate(<<~CODE) }
+      struct Person {
+        name,
+      }
+
+      var denis = new Person(name="Denis");
+      print denis.fav_hobby;
+    CODE
+
+    assert_equal('No such property: fav_hobby', error.message)
   end
 
   private

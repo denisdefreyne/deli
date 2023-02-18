@@ -201,8 +201,10 @@ module Deli
       end
 
       target.ivars.fetch(expr.ident.value) do
-        # TODO: raise locatable error
-        raise 'nope2'
+        raise Deli::LocatableError.new(
+          "No such property: #{expr.ident.value}",
+          expr.ident.span,
+        )
       end
     end
 
