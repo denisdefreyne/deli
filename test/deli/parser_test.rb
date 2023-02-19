@@ -199,6 +199,25 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
+  def test_struct_method
+    stmts = parse(<<~CODE)
+      struct Person {
+        firstName,
+        lastName,
+
+        fun toString() {
+          return self.firstName;
+        }
+
+        fun fullName() {
+          return self.firstName;
+        }
+      }
+    CODE
+
+    assert_equal('(struct "Person" (prop "firstName") (prop "lastName") (fun "toString" (group (return (dot (ident "self") "firstName")))) (fun "fullName" (group (return (dot (ident "self") "firstName")))))', stmts.shift.inspect)
+  end
+
   def test_unary_basic
     stmts = parse('print bla; print 123; print true; print false; print null;')
 

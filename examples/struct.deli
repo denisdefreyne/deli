@@ -1,7 +1,10 @@
 struct Person {
   firstName
+
+  fun toString() {
+    return self.toString;
+  }
 }
 
 var denis = new Person(firstName="Denis");
-denis =123;
 print denis.firstName;

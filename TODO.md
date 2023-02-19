@@ -8,11 +8,21 @@
   - [x] Escaping
   - [x] Interpolation
 - [ ] Structs
+  - [x] Define
+  - [x] Instantiate
+  - [x] Props
+  - [ ] Methods
+  - [ ] Traits
 - [ ] Lists
+  - [ ] Instantiation
+  - [ ] Methods
 - [ ] Maps
+  - [ ] Instantiation
+  - [ ] Methods
 
 Maybe later:
 
 - [ ] Transpiler
+- [ ] Testing framework
 - [ ] Right associativity
 - [ ] Are function definitions statements?

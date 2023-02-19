@@ -141,13 +141,13 @@ module Deli
       end
     end
 
-    StructStmt = Struct.new(:ident, :props) do
+    StructStmt = Struct.new(:ident, :props, :meths) do
       include SExp
 
       attr_accessor :symbol
 
       def to_sexp
-        [:struct, ident.value, *props]
+        [:struct, ident.value, *props, *meths]
       end
     end
 

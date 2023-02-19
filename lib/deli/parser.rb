@@ -82,7 +82,7 @@ module Deli
 
     # FIXME: is this really a statement?
     def parse_fun_stmt
-      advance # `fun` tokena
+      advance # `fun` token
 
       ident = consume(TokenType::IDENT)
 
@@ -118,26 +118,36 @@ module Deli
 
       ident = consume(TokenType::IDENT)
       consume(TokenType::LBRACE)
-      props = []
-      if peek.type != TokenType::RBRACE
-        prop_token = consume(TokenType::IDENT)
-        props << AST::Prop.new(prop_token)
 
-        while peek.type == TokenType::COMMA
+      props = []
+      methods = []
+
+      while peek.type != TokenType::RBRACE
+        case peek.type
+        when TokenType::IDENT
+          # Field
+          prop_token = advance
+          props << AST::Prop.new(prop_token)
+        when TokenType::KW_FUN
+          # Method
+          methods << parse_fun_stmt
+        else
+          raise 'tbi'
+        end
+
+        if peek.type == TokenType::COMMA
           advance # comma
 
           # Handle trailing comma
           if peek.type == TokenType::RBRACE
             break
           end
-
-          prop_token = consume(TokenType::IDENT)
-          props << AST::Prop.new(prop_token)
         end
       end
+
       consume(TokenType::RBRACE)
 
-      Deli::AST::StructStmt.new(ident, props)
+      Deli::AST::StructStmt.new(ident, props, methods)
     end
 
     def parse_return_stmt
