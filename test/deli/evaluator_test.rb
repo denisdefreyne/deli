@@ -301,7 +301,6 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal('No such property: fav_hobby', error.message)
   end
 
-
   def test_dot_non_instance
     error = assert_raises(Deli::LocatableError) { evaluate(<<~CODE) }
       var denis = 100;

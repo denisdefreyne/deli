@@ -197,7 +197,7 @@ module Deli
 
       unless target.is_a?(Instance)
         raise Deli::LocatableError.new(
-          "Cannot get property of something that is not a struct instance",
+          'Cannot get property of something that is not a struct instance',
           expr.ident.span,
         )
       end
