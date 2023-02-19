@@ -465,7 +465,9 @@ module Deli
 
     def parse_assign(left_expr, token)
       right_expr = parse_precedence(Precedence::ASSIGN + 1)
-      Deli::AST::AssignExpr.new(left_expr, token, right_expr)
+      expr = Deli::AST::AssignExpr.new(left_expr, right_expr)
+      expr.token = token
+      expr
     end
 
     def parse_binary(left_expr, token)

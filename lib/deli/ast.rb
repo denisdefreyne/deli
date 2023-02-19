@@ -74,9 +74,16 @@ module Deli
             [
               name.to_sym,
               *attr_names.flat_map do |attr_name|
-                value = instance_variable_get("@#{attr_name}")
-                value = value.value if value.is_a?(Deli::Token)
-                [value].flatten
+                attr = instance_variable_get("@#{attr_name}")
+
+                res =
+                  if attr.is_a?(Deli::Token)
+                    attr.value
+                  else
+                    attr
+                  end
+
+                [res].flatten
               end,
             ]
           end
@@ -140,132 +147,43 @@ module Deli
 
     # Expressions
 
-    IntegerExpr = Struct.new(:value) do
-      include SExp
+    IntegerExpr = Node.define(:integer, [:value])
 
-      def to_sexp
-        [:integer, value]
-      end
-    end
+    StringPartLitExpr = Node.define(:string_part_lit, [:value])
 
-    StringPartLitExpr = Struct.new(:value) do
-      include SExp
+    StringPartInterpExpr = Node.define(:string_part_interp, [:expr])
 
-      def to_sexp
-        [:string_part_lit, value]
-      end
-    end
+    StringExpr = Node.define(:string, [:parts])
 
-    StringPartInterpExpr = Struct.new(:expr) do
-      include SExp
-
-      def to_sexp
-        [:string_part_interp, expr]
-      end
-    end
-
-    StringExpr = Struct.new(:parts) do
-      include SExp
-
-      def to_sexp
-        [:string, *parts]
-      end
-    end
-
-    IdentifierExpr = Struct.new(:ident) do
-      include SExp
-
+    IdentifierExpr = Node.define(:ident, [:ident]) do
       attr_accessor :symbol
-
-      def to_sexp
-        [:ident, ident.value]
-      end
     end
 
-    TrueExpr = Class.new do
-      include SExp
+    TrueExpr = Node.define(:true, []) # rubocop:disable Lint/BooleanSymbol
 
-      def to_sexp
-        [:true] # rubocop:disable Lint/BooleanSymbol
-      end
-    end
+    FalseExpr = Node.define(:false, []) # rubocop:disable Lint/BooleanSymbol
 
-    FalseExpr = Class.new do
-      include SExp
+    NullExpr = Node.define(:null, [])
 
-      def to_sexp
-        [:false] # rubocop:disable Lint/BooleanSymbol
-      end
-    end
-
-    NullExpr = Class.new do
-      include SExp
-
-      def to_sexp
-        [:null]
-      end
-    end
-
-    AssignExpr = Struct.new(:left_expr, :token, :right_expr) do
-      include SExp
-
+    AssignExpr = Node.define(:assign, [:left_expr, :right_expr]) do
+      attr_accessor :token
       attr_accessor :symbol
-
-      def to_sexp
-        [:assign, left_expr, right_expr]
-      end
     end
 
-    CallExpr = Struct.new(:callee, :arg_exprs) do
-      include SExp
+    CallExpr = Node.define(:call, [:callee, :arg_exprs])
 
-      def to_sexp
-        [:call, callee, *arg_exprs]
-      end
-    end
+    DotExpr = Node.define(:dot, [:target, :ident])
 
-    DotExpr = Struct.new(:target, :ident) do
-      include SExp
+    UnaryExpr = Node.define(:unary, [:op, :expr])
 
-      def to_sexp
-        [:dot, target, ident.value]
-      end
-    end
+    BinaryExpr = Node.define(:binary, [:op, :left_expr, :right_expr])
 
-    UnaryExpr = Struct.new(:op, :expr) do
-      include SExp
-
-      def to_sexp
-        [:unary, op.lexeme, expr]
-      end
-    end
-
-    BinaryExpr = Struct.new(:op, :left_expr, :right_expr) do
-      include SExp
-
-      def to_sexp
-        [:binary, op.lexeme, left_expr, right_expr]
-      end
-    end
-
-    Kwarg = Struct.new(:key, :value) do
-      include SExp
-
+    Kwarg = Node.define(:kwarg, [:key, :value]) do
       attr_accessor :symbol
-
-      def to_sexp
-        [:kwarg, key.lexeme, value]
-      end
     end
 
-    NewExpr = Struct.new(:ident, :kwargs) do
-      include SExp
-
+    NewExpr = Node.define(:new, [:ident, :kwargs]) do
       attr_accessor :symbol
-
-      def to_sexp
-        [:new, ident.lexeme, *kwargs]
-      end
     end
   end
 end
