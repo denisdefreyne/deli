@@ -199,7 +199,7 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
-  def test_struct_method
+  def test_struct_method_def
     stmts = parse(<<~CODE)
       struct Person {
         firstName,
@@ -216,6 +216,22 @@ class TestDeliParser < Minitest::Test
     CODE
 
     assert_equal('(struct "Person" (prop "firstName") (prop "lastName") (fun "toString" (group (return (dot (ident "self") "firstName")))) (fun "fullName" (group (return (dot (ident "self") "firstName")))))', stmts.shift.inspect)
+  end
+
+  def test_struct_method_call_zero_args
+    stmts = parse(<<~CODE)
+      thing.show();
+    CODE
+
+    assert_equal('(expr (call (dot (ident "thing") "show")))', stmts.shift.inspect)
+  end
+
+  def test_struct_method_call_some_args
+    stmts = parse(<<~CODE)
+      thing.show(10, 20);
+    CODE
+
+    assert_equal('(expr (call (dot (ident "thing") "show") (integer 10) (integer 20)))', stmts.shift.inspect)
   end
 
   def test_unary_basic
