@@ -53,20 +53,24 @@ module Deli
     class Fun
       attr_reader :params
       attr_reader :body_stmt
+      attr_reader :this_symbol
 
-      def initialize(params, body_stmt)
+      def initialize(params, body_stmt, this_symbol)
         @params = params
         @body_stmt = body_stmt
+        @this_symbol = this_symbol
       end
     end
 
     class DeliStruct
       attr_reader :ident
       attr_reader :props
+      attr_reader :methods
 
-      def initialize(ident, props)
+      def initialize(ident, props, methods)
         @ident = ident
         @props = props
+        @methods = methods
       end
 
       def to_s
@@ -85,6 +89,16 @@ module Deli
 
       def to_s
         "a #{struct}(#{ivars.map { |k, v| [k, '=', v.inspect].join }.join(', ')})"
+      end
+    end
+
+    class Method
+      attr_reader :function
+      attr_reader :instance
+
+      def initialize(function, instance)
+        @function = function
+        @instance = instance
       end
     end
 
@@ -128,12 +142,18 @@ module Deli
     end
 
     def handle_fun_stmt(stmt)
-      fn = Fun.new(stmt.params, stmt.body_stmt)
+      fn = Fun.new(stmt.params, stmt.body_stmt, nil)
       @env.assign_new(stmt.symbol, fn)
     end
 
     def handle_struct_stmt(stmt)
-      struct = DeliStruct.new(stmt.symbol, stmt.props)
+      methods = {}
+      stmt.methods.each do |m|
+        methods[m.ident.value] = Fun.new(m.params, m.body_stmt, m.this_symbol)
+      end
+
+      struct = DeliStruct.new(stmt.symbol, stmt.props, methods)
+
       @env.assign_new(stmt.symbol, struct)
     end
 
@@ -172,22 +192,35 @@ module Deli
     def handle_call_expr(expr)
       callee = handle(expr.callee)
 
-      unless callee.is_a?(Fun)
+      function = nil
+      instance = nil
+
+      case callee
+      when Fun
+        function = callee
+      when Method
+        function = callee.function
+        instance = callee.instance
+      else
         # TODO: raise locatable error
         raise 'nope'
       end
 
-      unless callee.params.size == expr.arg_exprs.size
+      unless function.params.size == expr.arg_exprs.size
         raise 'args count mismatch'
       end
 
       push_env do
-        callee.params.zip(expr.arg_exprs) do |param, arg_expr|
+        if function.this_symbol
+          @env.assign_new(function.this_symbol, instance)
+        end
+
+        function.params.zip(expr.arg_exprs) do |param, arg_expr|
           @env.assign_new(param.symbol, handle(arg_expr))
         end
 
         catch :return do
-          handle(callee.body_stmt)
+          handle(function.body_stmt)
         end
       end
     end
@@ -202,12 +235,21 @@ module Deli
         )
       end
 
-      target.ivars.fetch(expr.ident.value) do
-        raise Deli::LocatableError.new(
-          "No such property: #{expr.ident.value}",
-          expr.ident.span,
-        )
+      # Find ivar
+      if target.ivars.key?(expr.ident.value)
+        return target.ivars[expr.ident.value]
       end
+
+      # Find and bind method
+      function = target.struct.methods[expr.ident.value]
+      if function
+        return Method.new(function, target)
+      end
+
+      raise Deli::LocatableError.new(
+        "No such property: #{expr.ident.value}",
+        expr.ident.span,
+      )
     end
 
     def handle_true_expr(_expr)

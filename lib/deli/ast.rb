@@ -121,6 +121,7 @@ module Deli
 
     FunStmt = Node.define(:fun, [:ident, :params, :body_stmt]) do
       attr_accessor :symbol
+      attr_accessor :this_symbol
     end
 
     ReturnStmt = Node.define(:return, [:expr])

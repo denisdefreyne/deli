@@ -325,6 +325,23 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("Denis Defreyne\nDenis Villeneuve\n", $stdout.string)
   end
 
+  def test_dot_method
+    evaluate(<<~CODE)
+      struct Person {
+        name,
+
+        fun who() {
+          return this.name;
+        }
+      }
+
+      var denis = new Person(name="Denis Defreyne");
+      print denis.who();
+    CODE
+
+    assert_equal("Denis Defreyne\n", $stdout.string)
+  end
+
   private
 
   def evaluate(string)

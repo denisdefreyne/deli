@@ -55,6 +55,9 @@ Style/EmptyMethod:
 Style/SymbolArray:
   EnforcedStyle: brackets
 
+Minitest/EmptyLineBeforeAssertionMethods:
+  Enabled: false
+
 ################################################################################
 # Disabling cops that are not useful
 
@@ -254,8 +257,6 @@ Minitest/AssertWithExpectedArgument: # new in 0.11
 Minitest/AssertionInLifecycleHook: # new in 0.10
   Enabled: true
 Minitest/DuplicateTestRun: # new in 0.19
-  Enabled: true
-Minitest/EmptyLineBeforeAssertionMethods: # new in 0.23
   Enabled: true
 Minitest/LiteralAsActualArgument: # new in 0.10
   Enabled: true

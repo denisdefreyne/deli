@@ -32,6 +32,9 @@ module Deli
     end
 
     def handle_struct_stmt(stmt)
+      stmt.methods.each do |method|
+        handle(method)
+      end
     end
 
     def handle_expr_stmt(stmt)

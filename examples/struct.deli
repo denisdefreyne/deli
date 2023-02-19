@@ -2,7 +2,7 @@ struct Person {
   firstName
 
   fun toString() {
-    return self.toString;
+    return this.toString;
   }
 }
 

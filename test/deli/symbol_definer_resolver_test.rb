@@ -114,6 +114,22 @@ class TestDeliSymbolDefinerResolver < Minitest::Test
     assert_equal(person_sym, stmts[1].expr.symbol)
   end
 
+  def test_self
+    stmts = define_and_resolve(<<~CODE)
+      struct Person {
+        fun x() {}
+      }
+    CODE
+
+    method = stmts[0].methods[0]
+
+    person_sym = stmts[0].scope.resolve('Person', span)
+    assert_equal(person_sym, stmts[0].symbol)
+
+    this = method.scope.resolve('this', span)
+    refute_nil(this)
+  end
+
   private
 
   def span

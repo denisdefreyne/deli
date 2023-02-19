@@ -61,6 +61,13 @@ module Deli
     def handle_struct_stmt(stmt)
       symbol = @scope.define(stmt.ident.value)
       stmt.symbol = symbol
+
+      stmt.methods.each do |method|
+        push_scope do
+          method.this_symbol = @scope.define('this')
+          handle(method)
+        end
+      end
     end
 
     def handle_expr_stmt(stmt)
