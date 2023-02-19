@@ -70,6 +70,8 @@ module Deli
         new_token(TokenType::LTE)
       elsif scanner.scan('>=')
         new_token(TokenType::GTE)
+      elsif scanner.scan('::')
+        new_token(TokenType::COLON_COLON)
 
       # One-character tokens
       elsif scanner.scan('+')
@@ -130,6 +132,8 @@ module Deli
           new_token(TokenType::KW_FUN)
         when 'if'
           new_token(TokenType::KW_IF)
+        when 'import'
+          new_token(TokenType::KW_IMPORT)
         when 'new'
           new_token(TokenType::KW_NEW)
         when 'null'

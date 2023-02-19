@@ -106,6 +106,8 @@ module Deli
       super(stmts)
 
       @env = Env.new
+
+      @namespaces = {}
     end
 
     private
@@ -169,6 +171,20 @@ module Deli
       end
     end
 
+    def handle_import_stmt(stmt)
+      case stmt.ident.value
+      when 'core'
+        @namespaces['core'] = {
+          'toUpper' => lambda do |str|
+            str.upcase
+          end,
+        }
+      else
+        # TODO: raise proper error
+        raise 'unknown namespace'
+      end
+    end
+
     def handle_integer_expr(expr)
       expr.value
     end
@@ -189,8 +205,32 @@ module Deli
       @env.lookup(expr.symbol, expr.ident.span)
     end
 
+    def handle_namespace_expr(expr)
+      namespace = @namespaces.fetch(expr.namespace.value) do
+        # TODO: raise proper error
+        raise 'nope2'
+      end
+
+      namespace.fetch(expr.ident.value) do
+        # TODO: raise proper error
+        raise 'nope3'
+      end
+    end
+
     def handle_call_expr(expr)
       callee = handle(expr.callee)
+
+      if callee.is_a?(Proc)
+        # Built-in function
+
+        unless callee.arity == expr.arg_exprs.size
+          # TODO: get better error
+          raise 'args count mismatch'
+        end
+
+        args = expr.arg_exprs.map { |arg_expr| handle(arg_expr) }
+        return callee.call(*args)
+      end
 
       function = nil
       instance = nil

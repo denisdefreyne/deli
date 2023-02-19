@@ -342,6 +342,16 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("Denis Defreyne\n", $stdout.string)
   end
 
+  def test_import_core
+    evaluate(<<~CODE)
+      import core;
+
+      print core::toUpper("Denis");
+    CODE
+
+    assert_equal("DENIS\n", $stdout.string)
+  end
+
   private
 
   def evaluate(string)

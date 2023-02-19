@@ -126,6 +126,8 @@ module Deli
 
     ReturnStmt = Node.define(:return, [:expr])
 
+    ImportStmt = Node.define(:import, [:ident])
+
     Param = Node.define(:param, [:name]) do
       attr_accessor :symbol
     end
@@ -147,6 +149,8 @@ module Deli
     IdentifierExpr = Node.define(:ident, [:ident]) do
       attr_accessor :symbol
     end
+
+    NamespaceExpr = Node.define(:ident, [:namespace, :ident])
 
     TrueExpr = Node.define(:true, []) # rubocop:disable Lint/BooleanSymbol
 

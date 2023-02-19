@@ -24,6 +24,8 @@ module Deli
         parse_print_stmt
       when TokenType::KW_IF
         parse_if_stmt
+      when TokenType::KW_IMPORT
+        parse_import_stmt
       when TokenType::KW_WHILE
         parse_while_stmt
       when TokenType::KW_FUN
@@ -187,7 +189,17 @@ module Deli
       fun_expr = Deli::AST::IdentifierExpr.new(ident_token)
       expr = parse_call_expr(fun_expr, lparen_token)
       consume(TokenType::SEMICOLON)
+
       Deli::AST::ExprStmt.new(expr)
+    end
+
+    def parse_import_stmt
+      advance # `import` token
+
+      ident = consume(TokenType::IDENT)
+      consume(TokenType::SEMICOLON)
+
+      Deli::AST::ImportStmt.new(ident)
     end
 
     module Precedence
@@ -201,6 +213,7 @@ module Deli
       FACTOR     = 5 # * /
       UNARY      = 6 # - ! new
       CALL       = 7 # ( .
+      NAMESPACE  = 8 # ::
     end
 
     class ParseRule
@@ -369,6 +382,12 @@ module Deli
       infix: :parse_dot_expr,
     )
 
+    PARSE_RULES.register(
+      TokenType::COLON_COLON,
+      Precedence::NAMESPACE,
+      infix: :parse_namespace_expr,
+    )
+
     def parse_expr
       parse_precedence(Precedence::LOWEST)
     end
@@ -505,6 +524,17 @@ module Deli
     def parse_dot_expr(left_expr, _dot_token)
       ident = consume(TokenType::IDENT)
       Deli::AST::DotExpr.new(left_expr, ident)
+    end
+
+    def parse_namespace_expr(left_expr, _colon_colon_token)
+      unless left_expr.is_a?(Deli::AST::IdentifierExpr)
+        # TODO: raise proper error
+        raise 'nope'
+      end
+
+      ident = consume(TokenType::IDENT)
+
+      Deli::AST::NamespaceExpr.new(left_expr.ident, ident)
     end
 
     def parse_true(_token)

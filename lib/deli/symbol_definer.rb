@@ -78,6 +78,10 @@ module Deli
       handle(stmt.expr)
     end
 
+    def handle_import_stmt(stmt)
+      # TODO: here we probably need to record the namespaces that were imported
+    end
+
     def handle_integer_expr(expr)
     end
 
@@ -93,6 +97,9 @@ module Deli
     end
 
     def handle_identifier_expr(expr)
+    end
+
+    def handle_namespace_expr(expr)
     end
 
     def handle_call_expr(expr)

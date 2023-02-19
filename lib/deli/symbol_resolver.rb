@@ -45,6 +45,9 @@ module Deli
       handle(stmt.expr)
     end
 
+    def handle_import_stmt(stmt)
+    end
+
     def handle_integer_expr(expr)
     end
 
@@ -62,6 +65,9 @@ module Deli
     def handle_identifier_expr(expr)
       symbol = expr.scope.resolve(expr.ident.value, expr.ident.span)
       expr.symbol = symbol
+    end
+
+    def handle_namespace_expr(expr)
     end
 
     def handle_call_expr(expr)

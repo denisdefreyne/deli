@@ -24,6 +24,7 @@ module Deli
     BANG_EQ       = TokenType.new(:BANG_EQ,       '“!=”')
     LTE           = TokenType.new(:LTE,           '“<=”')
     GTE           = TokenType.new(:GTE,           '“>=”')
+    COLON_COLON   = TokenType.new(:COLON_COLON,   '“::”')
     DOLLAR_LBRACE = TokenType.new(:DOLLAR_LBRACE, '“${”')
 
     PLUS          = TokenType.new(:PLUS,          '“+”')
@@ -55,6 +56,7 @@ module Deli
     KW_NEW        = TokenType.new(:KW_NEW,        '“new”')
     KW_PRINT      = TokenType.new(:KW_PRINT,      '“print”')
     KW_IF         = TokenType.new(:KW_IF,         '“if”')
+    KW_IMPORT     = TokenType.new(:KW_IMPORT,     '“import”')
     KW_ELSE       = TokenType.new(:KW_ELSE,       '“else”')
     KW_FUN        = TokenType.new(:KW_FUN,        '“fun”')
     KW_RETURN     = TokenType.new(:KW_RETURN,     '“return”')
