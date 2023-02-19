@@ -7,12 +7,11 @@
   - [ ] String operations
   - [x] Escaping
   - [x] Interpolation
-- [ ] Structs
+- [x] Structs
   - [x] Define
   - [x] Instantiate
   - [x] Props
-  - [ ] Methods
-  - [ ] Traits
+  - [x] Methods
   - [x] Assign to props
 - [ ] Lists
   - [ ] Instantiation
@@ -20,9 +19,11 @@
 - [ ] Maps
   - [ ] Instantiation
   - [ ] Methods
+- [ ] Standard library
 
 Maybe later:
 
+- [ ] Traits
 - [ ] Transpiler
 - [ ] Testing framework
 - [ ] Right associativity

@@ -207,6 +207,7 @@ module Deli
       end
 
       unless function.params.size == expr.arg_exprs.size
+        # TODO: get better error
         raise 'args count mismatch'
       end
 
