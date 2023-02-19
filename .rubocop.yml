@@ -52,6 +52,9 @@ Style/GuardClause:
 Style/EmptyMethod:
   EnforcedStyle: expanded
 
+Style/SymbolArray:
+  EnforcedStyle: brackets
+
 ################################################################################
 # Disabling cops that are not useful
 

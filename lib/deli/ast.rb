@@ -47,6 +47,51 @@ module Deli
       out << ')'
     end
 
+    class Node
+      def self.define(name, attr_names, &)
+        Class.new(self) do
+          attr_names.each do |attr_name|
+            attr_reader(attr_name)
+          end
+
+          attr_accessor :scope
+
+          if block_given?
+            instance_eval(&)
+          end
+
+          define_method :initialize do |*attrs|
+            if attr_names.size != attrs.size
+              raise ArgumentError, 'Not enough args'
+            end
+
+            attr_names.zip(attrs).each do |attr_name, attr|
+              instance_variable_set("@#{attr_name}", attr)
+            end
+          end
+
+          define_method :to_sexp do
+            [
+              name.to_sym,
+              *attr_names.flat_map do |attr_name|
+                value = instance_variable_get("@#{attr_name}")
+                value = value.value if value.is_a?(Deli::Token)
+                [value].flatten
+              end,
+            ]
+          end
+
+          def inspect
+            StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
+          end
+
+          def inspect_multiline
+            StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
+          end
+        end
+      end
+    end
+
     module SExp
       attr_accessor :scope
 
@@ -61,102 +106,36 @@ module Deli
 
     # Statements
 
-    VarStmt = Struct.new(:ident, :expr) do
-      include SExp
-
+    VarStmt = Node.define(:var, [:ident, :expr]) do
       attr_accessor :symbol
-
-      def to_sexp
-        [:var, ident.value, expr]
-      end
     end
 
-    ExprStmt = Struct.new(:expr) do
-      include SExp
+    ExprStmt = Node.define(:expr, [:expr])
 
-      def to_sexp
-        [:expr, expr]
-      end
-    end
+    PrintStmt = Node.define(:print, [:expr])
 
-    PrintStmt = Struct.new(:expr) do
-      include SExp
+    GroupStmt = Node.define(:group, [:stmts])
 
-      def to_sexp
-        [:print, expr]
-      end
-    end
+    IfStmt = Node.define(:if, [:cond_expr, :true_stmt, :false_stmt])
 
-    GroupStmt = Struct.new(:stmts) do
-      include SExp
+    WhileStmt = Node.define(:while, [:cond_expr, :body_stmt])
 
-      def to_sexp
-        [:group, *stmts]
-      end
-    end
-
-    IfStmt = Struct.new(:cond_expr, :true_stmt, :false_stmt) do
-      include SExp
-
-      def to_sexp
-        [:if, cond_expr, true_stmt, false_stmt]
-      end
-    end
-
-    WhileStmt = Struct.new(:cond_expr, :body_stmt) do
-      include SExp
-
-      def to_sexp
-        [:while, cond_expr, body_stmt]
-      end
-    end
-
-    Param = Struct.new(:name) do
-      include SExp
-
+    StructStmt = Node.define(:struct, [:ident, :props, :methods]) do
       attr_accessor :symbol
-
-      def to_sexp
-        [:param, name.value]
-      end
     end
 
-    Prop = Struct.new(:name) do
-      include SExp
-
+    FunStmt = Node.define(:fun, [:ident, :params, :body_stmt]) do
       attr_accessor :symbol
-
-      def to_sexp
-        [:prop, name.value]
-      end
     end
 
-    FunStmt = Struct.new(:ident, :params, :body_stmt) do
-      include SExp
+    ReturnStmt = Node.define(:return, [:expr])
 
+    Param = Node.define(:param, [:name]) do
       attr_accessor :symbol
-
-      def to_sexp
-        [:fun, ident.value, *params, body_stmt]
-      end
     end
 
-    StructStmt = Struct.new(:ident, :props, :meths) do
-      include SExp
-
+    Prop = Node.define(:prop, [:name]) do
       attr_accessor :symbol
-
-      def to_sexp
-        [:struct, ident.value, *props, *meths]
-      end
-    end
-
-    ReturnStmt = Struct.new(:expr) do
-      include SExp
-
-      def to_sexp
-        [:return, expr]
-      end
     end
 
     # Expressions

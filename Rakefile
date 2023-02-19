@@ -13,5 +13,5 @@ end
 
 RuboCop::RakeTask.new(:rubocop)
 
-task test: %i[minitest rubocop]
+task test: [:minitest, :rubocop]
 task default: :test
