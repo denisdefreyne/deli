@@ -310,6 +310,21 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal('Cannot get property of something that is not a struct instance', error.message)
   end
 
+  def test_dot_instance_assign
+    evaluate(<<~CODE)
+      struct Person {
+        name,
+      }
+
+      var denis = new Person(name="Denis Defreyne");
+      print denis.name;
+      denis.name = "Denis Villeneuve";
+      print denis.name;
+    CODE
+
+    assert_equal("Denis Defreyne\nDenis Villeneuve\n", $stdout.string)
+  end
+
   private
 
   def evaluate(string)

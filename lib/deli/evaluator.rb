@@ -223,15 +223,34 @@ module Deli
     end
 
     def handle_assign_expr(expr)
-      unless expr.left_expr.is_a?(AST::IdentifierExpr)
+      case expr.left_expr
+      when AST::IdentifierExpr
+        right_value = handle(expr.right_expr)
+        @env.assign_existing(
+          expr.left_expr.symbol,
+          right_value,
+          expr.left_expr.ident.span,
+        )
+      when AST::DotExpr
+        target = handle(expr.left_expr.target)
+
+        unless target.is_a?(Instance)
+          raise Deli::LocatableError.new(
+            'Cannot get property of something that is not a struct instance',
+            expr.ident.span,
+          )
+        end
+
+        right_value = handle(expr.right_expr)
+
+        target.ivars[expr.left_expr.ident.value] =
+          right_value
+      else
         raise Deli::LocatableError.new(
           'Left-hand side cannot be assigned to',
           expr.token.span,
         )
       end
-
-      right_value = handle(expr.right_expr)
-      @env.assign_existing(expr.left_expr.symbol, right_value, expr.left_expr.ident.span)
     end
 
     def handle_unary_expr(expr)

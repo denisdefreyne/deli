@@ -199,6 +199,24 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
+  def test_struct_prop_assign
+    stmts = parse(<<~CODE)
+      person.name = "Denis";
+    CODE
+
+    assert_equal('(expr (assign (dot (ident "person") "name") (string (string_part_lit "Denis"))))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
+  def test_struct_prop_assign_twice
+    stmts = parse(<<~CODE)
+      person.name.full = "Denis";
+    CODE
+
+    assert_equal('(expr (assign (dot (dot (ident "person") "name") "full") (string (string_part_lit "Denis"))))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
   def test_struct_method_def
     stmts = parse(<<~CODE)
       struct Person {

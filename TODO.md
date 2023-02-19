@@ -13,6 +13,7 @@
   - [x] Props
   - [ ] Methods
   - [ ] Traits
+  - [x] Assign to props
 - [ ] Lists
   - [ ] Instantiation
   - [ ] Methods
