@@ -99,18 +99,6 @@ module Deli
       end
     end
 
-    module SExp
-      attr_accessor :scope
-
-      def inspect
-        StringIO.new.tap { AST.dump_sexp_oneline(to_sexp, _1, 0) }.string
-      end
-
-      def inspect_multiline
-        StringIO.new.tap { AST.dump_sexp_multiline(to_sexp, _1, 0) }.string
-      end
-    end
-
     # Statements
 
     VarStmt = Node.define(:var, [:ident, :expr]) do
