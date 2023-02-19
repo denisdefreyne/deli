@@ -78,7 +78,7 @@ module Deli
 
                 res =
                   if attr.is_a?(Deli::Token)
-                    attr.value
+                    attr.value || attr.type
                   else
                     attr
                   end

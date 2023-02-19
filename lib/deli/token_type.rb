@@ -14,6 +14,10 @@ module Deli
       "#{name} (#{symbol})"
     end
 
+    def inspect
+      @symbol.to_s
+    end
+
     EOF           = TokenType.new(:EOF,           'end of input')
 
     EQ_EQ         = TokenType.new(:EQ_EQ,         '“==”')
