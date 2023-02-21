@@ -211,7 +211,7 @@ module Deli
       COMPARISON = 3 # > >= < <=
       TERM       = 4 # + -
       FACTOR     = 5 # * /
-      UNARY      = 6 # - ! new
+      UNARY      = 6 # - ! new [
       CALL       = 7 # ( .
       NAMESPACE  = 8 # ::
     end
@@ -371,6 +371,12 @@ module Deli
     )
 
     PARSE_RULES.register(
+      TokenType::LBRACKET,
+      Precedence::UNARY,
+      prefix: :parse_list,
+    )
+
+    PARSE_RULES.register(
       TokenType::LPAREN,
       Precedence::CALL,
       infix: :parse_call_expr,
@@ -448,6 +454,28 @@ module Deli
     def parse_unary(token)
       expr = parse_precedence(Precedence::UNARY)
       Deli::AST::UnaryExpr.new(token, expr)
+    end
+
+    def parse_list(token)
+      elements = []
+      if peek.type != TokenType::RBRACKET
+        elements << parse_expr
+
+        while peek.type == TokenType::COMMA
+          advance # comma
+
+          # Handle trailing comma
+          if peek.type == TokenType::RBRACKET
+            break
+          end
+
+          elements << parse_expr
+        end
+      end
+
+      consume(TokenType::RBRACKET)
+
+      Deli::AST::ListExpr.new(elements)
     end
 
     def parse_new(_token)

@@ -348,6 +348,41 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
+  def test_list_empty
+    stmts = parse('var things = [];')
+
+    assert_equal('(var "things" (list))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
+  def test_list_one_elem
+    stmts = parse('var things = [100];')
+
+    assert_equal('(var "things" (list (integer 100)))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
+  def test_list_one_elem_trailing_comma
+    stmts = parse('var things = [100,];')
+
+    assert_equal('(var "things" (list (integer 100)))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
+  def test_list_two_elem
+    stmts = parse('var things = [100, 200];')
+
+    assert_equal('(var "things" (list (integer 100) (integer 200)))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
+  def test_list_two_elem_trailing_comma
+    stmts = parse('var things = [100, 200,];')
+
+    assert_equal('(var "things" (list (integer 100) (integer 200)))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
   def test_error_unknown_infix
     error = assert_raises(Deli::LocatableError) { parse('var x = a var b') }
 

@@ -171,6 +171,8 @@ module Deli
 
     BinaryExpr = Node.define(:binary, [:op, :left_expr, :right_expr])
 
+    ListExpr = Node.define(:list, [:elems])
+
     Kwarg = Node.define(:kwarg, [:key, :value]) do
       attr_accessor :symbol
     end
