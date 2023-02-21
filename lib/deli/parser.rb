@@ -456,7 +456,7 @@ module Deli
       Deli::AST::UnaryExpr.new(token, expr)
     end
 
-    def parse_list(token)
+    def parse_list(_token)
       elements = []
       if peek.type != TokenType::RBRACKET
         elements << parse_expr
