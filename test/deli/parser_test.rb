@@ -383,6 +383,13 @@ class TestDeliParser < Minitest::Test
     assert_nil(stmts.shift)
   end
 
+  def test_list_nested
+    stmts = parse('var things = [100, [200, [[300]]]];')
+
+    assert_equal('(var "things" (list (integer 100) (list (integer 200) (list (list (integer 300))))))', stmts.shift.inspect)
+    assert_nil(stmts.shift)
+  end
+
   def test_error_unknown_infix
     error = assert_raises(Deli::LocatableError) { parse('var x = a var b') }
 
