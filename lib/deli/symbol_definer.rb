@@ -140,6 +140,10 @@ module Deli
       end
     end
 
+    def handle_list_expr(expr)
+      expr.elems.each { |elem| handle(elem) }
+    end
+
     def push_scope
       @scope = Scope.new(parent: @scope)
       yield

@@ -352,6 +352,14 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("DENIS\n", $stdout.string)
   end
 
+  def test_list
+    evaluate(<<~CODE)
+      print [1, 2, [3, 4]];
+    CODE
+
+    assert_equal("[1, 2, [3, 4]]\n", $stdout.string)
+  end
+
   private
 
   def evaluate(string)

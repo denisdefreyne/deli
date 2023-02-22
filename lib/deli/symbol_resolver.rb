@@ -102,6 +102,10 @@ module Deli
       handle(expr.right_expr)
     end
 
+    def handle_list_expr(expr)
+      expr.elems.each { |elem| handle(elem) }
+    end
+
     def handle_new_expr(expr)
       symbol = expr.scope.resolve(expr.ident.value, expr.ident.span)
       expr.symbol = symbol

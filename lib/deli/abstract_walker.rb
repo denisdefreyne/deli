@@ -64,6 +64,8 @@ module Deli
         handle_binary_expr(node)
       when AST::NewExpr
         handle_new_expr(node)
+      when AST::ListExpr
+        handle_list_expr(node)
       else
         raise Deli::InternalInconsistencyError,
           "Unexpected class: #{node.class}"

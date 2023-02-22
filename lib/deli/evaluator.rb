@@ -411,6 +411,10 @@ module Deli
       Instance.new(struct, hash)
     end
 
+    def handle_list_expr(expr)
+      expr.elems.map { |elem| handle(elem) }
+    end
+
     def push_env
       @env = Env.new(parent: @env)
       yield
