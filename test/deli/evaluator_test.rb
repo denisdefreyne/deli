@@ -383,6 +383,16 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("DENIS\n", $stdout.string)
   end
 
+  def test_namespace_nonexistant
+    error = assert_raises(Deli::LocatableError) { evaluate(<<~CODE) }
+      import core;
+
+      print core::abcdefg();
+    CODE
+
+    assert_equal('Namespace “core” does not export “abcdefg”', error.message)
+  end
+
   def test_list
     evaluate(<<~CODE)
       print [1, 2, [3, 4]];

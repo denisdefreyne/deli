@@ -212,8 +212,10 @@ module Deli
       end
 
       namespace.fetch(expr.ident.value) do
-        # TODO: raise proper error
-        raise 'nope3'
+        raise Deli::LocatableError.new(
+          "Namespace “#{expr.namespace.value}” does not export “#{expr.ident.value}”",
+          expr.ident.span,
+        )
       end
     end
 
