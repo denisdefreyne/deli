@@ -178,6 +178,9 @@ module Deli
           'toUpper' => lambda do |str|
             str.upcase
           end,
+          'exit' => lambda do |code|
+            exit(code)
+          end,
         }
       else
         # TODO: raise proper error
