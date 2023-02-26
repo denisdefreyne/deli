@@ -244,8 +244,10 @@ module Deli
         function = callee.function
         instance = callee.instance
       else
-        # TODO: raise locatable error
-        raise 'nope'
+        raise Deli::LocatableError.new(
+          "Cannot call #{callee.class}: not a callable",
+          expr.rparen.span,
+        )
       end
 
       unless function.params.size == expr.arg_exprs.size

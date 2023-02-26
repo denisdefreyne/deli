@@ -147,6 +147,15 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal('Argument count mismatch: expected 1 argument(s), but 0 given', error.message)
   end
 
+  def test_fun_non_callable
+    error = assert_raises(Deli::LocatableError) { evaluate(<<~CODE) }
+      var z = 123;
+      z();
+    CODE
+
+    assert_equal('Cannot call Integer: not a callable', error.message)
+  end
+
   # def test_fun_closures
   #   evaluate(<<~SRC)
   #     var a = 100;
