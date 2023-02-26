@@ -1,0 +1,39 @@
+import core;
+
+fun assert(cond, msg) {
+  if !cond {
+    print "Assertion failure: ${msg}";
+    core::exit(1);
+  }
+}
+
+fun assert_equal(left, right) {
+  assert(left == right, "Expected “${left}” to equal “${right}”");
+}
+
+fun assert_not_null(value) {
+  assert(value != null, "Expected “${value}” not to be null");
+}
+
+struct VarStmt {
+  ident,
+  expr,
+
+  fun toString() {
+    return "(var ${this.ident} ${this.expr.toString()})";
+  }
+}
+
+struct TrueExpr {
+  fun toString() {
+    return "(true)";
+  }
+}
+
+assert_equal(
+  "(true)",
+  new TrueExpr().toString());
+
+assert_equal(
+  "(var enabled (true))",
+  new VarStmt(ident="enabled", expr=new TrueExpr()).toString());
