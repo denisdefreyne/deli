@@ -125,6 +125,28 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("8\n13\n21\n34\n", $stdout.string)
   end
 
+  def test_fun_arg_mismatch
+    error = assert_raises(Deli::LocatableError) { evaluate(<<~CODE) }
+      fun z(a) {
+        return 123;
+      }
+
+      z();
+    CODE
+
+    assert_equal('Argument count mismatch: expected 1 argument(s), but 0 given', error.message)
+  end
+
+  def test_fun_arg_mismatch_builtin
+    error = assert_raises(Deli::LocatableError) { evaluate(<<~CODE) }
+      import core;
+
+      core::toUpper();
+    CODE
+
+    assert_equal('Argument count mismatch: expected 1 argument(s), but 0 given', error.message)
+  end
+
   # def test_fun_closures
   #   evaluate(<<~SRC)
   #     var a = 100;

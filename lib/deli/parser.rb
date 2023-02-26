@@ -544,9 +544,11 @@ module Deli
         end
       end
 
-      consume(TokenType::RPAREN)
+      rparen = consume(TokenType::RPAREN)
 
-      Deli::AST::CallExpr.new(left_expr, args)
+      node = Deli::AST::CallExpr.new(left_expr, args)
+      node.rparen = rparen
+      node
     end
 
     def parse_dot_expr(left_expr, _dot_token)

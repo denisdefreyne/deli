@@ -162,7 +162,9 @@ module Deli
       attr_accessor :token
     end
 
-    CallExpr = Node.define(:call, [:callee, :arg_exprs])
+    CallExpr = Node.define(:call, [:callee, :arg_exprs]) do
+      attr_accessor :rparen
+    end
 
     DotExpr = Node.define(:dot, [:target, :ident])
 

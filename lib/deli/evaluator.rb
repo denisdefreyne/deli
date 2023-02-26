@@ -224,8 +224,10 @@ module Deli
         # Built-in function
 
         unless callee.arity == expr.arg_exprs.size
-          # TODO: get better error
-          raise 'args count mismatch'
+          raise Deli::LocatableError.new(
+            "Argument count mismatch: expected #{callee.arity} argument(s), but #{expr.arg_exprs.size} given",
+            expr.rparen.span,
+          )
         end
 
         args = expr.arg_exprs.map { |arg_expr| handle(arg_expr) }
@@ -247,8 +249,10 @@ module Deli
       end
 
       unless function.params.size == expr.arg_exprs.size
-        # TODO: get better error
-        raise 'args count mismatch'
+        raise Deli::LocatableError.new(
+          "Argument count mismatch: expected #{function.params.size} argument(s), but #{expr.arg_exprs.size} given",
+          expr.rparen.span,
+        )
       end
 
       push_env do
