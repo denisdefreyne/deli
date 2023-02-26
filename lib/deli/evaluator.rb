@@ -381,6 +381,10 @@ module Deli
         left_val > right_val
       when TokenType::GTE
         left_val >= right_val
+      when TokenType::EQ_EQ
+        left_val == right_val
+      when TokenType::BANG_EQ
+        left_val != right_val
       else
         raise Deli::InternalInconsistencyError,
           "Unexpected unary operator: #{expr.op}"

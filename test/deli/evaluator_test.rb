@@ -218,6 +218,12 @@ class TestDeliEvaluator < Minitest::Test
     assert_equal("true\ntrue\nfalse\nfalse\n", $stdout.string)
   end
 
+  def test_binary_equality_operator
+    evaluate('print 2==3; print 2!=3;')
+
+    assert_equal("false\ntrue\n", $stdout.string)
+  end
+
   def test_string_basic
     evaluate('print "Hello, world!";')
 
