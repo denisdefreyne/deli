@@ -160,7 +160,6 @@ module Deli
 
     AssignExpr = Node.define(:assign, [:left_expr, :right_expr]) do
       attr_accessor :token
-      attr_accessor :symbol
     end
 
     CallExpr = Node.define(:call, [:callee, :arg_exprs])
@@ -173,9 +172,7 @@ module Deli
 
     ListExpr = Node.define(:list, [:elems])
 
-    Kwarg = Node.define(:kwarg, [:key, :value]) do
-      attr_accessor :symbol
-    end
+    Kwarg = Node.define(:kwarg, [:key, :value])
 
     NewExpr = Node.define(:new, [:ident, :kwargs]) do
       attr_accessor :symbol
