@@ -15,12 +15,21 @@ fun assert_not_null(value) {
   assert(value != null, "Expected “${value}” not to be null");
 }
 
+struct Token {
+  type,
+  lexeme
+
+  fun toString() {
+    return "\"${this.lexeme}\"";
+  }
+}
+
 struct VarStmt {
   ident,
   expr,
 
   fun toString() {
-    return "(var ${this.ident} ${this.expr.toString()})";
+    return "(var ${this.ident.toString()} ${this.expr.toString()})";
   }
 }
 
@@ -35,5 +44,8 @@ assert_equal(
   new TrueExpr().toString());
 
 assert_equal(
-  "(var enabled (true))",
-  new VarStmt(ident="enabled", expr=new TrueExpr()).toString());
+  "(var \"enabled\" (true))",
+  new VarStmt(
+    ident=new Token(type="IDENT", lexeme="enabled"),
+    expr=new TrueExpr()
+  ).toString());

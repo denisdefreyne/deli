@@ -280,28 +280,33 @@ module Deli
     def handle_dot_expr(expr)
       target = handle(expr.target)
 
-      unless target.is_a?(Instance)
+      case target
+      when Instance
+        # Find ivar
+        if target.ivars.key?(expr.ident.value)
+          return target.ivars[expr.ident.value]
+        end
+
+        # Find and bind method
+        function = target.struct.methods[expr.ident.value]
+        if function
+          return Method.new(function, target)
+        end
+
         raise Deli::LocatableError.new(
-          'Cannot get property of something that is not a struct instance',
+          "No such property: #{expr.ident.value}",
           expr.ident.span,
         )
+      when Array
+        raise '???'
+      else
+        unless target.is_a?(Instance)
+          raise Deli::LocatableError.new(
+            'Cannot get property of something that is not a struct instance',
+            expr.ident.span,
+          )
+        end
       end
-
-      # Find ivar
-      if target.ivars.key?(expr.ident.value)
-        return target.ivars[expr.ident.value]
-      end
-
-      # Find and bind method
-      function = target.struct.methods[expr.ident.value]
-      if function
-        return Method.new(function, target)
-      end
-
-      raise Deli::LocatableError.new(
-        "No such property: #{expr.ident.value}",
-        expr.ident.span,
-      )
     end
 
     def handle_true_expr(_expr)
